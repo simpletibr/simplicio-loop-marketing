@@ -36,11 +36,11 @@ discover -> orient -> decide -> create -> verify -> publish -> measure -> promot
 | orient | channel plan | `lib/campaigns/campaign.ts` `planPieceQueue` |
 | decide | piece queue → yool board | `lib/yool/board.ts` (`piece.plan` tuples) |
 | create (copy) | script/caption generation | `lib/cli/generate.ts`, `lib/content/templates.ts`, `.skills/content-engineering-authentic/` |
-| create (creative) | image/video generation | `lib/providers/image.ts`, `lib/providers/video.ts`, routed via `.specs/architecture/PROVIDERS.md` |
+| create (creative) | image/video generation | `lib/providers/image.ts`, `lib/providers/video.ts` (vídeo de cliente → provider `simplicio-video`, #160), routed via `.specs/architecture/PROVIDERS.md` |
 | verify (brand/humanize) | brand-voice + humanizer critics | `lib/skills/brand-voice.ts`, `lib/skills/humanizer.ts` |
 | verify (claims) | watcher gate | `lib/gate/watcher-gate.ts`, `lib/gate/claims-gate.ts` |
 | verify (compliance) | generic + community compliance | `lib/compliance/loader.ts`, `lib/compliance/community.ts` |
-| publish | broker-routed publish/schedule | `lib/integrations/broker.ts`, `lib/publish/adaptlypost.ts`, `lib/automation/browser-lane.ts` |
+| publish | broker-routed publish/schedule | `lib/integrations/broker.ts` → interface `publisher` (Real Oficial, #161; `adaptlypost.ts` deprecado), `lib/automation/browser-lane.ts` |
 | measure | metrics snapshot + accrual scoring | `lib/analytics/score.ts` |
 | promote | winner → paused ads-draft, guardrails | `lib/cli/promote.ts`, `lib/promotion/budget-guardrail.ts` |
 | community | comment monitor + reply drafts | `lib/community/reply-loop.ts` |
@@ -49,6 +49,24 @@ discover -> orient -> decide -> create -> verify -> publish -> measure -> promot
 Every stage transition is a tuple write on the Yool board
 (`.specs/architecture/YOOL-BOARD.md`) so the loop's state is inspectable
 without re-deriving it from scratch.
+
+## Integração SimpleTI: simplicio-videos + Real Oficial (planejada, épico #159)
+
+Plano: `docs/ROADMAP-REALOFICIAL-VIDEOS.md`.
+
+- **Fábrica de vídeo:** [simpletibr/simplicio-videos](https://github.com/simpletibr/simplicio-videos).
+  O loop escreve `simplicio.video-contract/v1` e chama `simplicio-video-mcp`/CLI.
+  Recebe MP4 + `render.manifest.json` (sha256) como evidência. Voz principal: **Gemini TTS**.
+- **Real Oficial:**
+  - `publisher` → TikTok/Reels/Shorts, agenda ≤ 30 dias (#161, #162).
+  - `dubbing` → dublagem 300+ idiomas e legendas 150+, só nas versões internacionais (#165).
+  - Cortes de vídeo longo pelo MCP `ro_*` oficial (#164).
+- **Superfície real hoje:** MCP/REST cobrem só cortes e renders. Publicar, agendar e dublar ficam
+  no app web, então a implementação provisória usa a trilha de navegador. A API foi pedida (#168).
+- **Guardrails extras:**
+  - créditos Real Oficial (`ro_create_clips`, dublagem, imagens) só com OK explícito do Wesley;
+  - publicar exige aprovação registrada do cliente (#163);
+  - a sessão da Real Oficial é aberta pelo humano, e nenhum agente lê ou grava cookies ou tokens.
 
 ## Required lanes (all present)
 

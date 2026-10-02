@@ -91,6 +91,14 @@ https://github.com/wesleysimplicio/marketing-engine/raw/main/video/out/marketing
 - Publishes the 4-platform caption set through AdaptlyPost (Instagram, TikTok, Facebook, LinkedIn, X, Threads, Pinterest, Shorts, YouTube — 9 platforms total).
 - Pulls analytics on a schedule, classifies top performers, and drafts Meta Ads campaigns from the winners.
 
+
+## Roadmap: simplicio-videos + Real Oficial integration
+
+The plan to turn this engine into a "social media on autopilot" product lives in [docs/ROADMAP-REALOFICIAL-VIDEOS.md](./docs/ROADMAP-REALOFICIAL-VIDEOS.md) (Portuguese; epic [#159](https://github.com/simpletibr/simplicio-loop-marketing/issues/159)). Summary:
+- [simplicio-videos](https://github.com/simpletibr/simplicio-videos) is the video factory, with Gemini TTS narration;
+- [Real Oficial](https://realoficial.com.br) handles publishing and scheduling (up to 30 days) to TikTok, Reels and Shorts, plus dubbing and subtitles for international versions;
+- long-video clips come from Real Oficial's official MCP.
+
 ## Quick start
 
 ```

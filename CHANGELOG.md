@@ -13,6 +13,9 @@ All notable changes to this project are documented here. Format based on
 
 ### Added
 
+- **Planejamento simplicio-videos + Real Oficial** (épico #159, issues #160–#169): `docs/ROADMAP-REALOFICIAL-VIDEOS.md` com papéis, superfície real de integração da Real Oficial (MCP/REST só de cortes; publicação/agendamento/dublagem só no app web → adaptadores `publisher`/`dubbing` com implementação provisória por navegador), fases, guardrails de créditos e riscos; super-skill `.skills/simplicio-loop-marketing/SKILL.md` atualizada.
+- **simplicio-loop 3.47.0** instalado pelo instalador oficial (`simplicio-loop install`): skills em `.claude/skills/` e hooks em `hooks/` (novo hook `UserPromptSubmit`), mais o recibo `.simplicio-loop/install-ownership.json` classificado em `config/json-boundaries.toml`.
+
 - **Issue #99 completion:** extracted canonical caption fan-out with deterministic fast-check invariants for platform keys, bounds, Unicode-safe truncation, and pillar-tag preservation; added a near-real pt-BR fixture through parsing, compliance, fan-out, and observable E2E assertions.
 
 - **Issue #93 Loop core extension binding:** publishes the pinned `simplicio.loop-extension/v1` marketing manifest, hashed context schemas, declarative stage/role/gate/resource bindings, core-owned budgets, receipt-derived views, and a fenced exactly-once effect adapter. Campaign startup rejects incompatible cores before creating work; doctor reports conformance.

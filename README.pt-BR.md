@@ -82,6 +82,14 @@ https://github.com/wesleysimplicio/marketing-engine/raw/main/video/out/marketing
 - Publica caption set de 4 plataformas via AdaptlyPost (Instagram, TikTok, Facebook, LinkedIn, X, Threads, Pinterest, Shorts, YouTube — 9 ao total).
 - Puxa analytics em schedule, classifica top performers, rascunha campanhas Meta Ads dos vencedores.
 
+
+## Roadmap: integração com simplicio-videos + Real Oficial
+
+O plano para virar produto de "social no piloto automático" está em [docs/ROADMAP-REALOFICIAL-VIDEOS.md](./docs/ROADMAP-REALOFICIAL-VIDEOS.md) (épico [#159](https://github.com/simpletibr/simplicio-loop-marketing/issues/159)). Resumo:
+- o [simplicio-videos](https://github.com/simpletibr/simplicio-videos) é a fábrica de vídeo, com voz Gemini TTS;
+- a [Real Oficial](https://realoficial.com.br) publica e agenda, até 30 dias, no TikTok, Reels e Shorts, e faz a dublagem e as legendas das versões internacionais;
+- os cortes de vídeo longo vêm do MCP oficial da Real Oficial.
+
 ## Quick start
 
 ```
