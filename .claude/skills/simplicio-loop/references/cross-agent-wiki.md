@@ -1,18 +1,25 @@
-# Cross-agent persistent wiki (`.orchestrator/wiki/`) — full detail
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/cross-agent-wiki
+schema: simplicio.skill-reference/v1
+purpose: Moved out of `SKILL.md` § Cross-agent persistent wiki as part of the #119 shrink.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
+# Cross-agent persistent wiki (`.simplicio-loop/orchestrator/wiki/`) — full detail
 
 Moved out of `SKILL.md` § Cross-agent persistent wiki as part of the #119 shrink.
 
 Evolved from the one-shot `HANDOFF.md` pattern (inspired by JesseBrown1980/ai-memory).
 Every turn's key decisions, findings, and dead-ends are captured into a persistent
-markdown wiki at `.orchestrator/wiki/` — a per-project, cross-agent, zero-friction
-knowledge base that survives across agent vendors (Hermes → Claude Code → Codex).
+markdown wiki at `.simplicio-loop/orchestrator/wiki/` — a per-project, cross-agent, zero-friction
+knowledge base that survives across agent vendors (Simplicio Agent → Claude Code → Codex).
 
 A fresh agent arriving in the repo reads the wiki and sees "where we left off"
 without needing the prior conversation transcript.
 
 **Structure:**
 ```
-.orchestrator/wiki/
+.simplicio-loop/orchestrator/wiki/
   SUMMARY.md          — regenerated each turn; full index of all entries
   journal/            — per-turn captures (YYYY-MM-DD_HH-MM-SS.md)
   decisions/          — accepted ACs, rejected approaches, settled facts

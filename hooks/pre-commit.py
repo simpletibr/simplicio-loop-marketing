@@ -58,7 +58,10 @@ def _monitored_paths():
     for prefix in WATCHED_SOURCE_DIRS:
         full = os.path.join(REPO, prefix)
         if os.path.exists(full):
-            watched.add(full)
+            # Normalize separators before commonpath on Windows.  A manifest entry
+            # may use POSIX-style `/` while git emits `\\`; mixed forms caused the
+            # hook to silently miss staged skill changes on Windows.
+            watched.add(os.path.abspath(os.path.normpath(full)))
     return watched
 
 
@@ -77,7 +80,7 @@ def _staged_changes_touch_monitored():
 
     for rel_path in r.stdout.splitlines():
         for watched in _monitored_paths():
-            abs_path = os.path.join(REPO, rel_path)
+            abs_path = os.path.abspath(os.path.normpath(os.path.join(REPO, rel_path)))
             if os.path.commonpath([abs_path, watched]) == watched:
                 return True
     return False

@@ -11,7 +11,14 @@ All notable changes to this project are documented here. Format based on
 
 ## [Unreleased]
 
+### Fixed
+
+- **Revisão QA do PR #170:** `hooks/user_prompt_submit.py` não quebra mais todo prompt (registro removido e modo degradado explícito); o estado do loop em `.simplicio-loop/` (transcrições, journal, anchor) e o `__pycache__/` são ignorados pelo git; o pre-push do `hooks/action_gate.py` roda `npm run check` e bloqueia quando não há gate, em vez de pular em silêncio; `ImportError` de `simplicio_loop.delivery_contract` falha fechado em `action_gate.py` e `loop_stop.py`; removidos o `.pyc` versionado e a referência órfã `cross-repo-integration.md`.
+
 ### Added
+
+- **Planejamento simplicio-videos + Real Oficial** (épico #159, issues #160–#169): `docs/ROADMAP-REALOFICIAL-VIDEOS.md` com papéis, superfície real de integração da Real Oficial (MCP/REST só de cortes; publicação/agendamento/dublagem só no app web → adaptadores `publisher`/`dubbing` com implementação provisória por navegador), fases, guardrails de créditos e riscos; super-skill `.skills/simplicio-loop-marketing/SKILL.md` atualizada.
+- **simplicio-loop 3.47.0** instalado pelo instalador oficial (`simplicio-loop install`): skills em `.claude/skills/` e hooks em `hooks/` (o hook novo `UserPromptSubmit` fica desregistrado até o core empacotar o adapter, simpletibr/simplicio-loop#1410), mais o recibo `.simplicio-loop/install-ownership.json` classificado em `config/json-boundaries.toml`. `extension/core.lock.json` fixado em 3.47.0 (commit `e6f0f33`, sha256 do wheel `77c0b667…d389`), com rollback para 3.38.0.
 
 - **Issue #99 completion:** extracted canonical caption fan-out with deterministic fast-check invariants for platform keys, bounds, Unicode-safe truncation, and pillar-tag preservation; added a near-real pt-BR fixture through parsing, compliance, fan-out, and observable E2E assertions.
 

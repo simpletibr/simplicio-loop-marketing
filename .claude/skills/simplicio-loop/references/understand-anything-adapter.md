@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/understand-anything-adapter
+schema: simplicio.skill-reference/v1
+purpose: A concrete binding of the `orient` and `recall` extension points that uses **Understand Anything** (Egonex-AI) — a pre-computed knowledge graph generator — instead of the default `simplicio-mapper`.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # Understand Anything adapter (`orient` / `recall` via Egonex-AI knowledge graph)
 
 A concrete binding of the `orient` and `recall` extension points that uses **Understand
@@ -38,8 +45,8 @@ file — no LLM invocation, no re-scan. The full analysis is re-run only intenti
 
 | Extension point | Default (`simplicio-mapper`) | Understand Anything adapter |
 |---|---|---|
-| `orient` | `simplicio-mapper scan . --json` (or `index . --json` synchronous) → `.simplicio/*.json` | Read `.understand-anything/knowledge-graph.json` + `jq` queries |
-| `recall` | `.simplicio/precedent-index.json` (past resolutions) | Guided tours + semantic search over the graph + prior `/understand-diff` snapshots |
+| `orient` | `simplicio-mapper scan . --json` (or `index . --json` synchronous) → `.simplicio-loop/*.json` | Read `.understand-anything/knowledge-graph.json` + `jq` queries |
+| `recall` | `.simplicio-loop/precedent-index.json` (past resolutions) | Guided tours + semantic search over the graph + prior `/understand-diff` snapshots |
 
 ### When to use which
 

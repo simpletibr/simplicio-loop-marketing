@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/agentsview-adapter
+schema: simplicio.skill-reference/v1
+purpose: A concrete binding of the `source_adapter` extension point for the **agentsview** local-first session search / analytics system.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # agentsview source_adapter — session analytics & cost observability
 
 A concrete binding of the `source_adapter` extension point for the **agentsview** local-first

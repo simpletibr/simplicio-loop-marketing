@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/claims-gate
+schema: simplicio.skill-reference/v1
+purpose: Moved out of `SKILL.md` § Claims-gate discipline as part of the #119 shrink (SKILL.md keeps only the two-tag table and the rule that every output line must be tagged; this file has the full eight-rule contract and worked examples).
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # Claims-gate discipline — MEASURED/UNVERIFIED tagging (full detail)
 
 Moved out of `SKILL.md` § Claims-gate discipline as part of the #119 shrink (SKILL.md keeps only

@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-tasks/standing-loop-247
+schema: simplicio.skill-reference/v1
+purpose: To run unattended for 24h and cover the WHOLE work universe, the skill becomes a durable, self-governing, self-healing loop.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # 24/7 standing loop + arming the watcher (Step 7 full detail)
 
 To run unattended for 24h and cover the WHOLE work universe, the skill becomes a durable,
@@ -83,7 +90,7 @@ per item. Daily meta-review: scan escapes/blocks → propose protocol tweaks, ba
 ### 10. Coordination & clean stop
 Multiple loop instances: atomic claims (tuple-space/labels/lockfile) + lease/heartbeat/TTL so a
 dead worker's items are reclaimed, never stolen while live. A single `STOP` signal (flag file
-`.orchestrator/STOP` or channel command) halts cleanly between ticks.
+`.simplicio-loop/orchestrator/STOP` or channel command) halts cleanly between ticks.
 
 **Exit condition: none by design** — idle when drained, wake on any new item/comment/check. Only
 STOPS on the explicit stop signal, iteration cap, spindle handoff, or a safety halt.

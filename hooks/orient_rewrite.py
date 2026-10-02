@@ -23,14 +23,14 @@ import re
 import sys
 
 CLAMP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "orient_clamp.py")
-CONFIG = os.path.join(".orchestrator", "orient.toml")
+CONFIG = os.path.join(".simplicio-loop/orchestrator", "orient.toml")
 DEFAULT_EXCLUDES = ["curl", "wget", "playwright", "ssh", "vim", "less", "top", "htop"]
 
 
 def _project_relevant():
     """Project-relevance gate: this PreToolUse hook acts ONLY inside an active
     simplicio-loop project, never on unrelated repos. Relevant when the opt-in env var
-    SIMPLICIO_LOOP (or SIMPLICIO_ORCHESTRATOR) is set, or a `.orchestrator/` marker dir
+    SIMPLICIO_LOOP (or SIMPLICIO_ORCHESTRATOR) is set, or a `.simplicio-loop/orchestrator/` marker dir
     exists in the current working directory or an ancestor. Outside such a project the
     hook no-ops and the command runs raw."""
     if os.environ.get("SIMPLICIO_LOOP") or os.environ.get("SIMPLICIO_ORCHESTRATOR"):
@@ -40,10 +40,10 @@ def _project_relevant():
     for _ in range(40):  # depth backstop so an off-home tree can't climb forever
         parent = os.path.dirname(d)
         # Never treat the home dir or a drive/filesystem root as a project marker location:
-        # a stray ~/.orchestrator, or a marker at a drive root, must not widen the scope.
+        # a stray ~/.simplicio-loop/orchestrator, or a marker at a drive root, must not widen the scope.
         if d == home or parent == d:
             return False
-        if os.path.isdir(os.path.join(d, ".orchestrator")):
+        if os.path.isdir(os.path.join(d, ".simplicio-loop/orchestrator")):
             return True
         d = parent
     return False
