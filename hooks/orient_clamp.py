@@ -12,7 +12,7 @@ Works on Windows/macOS/Linux (pure Python, no shell-specific syntax). Safe and
 fail-open: on ANY internal error it prints the raw output and propagates the REAL
 exit code — it can never turn "task works" into "task dead".
 
-Config (optional): .orchestrator/orient.toml
+Config (optional): .simplicio-loop/orchestrator/orient.toml
     [tee]   mode = "failures" | "always" | "never"   (default failures)
     [hooks] exclude_commands = ["curl", "wget", "playwright", "ssh", "vim", "less"]
 Excluded commands run RAW (streaming/interactive/binary must not be filtered).
@@ -32,8 +32,8 @@ except Exception:
 CAP_ERRORS = 20
 CAP_WARNINGS = 10
 CAP_LIST = 20
-TEE_DIR = os.path.join(".orchestrator", "tee")
-CONFIG = os.path.join(".orchestrator", "orient.toml")
+TEE_DIR = os.path.join(".simplicio-loop/orchestrator", "tee")
+CONFIG = os.path.join(".simplicio-loop/orchestrator", "orient.toml")
 DEFAULT_EXCLUDES = ["curl", "wget", "playwright", "ssh", "vim", "less", "top", "htop"]
 
 ERR_RE = re.compile(r"\b(error|fail(ed|ure)?|panic|exception|fatal|traceback)\b", re.I)

@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-tasks/video-evidence
+schema: simplicio.skill-reference/v1
+purpose: Concrete implementation of the `video_evidence` extension point: produce a demo video of a screen/feature and record it as evidence a change works.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # Video evidence — `video_evidence` (Playwright by default · hyperframes on request)
 
 Concrete implementation of the `video_evidence` extension point: produce a demo video of a
@@ -32,7 +39,7 @@ The normal evidence path. `video_evidence verify` (no `--engine`) records the li
 
 1. **`video_evidence verify --url <url> --expect <text>`** drives a headless browser to the URL
    with Playwright's native video recording ON (`test.use({ video: 'on' })`), holds for `--seconds`,
-   and writes a `.webm` of the real session under `.orchestrator/tee/video/<name>-<issue>-pw/`.
+   and writes a `.webm` of the real session under `.simplicio-loop/orchestrator/tee/video/<name>-<issue>-pw/`.
 2. The worker locates the recording, converts it to `.mp4` when **FFmpeg** is present (otherwise the
    `.webm` is kept — both are real recordings), appends the ledger row, and prints the verdict.
 3. `--upload --pr N` attaches the file to the PR as a link (never bytes).
@@ -45,8 +52,8 @@ Only when the work-item or skill argument explicitly asks for a demo/explainer v
 renders an HTML composition deterministically; the source is the screenshots `web_verify` already
 captured:
 
-1. **`web_verify run`** drives the UI and writes per-step PNGs into `.orchestrator/tee/web/`.
-2. **`video_evidence verify --engine hyperframes --frames .orchestrator/tee/web --title "Screen X"`**
+1. **`web_verify run`** drives the UI and writes per-step PNGs into `.simplicio-loop/orchestrator/tee/web/`.
+2. **`video_evidence verify --engine hyperframes --frames .simplicio-loop/orchestrator/tee/web --title "Screen X"`**
    scaffolds those exact PNGs into a captioned hyperframes composition and runs
    `npx hyperframes render` → a deterministic MP4 walkthrough.
 
@@ -55,16 +62,16 @@ by HeyGen — <https://github.com/heygen-com/hyperframes> (open-source, no API k
 headless Chrome + FFmpeg). A pure-synthetic demo (no live UI) feeds `--shots a.png,b.png` directly.
 
 ## Capture into the evidence ledger
-All artifacts write to `.orchestrator/tee/video/`. Append a ledger row recording **path + a
+All artifacts write to `.simplicio-loop/orchestrator/tee/video/`. Append a ledger row recording **path + a
 one-line verdict** — never the bytes:
 ```
-video_evidence: PASS — demo video (playwright) project=login-demo file=.orchestrator/tee/video/login-demo-12.mp4
-video_evidence: PASS — demo MP4 (hyperframes) project=login-demo mp4=.orchestrator/tee/video/login-demo-12.mp4
+video_evidence: PASS — demo video (playwright) project=login-demo file=.simplicio-loop/orchestrator/tee/video/login-demo-12.mp4
+video_evidence: PASS — demo MP4 (hyperframes) project=login-demo mp4=.simplicio-loop/orchestrator/tee/video/login-demo-12.mp4
 ```
 
 ## Attach to the PR (link, don't paste)
 ```bash
-gh release upload "evidence-pr<N>" .orchestrator/tee/video/login-demo-12.mp4
+gh release upload "evidence-pr<N>" .simplicio-loop/orchestrator/tee/video/login-demo-12.mp4
 gh pr comment <N> --body "🎬 video_evidence ✅  demo video attached: <url>"
 ```
 
@@ -93,7 +100,7 @@ python3 scripts/video_evidence.py verify  --url http://localhost:3000/login --na
 python3 scripts/video_evidence.py record  --url <url> --name NAME [--expect TEXT] [--seconds 4]
 # explicit custom explainer — hyperframes:
 python3 scripts/video_evidence.py verify  --engine hyperframes --name NAME \
-    --frames .orchestrator/tee/web --title "Screen X" [--seconds 2.0] [--issue N]
+    --frames .simplicio-loop/orchestrator/tee/web --title "Screen X" [--seconds 2.0] [--issue N]
 python3 scripts/video_evidence.py scaffold --name NAME --frames DIR --title "Screen X"
 python3 scripts/video_evidence.py render   --name NAME [--issue N]
 python3 scripts/video_evidence.py lint     --name NAME

@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/orchestration
+schema: simplicio.skill-reference/v1
+purpose: **Resolve the SOURCE ADAPTER first — do not assume GitHub.** Detect which connector is available and authed, then use it.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # Orchestration — discover, intake, route, scale, speed (Steps 2–3d full detail)
 
 ## Step 2 — Discover + normalize work-items
@@ -11,7 +18,7 @@ and authed, then use it. Never claim a source works without a live connector.
 | Trello / Azure DevOps | host connector, else the `az boards` adapter (`scripts/az_boards_adapter.py`, see `azure-devops-adapter.md`) |
 | agentsview sessions | `scripts/agentsview_adapter.py` (see `agentsview-adapter.md`) | session observability, recovery of stalled sessions |
 | local files / CI queue | filesystem / CI API |
-| vague goal / no reachable board | the LOCAL BACKLOG — `scripts/task_backlog.py` (the frozen LLM decomposition, `.orchestrator/backlog/`; SKILL.md § Phase 0) |
+| vague goal / no reachable board | the LOCAL BACKLOG — `scripts/task_backlog.py` (the frozen LLM decomposition, `.simplicio-loop/orchestrator/backlog/`; SKILL.md § Phase 0) |
 
 If the target source has no reachable adapter, STOP and report it as a blocker (do not silently
 fall back to GitHub). Each adapter exposes: list_ready (metadata-only), get_details, claim,
@@ -33,8 +40,9 @@ assignees, milestone, acceptance_criteria, comments, linked_prs, linked_items.
   derive + record them. An item that obviously should have ACs but has none is a BLOCKER — ask
   ONE line, don't guess. With a VAGUE goal and no source at all, decompose first (brainstorm the
   subtasks + per-item ACs + `depends_on`) and freeze the plan with `python3
-  scripts/task_backlog.py init --goal "<goal>" --items-file plan.json` (SKILL.md § Phase 0); a
-  GENESIS repo (`task_backlog.py genesis --exit-code` exits 10) leads with the `scaffold` item.
+  scripts/task_backlog.py init --goal "<goal>" --item-file plan.json` (SKILL.md § Phase 0). For a
+  genesis repo, make one explicit `scaffold` item T1 in that input and make every later item
+  depend on T1.
 - Extract design decisions/constraints/rejections from comments ("don't use X", "must integrate
   with Y", reviewer requests) — these override naive title reading.
 - Note linked items/PRs and check status — a blocked dependency is flagged, not ignored.
@@ -56,7 +64,7 @@ python3 scripts/impact_audit.py audit <root> \
   --file <seed-you-expect-to-touch> \
   --cover <files-already-in-plan> \
   --fail-on high \
-  --json > .orchestrator/impact-audit.json
+  --json > .simplicio-loop/orchestrator/impact-audit.json
 ```
 
 Treat a `high` issue as a planning failure: a caller/dependent file sits outside the declared task
@@ -144,6 +152,29 @@ queue; the pool pulls as a slot frees. ALSO poll this run's open PRs (failed che
 review/requested-changes, branches behind main) → reopen the feedback loop (Step 6b). **Reset
 `dry=0` whenever the poll finds anything new.** The run FINISHES only when queue empty AND no
 worker busy AND `dry >= 2` consecutive empty polls (plus hard stops: time-box, scope, STOP).
+
+**PR patrol cadence (mandatory, non-blocking).** After every **two** work-items are delivered
+and their PRs are open, run the read-only patrol before starting the next delivery wave:
+`python3 scripts/pr_patrol.py --repo <owner/name> --completed-items <N>`. It classifies open
+PRs as conflict/rebase, review-required/requested-changes, failed checks, or clean; every
+actionable result returns to Step 6b instead of being deferred. Run the same patrol with
+`--final` before the run can claim completion. It is a priority signal, not a queue lock: local
+work may continue while independent PR repair workers run.
+
+**Cross-agent acceptance review.** A patrol may review PRs opened by any provider (Claude,
+Codex, Cursor, Gemini, Kiro, Antigravity, Hermes/Simplicio Agent, OpenClaw, or a human). Fetch
+the review packet first, inspect the diff against the explicit AC checklist and its evidence, then
+publish/update exactly one marked PR comment:
+`python3 scripts/pr_patrol.py review --repo <owner/name> --pr <N> --verdict accepted|changes_requested|unverified --note "<concrete evidence>" --publish`.
+`accepted` is rejected unless every explicit criterion is checked and carries evidence; this is a
+coordination receipt, **not** an automatic GitHub approval. Missing ACs/evidence must be commented
+as `unverified`, never silently accepted. Conflict/rebase/failed-check findings return to Step 6b.
+
+**GitHub issue signature before work.** Before any provider starts an issue, it must claim/sign
+the source issue with the canonical `CLAIMED` lifecycle comment (worker/run/attempt identity and
+goal) using `github_lifecycle.py publish`. Do this before editing or opening a worktree; never
+take an issue already claimed by another live worker. PR reviewers keep the issue lifecycle state
+intact and sign their independent AC assessment on the PR comment instead.
 
 **agentsview (optional).** If configured (`scripts/agentsview_adapter.py` authed), poll
 agentsview for stalled sessions each cycle and convert them into work-items of type 'resume

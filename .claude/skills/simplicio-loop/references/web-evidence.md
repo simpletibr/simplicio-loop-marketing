@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/web-evidence
+schema: simplicio.skill-reference/v1
+purpose: Concrete implementation of the `web_verify` extension point: drive a real browser to PROVE a front-end change works, and capture a **screenshot + trace** as evidence.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # Web evidence — `web_verify` via Playwright (front-end proof)
 
 Concrete implementation of the `web_verify` extension point: drive a real browser to PROVE a
@@ -20,7 +27,7 @@ conditional sub-gate of `validate`/`smoke`.
 **Preferred — playwright-mcp** (the worker has the MCP server registered):
 ```json
 { "mcpServers": { "playwright": { "command": "npx",
-  "args": ["@playwright/mcp@latest", "--headless", "--output-dir", ".orchestrator/tee/web", "--save-trace"] } } }
+  "args": ["@playwright/mcp@latest", "--headless", "--output-dir", ".simplicio-loop/orchestrator/tee/web", "--save-trace"] } } }
 ```
 Per acceptance check: `browser_navigate(url)` → act (`browser_click` / `browser_fill_form` /
 `browser_type`) → `browser_snapshot` (assert text present — compact a11y tree, no vision needed) →
@@ -31,29 +38,29 @@ Per acceptance check: `browser_navigate(url)` → act (`browser_click` / `browse
 **Fallback A — `npx playwright` (no MCP):**
 ```bash
 npx playwright install --with-deps chromium
-PWTEST_OUTPUT_DIR=.orchestrator/tee/web npx playwright test --trace on --output .orchestrator/tee/web
+PWTEST_OUTPUT_DIR=.simplicio-loop/orchestrator/tee/web npx playwright test --trace on --output .simplicio-loop/orchestrator/tee/web
 ```
 
-**Fallback B — playwright-python / pytest (Python repos, e.g. hermes-agent):**
+**Fallback B — playwright-python / pytest (Python repos, e.g. the Simplicio Agent repo, formerly hermes-agent):**
 ```bash
 pip install playwright pytest-playwright && playwright install chromium
-pytest --tracing retain-on-failure --output .orchestrator/tee/web
+pytest --tracing retain-on-failure --output .simplicio-loop/orchestrator/tee/web
 ```
 or programmatic: `context.tracing.start(screenshots=True, snapshots=True)` … `page.screenshot(
-path=".orchestrator/tee/web/shot.png")` … `context.tracing.stop(path=".orchestrator/tee/web/trace.zip")`.
+path=".simplicio-loop/orchestrator/tee/web/shot.png")` … `context.tracing.stop(path=".simplicio-loop/orchestrator/tee/web/trace.zip")`.
 
 ## Capture into the evidence ledger
-All artifacts write to `.orchestrator/tee/web/` (screenshots `*.png`, `trace.zip`, optional
+All artifacts write to `.simplicio-loop/orchestrator/tee/web/` (screenshots `*.png`, `trace.zip`, optional
 `console.log`/`network.json`). Append a ledger row recording **paths + a one-line verdict**:
 ```
-web_verify: PASS — /login renders, 0 console errors; shot=.orchestrator/tee/web/login.png trace=…/trace.zip
+web_verify: PASS — /login renders, 0 console errors; shot=.simplicio-loop/orchestrator/tee/web/login.png trace=…/trace.zip
 ```
 The ledger stores the path, never the bytes.
 
 ## Attach to the PR (link, don't paste)
 ```bash
 # CI: prefer actions/upload-artifact; locally a release/gist works
-gh release upload "evidence-<pr>" .orchestrator/tee/web/login.png .orchestrator/tee/web/trace.zip
+gh release upload "evidence-<pr>" .simplicio-loop/orchestrator/tee/web/login.png .simplicio-loop/orchestrator/tee/web/trace.zip
 gh pr comment <pr> --body "web_verify ✅  screenshot: <url>  trace: <url> (open in trace.playwright.dev)"
 ```
 
@@ -81,10 +88,10 @@ python3 scripts/web_verify.py run    --url URL --expect "Sign in" --issue 10 [--
 python3 scripts/web_verify.py verify --url URL --expect TEXT --base origin/main --issue 10
 ```
 `verify` = detect + (run only if the diff is front-end, else a SKIP ledger note). It writes the
-screenshot, trace, and console scan under `.orchestrator/tee/web/`, appends the ledger row, and
+screenshot, trace, and console scan under `.simplicio-loop/orchestrator/tee/web/`, appends the ledger row, and
 prints the MACHINE-tier verdict (`done|fail|skip|blocked`); a missing toolchain yields BLOCKED,
 never a fake pass. **CI artifact upload:** `.github/workflows/web-verify.yml` runs the worker on
-front-end PRs and uploads `.orchestrator/tee/web` via `actions/upload-artifact@v4`; locally pass
+front-end PRs and uploads `.simplicio-loop/orchestrator/tee/web` via `actions/upload-artifact@v4`; locally pass
 `--upload --pr <N>` to `gh release upload` the artifacts and `gh pr comment` the links.
 
 ## Scope (v1 — don't over-engineer)

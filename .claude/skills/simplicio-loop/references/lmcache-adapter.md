@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/lmcache-adapter
+schema: simplicio.skill-reference/v1
+purpose: A concrete binding of the **`model_cache`** and **`inference_optimization`** extension points using [LMCache](https://github.com/LMCache/LMCache) — a high-performance KV cache management layer for LLM inference.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # LMCache adapter — KV cache management layer for local inference
 
 A concrete binding of the **`model_cache`** and **`inference_optimization`** extension points
@@ -5,8 +12,8 @@ using [LMCache](https://github.com/LMCache/LMCache) — a high-performance KV ca
 layer for LLM inference. Reduces Time-To-First-Token (TTFT), improves throughput, and lowers
 GPU cost by caching KV caches across GPU, CPU, disk, and remote storage.
 
-**Author:** LMCache team / CMU + Princeton.  
-**Repo:** [github.com/LMCache/LMCache](https://github.com/LMCache/LMCache)  
+**Author:** LMCache team / CMU + Princeton.
+**Repo:** [github.com/LMCache/LMCache](https://github.com/LMCache/LMCache)
 **Docs:** [docs.lmcache.ai](https://docs.lmcache.ai)
 
 ---
@@ -422,7 +429,7 @@ MODEL_CONFIG=$(cat <<JSON
   "tier": "L3",
   "lmcache": {
     "enabled": true,
-    "config": "$HOME/.orchestrator/lmcache.yaml",
+    "config": "$HOME/.simplicio-loop/orchestrator/lmcache.yaml",
     "endpoint": "$LMCACHE_URL",
     "cache_hit_rate": "$hit_rate",
     "estimated_ttft_ms": {
@@ -447,7 +454,7 @@ Append LMCache savings to the token economy report:
     "gpu_time_saved_sec": 368.64,
     "estimated_cost_saved_usd": 0.37,
     "cache_hit_rate": 0.80,
-    "config": "$HOME/.orchestrator/lmcache.yaml"
+    "config": "$HOME/.simplicio-loop/orchestrator/lmcache.yaml"
   }
 }
 ```
@@ -514,15 +521,15 @@ pip install vLLM
 python -c "import torch; print(f'CUDA: {torch.cuda.is_available()}'); print(f'Device count: {torch.cuda.device_count()}')"
 
 # 4. Create config
-mkdir -p ~/.orchestrator
-cat > ~/.orchestrator/lmcache.yaml << 'EOF'
+mkdir -p ~/.simplicio-loop/orchestrator
+cat > ~/.simplicio-loop/orchestrator/lmcache.yaml << 'EOF'
 chunk_size: 4096
 local_device: "cuda"
 max_local_cache_size: 4
 EOF
 
 # 5. Export config
-export LMCACHE_CONFIG="$HOME/.orchestrator/lmcache.yaml"
+export LMCACHE_CONFIG="$HOME/.simplicio-loop/orchestrator/lmcache.yaml"
 
 # 6. Start inference server
 lmcache serve --model meta-llama/Llama-3.1-8B-Instruct &

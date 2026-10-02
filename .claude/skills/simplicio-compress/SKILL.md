@@ -1,7 +1,14 @@
 ---
 name: simplicio-compress
-description: Cut output and memory tokens without losing meaning — terse prose levels (caveman-style) that preserve code/paths/URLs byte-for-byte, plus a one-time memory/doc compaction pass that pays back every future turn. Use when replies or worker reports are verbose, when standing context (CLAUDE.md/AGENTS.md/notes) is bloated, or when simplicio-tasks needs its output-side + input-side token discipline. Compression NEVER touches code, identifiers, or a safety confirmation.
+description: Cut output and memory tokens without losing meaning — terse prose levels (caveman-style) that preserve code/paths/URLs byte-for-byte, plus a one-time memory/doc compaction pass that pays back every future turn. Use when replies or worker reports are verbose, when standing context (AGENTS.md/notes) is bloated, or when simplicio-tasks needs its output-side + input-side token discipline. Compression NEVER touches code, identifiers, or a safety confirmation.
 ---
+
+<!-- simplicio-contract:begin -->
+contract: simplicio-compress
+schema: simplicio.skill/v1
+purpose: Cut output and memory tokens without losing meaning — terse prose levels (caveman-style) that preserve code/paths/URLs byte-for-byte, plus a one-time memory/doc compaction pass that pays back every future turn.
+rules: Follow this skill end-to-end; mutable data (versions, dates, counts) lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
 
 # simplicio-compress — output & memory token discipline
 
@@ -55,7 +62,7 @@ compacting them ONCE pays back across hundreds of iterations (caveman reports ~4
 reduction on memory files).
 
 Procedure:
-1. Target prose-heavy standing files (CLAUDE.md, AGENTS.md, shared digest, long notes). Skip
+1. Target prose-heavy standing files (AGENTS.md, shared digest, long notes). Skip
    pure code/config/lockfiles.
 2. Rewrite to terse form preserving code/paths/URLs/numbers/versions VERBATIM; run through
    `transform_guard`.
@@ -84,3 +91,22 @@ simplicio-tasks: ~<spent> tokens · baseline ~<control-arm> · saved ~<saved> (<
 - Never compress: code, config, lockfiles, secrets-adjacent text, safety confirmations.
 - Never paraphrase an identifier to "save a token" — `transform_guard` will fail closed.
 - A compaction that can't pass the guard is reverted, not shipped.
+
+## What the model sees
+
+When a host loads this skill, the model receives the YAML frontmatter, the
+immutable `simplicio-contract` header, and this body, verbatim. Files under
+`references/` enter the context only when this body points to them. Nothing
+here is generated per run.
+
+### Token effect
+
+The body is paid once per session as input tokens. References are paid only on
+demand, so the always-loaded part stays the short hot path.
+
+### KV cache effect
+
+The frontmatter and header are byte-stable across releases (pinned in
+`contracts/headers.lock.json`), and mutable data lives only at the end of the
+file. The provider can therefore reuse the cached prefix from the second call
+on, and a release does not invalidate it unless a `header-change:` note says so.

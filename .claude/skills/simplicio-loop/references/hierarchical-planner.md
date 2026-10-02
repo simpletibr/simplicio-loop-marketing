@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/hierarchical-planner
+schema: simplicio.skill-reference/v1
+purpose: Moved out of `SKILL.md` § HRM-style hierarchical planner as part of the #119 shrink.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # HRM-style hierarchical planner (two-level reasoning loop) — full detail
 
 Moved out of `SKILL.md` § HRM-style hierarchical planner as part of the #119 shrink.
@@ -7,7 +14,7 @@ the loop now operates at TWO levels instead of one:
 
 | Level | Speed | Runs | Job |
 |-------|-------|------|-----|
-| **High-level planner** (`scripts/hierarchical_planner.py`) | Slow (every N turns or on stall) | `plan` subcommand called by `loop_stop.py` before each re-feed | Re-assess abstract strategy; MAY write a new **phase** (`.orchestrator/loop/phase.json`) that changes direction |
+| **High-level planner** (`scripts/hierarchical_planner.py`) | Slow (every N turns or on stall) | `plan` subcommand called by `loop_stop.py` before each re-feed | Re-assess abstract strategy; MAY write a new **phase** (`.simplicio-loop/orchestrator/loop/phase.json`) that changes direction |
 | **Low-level executor** (the loop itself) | Fast (every turn) | The normal Ralph re-feed within the current phase | Execute one AC-scoped change, verify, record to journal — never change the phase |
 
 **Phase states** (ordered escalation):
@@ -22,7 +29,7 @@ the loop now operates at TWO levels instead of one:
 | `escalate` | Deep stall (>K identical failures) | STOP mutations — gather context for human handoff | Zero mutations — only HANDOFF.md |
 
 The planner is **deterministic and model-free** — same rules apply regardless of
-LLM provider. State lives in `.orchestrator/loop/phase.json`. The loop runs in
+LLM provider. State lives in `.simplicio-loop/orchestrator/loop/phase.json`. The loop runs in
 flat mode if the planner script is missing.
 
 **Usage:**

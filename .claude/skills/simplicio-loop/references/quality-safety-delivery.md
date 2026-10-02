@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/quality-safety-delivery
+schema: simplicio.skill-reference/v1
+purpose: edit → fmt → lint → targeted tests → analyze failure → fix → repeat until green or genuinely blocked.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # Quality, safety, delivery & feedback (Steps 4–6b full detail)
 
 > Stack-agnostic: examples use Go/`go build` for concreteness, but every build/lint/typecheck/test
@@ -10,7 +17,7 @@ blocked. Never mark done without green gates + evidence. Code failure is NOT a b
 investigate first. Drive with `diagnostics` (parse build/test output → fix root cause); apply each
 fix via `deterministic_edit` with its assertion so fix + verification are one step.
 
-**Architecture + practices gate (before the first edit):** re-read `.orchestrator/conventions.json`
+**Architecture + practices gate (before the first edit):** re-read `.simplicio-loop/orchestrator/conventions.json`
 `architecture.docs` (mined by `repo_conventions` — see `extension-points.md`) for the layer/module
 boundaries, naming, and patterns this repo actually uses (e.g. hexagonal vs layered, where a new
 endpoint/service/model belongs) — new code MUST land in the place and shape that the discovered
@@ -42,6 +49,10 @@ per-turn prompt re-feed, `--format json` for a machine consumer) — verdict `DR
 goal moved — STOP, re-anchor with `--force`
 only if the task genuinely changed). As each AC is met: `task_anchor.py mark --id ACk --status done
 --evidence "<file:line / command output / screenshot path>"` (a `done` with no receipt is REFUSED).
+If the freeze itself should declare HOW the AC will be checked, add the inline suffix
+`:: verify: <command or artifact>` to the AC text; the checklist/PR then shows the declared method
+next to the real receipt, so "declared vs real" is auditable instead of implicit. Default lint now
+REFUSES vague ACs like `works`; `task_anchor.py set --lint` also refuses short ACs without `verify:`.
 The DoD gate is then mechanical: `task_anchor.py gate --exit-code` (exit 12 = criteria still
 pending) MUST pass before "done" or PR-open. This is the loop's durable working memory for SCOPE,
 the sibling of `loop_journal`'s working memory for ATTEMPTS.
@@ -54,7 +65,7 @@ python3 scripts/impact_audit.py audit <root> \
   --file <seed-you-touch> \
   --cover <reviewed-or-adjusted-files> \
   --fail-on high \
-  --json > .orchestrator/impact-audit.json
+  --json > .simplicio-loop/orchestrator/impact-audit.json
 ```
 
 The audit maps three things around each seed file:
@@ -77,7 +88,7 @@ imported modules, run the stricter gate:
 python3 scripts/impact_audit.py audit <root> --fail-on medium
 ```
 
-The final evidence can cite `.orchestrator/impact-audit.json` or summarize the explicit caller/test
+The final evidence can cite `.simplicio-loop/orchestrator/impact-audit.json` or summarize the explicit caller/test
 classification. "I changed one file" is not enough when the dependency map says the task reached
 farther.
 
@@ -97,7 +108,7 @@ When a workspace contains frontend, backend, and services under the same root �
 any cross-surface user flow — run a structural flow audit before planning and again before done:
 
 ```
-python3 scripts/flow_audit.py audit <root> --fail-on high --json > .orchestrator/flow-audit.json
+python3 scripts/flow_audit.py audit <root> --fail-on high --json > .simplicio-loop/orchestrator/flow-audit.json
 ```
 
 The audit builds a static map of UI actions, frontend HTTP calls, backend endpoints, and backend
@@ -117,7 +128,7 @@ integration for a UI flow, run the stricter gate:
 python3 scripts/flow_audit.py audit <root> --fail-on medium
 ```
 
-The final evidence must include either `.orchestrator/flow-audit.json` or the human summary. A green
+The final evidence must include either `.simplicio-loop/orchestrator/flow-audit.json` or the human summary. A green
 unit test is not enough when the flow graph still has an unclassified loose end.
 
 ### 4c — Adversarial verify for EVERY item (multi-vote, no tier shortcut)
@@ -170,7 +181,7 @@ On hard failure issue ONE targeted fix on the flagged tokens (≤2 retries); els
 
 ## Step 6 — Deliver + close + self-audit
 For each completed item, shape every artifact to the LEARNED `repo_conventions` profile (Step 1a',
-`.orchestrator/conventions.json`) — don't hand-guess the format: branch name via
+`.simplicio-loop/orchestrator/conventions.json`) — don't hand-guess the format: branch name via
 `repo_conventions.py branch --type <item-type> --slug <title> [--ticket <id>]`, commit subject via
 `repo_conventions.py commit --type <t> [--scope <s>] --subject <s>` (Conventional Commits when the
 repo uses them, plain when it doesn't; English), and fill the PR body from the profile's PR-template
@@ -181,16 +192,23 @@ history), fall back to Conventional Commits and say so.
 **Every PR carries prints + an item-by-item AC check (the `pr_evidence` worker).** Do NOT hand-write
 the PR body and risk forgetting the proof — assemble it mechanically:
 `python3 scripts/pr_evidence.py build --item <id> --title "<t>" --summary "<s>" --require-evidence
---out .orchestrator/pr_body.md`. It pulls the item-by-item checklist from the task anchor (one line
+--out .simplicio-loop/orchestrator/pr_body.md`. It pulls the item-by-item checklist from the task anchor (one line
 per AC, with its status + the receipt that verified it) AND embeds every screenshot
-(`web_verify`, under `.orchestrator/tee/web`) and recording (`video_evidence`, under
-`.orchestrator/tee/video`). With `--require-evidence`
-it FAILS CLOSED — exit 3 (`blocked`), never a body — when there is neither a checklist nor a single
-print, so an evidence-less PR cannot be opened by accident. It honors a discovered
+(`web_verify`, under `.simplicio-loop/orchestrator/tee/web`) and recording (`video_evidence`, under
+`.simplicio-loop/orchestrator/tee/video`). For body-of-work / Phase-0 runs, `task_backlog.py checklist` renders the
+master goal + multi-item table that `pr_evidence.py build --backlog ...` inserts ABOVE the per-item
+anchor checklist, so the PR shows backlog progress even after the anchor is cleared for the next item.
+With `--require-evidence` it FAILS CLOSED — exit 3 (`blocked`), never a body — when there is neither
+an anchor checklist, nor a backlog table, nor a single print, so an evidence-less PR cannot be
+opened by accident. It honors a discovered
 `.github/PULL_REQUEST_TEMPLATE.md` (keeps the maintainer's sections, appends the checklist + prints
 below). `pr_evidence.py comment --item <id> --pr <N>` emits the matching in-source evidence comment
-(PR link + per-AC check + a count of attached prints). Write surrounding comment PROSE in the user's
-language; keep paths/identifiers in English.
+(PR link + per-AC check + a count of attached prints). Add `--publish --issue <N> --repo owner/name`
+(both required explicitly — no implicit git-remote auto-detect) to ALSO post it to the source issue
+via `gh api`, idempotently: a hidden marker lets a re-run on the same issue UPDATE that one comment
+instead of appending a duplicate, and a publish failure BLOCKS (exit 3) instead of silently
+reporting success. Write surrounding comment PROSE in the user's language; keep paths/identifiers
+in English.
 
 **Verify in the workflow, never trust self-report.** When a fan-out drove the run, its FINAL step
 re-verifies reality: the merged build/test, the `smoke` gate, and a source re-query confirming
@@ -208,6 +226,10 @@ Status: done | partial | blocked
 
 ## Step 6b — Close the feedback loop until merge-ready
 Opening a Draft PR is `dev_done`, NOT `merge_ready`. Pursue these loops, POLLED like intake:
+0. **Cadenced PR patrol → route.** Every two delivered items with open PRs, run
+   `python3 scripts/pr_patrol.py --repo <owner/name> --completed-items <N>`. Before declaring the
+   body of work finished, run it with `--final`. It is read-only and does not block independent
+   workers; its actionable rows become normal Step 6b repair/review work.
 1. **CI → fix.** Check status; on a failed check fetch the log, parse via `diagnostics`, fix the
    ROOT CAUSE, push. Loop until green. Never disable a test to go green.
 2. **Review comments → adjust.** Read PR review threads + the source item's comments. For each
@@ -223,6 +245,18 @@ Opening a Draft PR is `dev_done`, NOT `merge_ready`. Pursue these loops, POLLED 
    messages, paths, and identifiers in English.
 5. **Merge-readiness.** `merge_ready` only when CI green AND review approved AND ACs met.
    `done` in the tracker ≠ merge-ready.
+6. **After every merge → re-patrol siblings.** A merge changes `main` and can make another open
+   PR behind or conflicting. `MergeExecutor.merge()` automatically emits a post-merge patrol
+   receipt; standalone flows must run `python3 scripts/pr_patrol.py --repo <owner/name>
+   --post-merge` and route every actionable sibling back through this section before another
+   completion claim.
+7. **Review any provider's PR against its ACs.** Before a reviewer writes a verdict, load the
+   PR packet/diff and compare it with the explicit AC checklist and evidence. Publish one
+   idempotent PR comment through `scripts/pr_patrol.py review ... --publish`: `accepted` only with
+   fully evidenced ACs, otherwise `changes_requested` or `unverified` with a concrete note. Never
+   auto-approve a PR. The implementation worker must have signed/claimed the source GitHub issue
+   before mutation; a reviewer comment is a separate coordination receipt and does not steal that
+   lease.
 
 The Step 3b watcher therefore polls THREE things: new work-items, open PRs (comments/checks), and
 branches behind the default branch.

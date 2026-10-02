@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/azure-devops-adapter
+schema: simplicio.skill-reference/v1
+purpose: A concrete binding of the `source_adapter` extension point for repos whose work lives in **Azure DevOps Boards** rather than GitHub Issues.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # Azure DevOps source_adapter (`az boards` / `az repos` / `az pipelines`)
 
 A concrete binding of the `source_adapter` extension point for repos whose work lives in **Azure

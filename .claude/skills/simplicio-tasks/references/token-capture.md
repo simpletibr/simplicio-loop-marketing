@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-tasks/token-capture
+schema: simplicio.skill-reference/v1
+purpose: The **Simplicio Token Monitor** (`hooks/simplicio_dashboard.py`, `:9090`) only *displays* numbers.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # Token capture — how Simplicio really intercepts tokens
 
 The **Simplicio Token Monitor** (`hooks/simplicio_dashboard.py`, `:9090`) only *displays* numbers.
@@ -16,7 +23,7 @@ or install the engine's durable integration for X. Some runtimes can do neither.
 
 ## Providers we intercept (the real breadth)
 
-Interception is really about **providers**, not apps. From the Hermes/OpenCode provider lists
+Interception is really about **providers**, not apps. From the Simplicio Agent/OpenCode provider lists
 (`app/providers.json`, derived from `~/.hermes/models_dev_cache.json` + the active providers),
 **141 of 144 providers (98%)** are interceptable — every OpenAI-compatible endpoint (139) plus
 Anthropic (2). Only 3 are Google-native (`google`, `vertex`, `gemini`) and need their own shim.
@@ -44,7 +51,7 @@ elsewhere, with a headless print fallback.
 | Tier | Runtimes | How capture is wired | Notes |
 |---|---|---|---|
 | **native** | Claude · Codex · VS Code (Copilot) · OpenClaw | `simplicio-cli capture init <client>` (engine's durable hooks + **transparent** provider routing) | Forwards to the client's REAL provider — does not change the model. |
-| **base-url** | Hermes · Cursor · OpenCode | point the client's model `base_url` at `http://127.0.0.1:<port>` (OpenAI/Anthropic-compatible) | Hermes is wired this way today (→ DeepSeek). |
+| **base-url** | Simplicio Agent · Cursor · OpenCode | point the client's model `base_url` at `http://127.0.0.1:<port>` (OpenAI/Anthropic-compatible) | Simplicio Agent is wired this way today (→ DeepSeek). |
 | **none** | Gemini · Kiro · Antigravity | — | Proprietary Google/AWS APIs the proxy can't speak; not interceptable yet. |
 
 **7 of 10 runtimes are interceptable; 3 are not.** The dashboard shows this live with per-runtime
@@ -53,7 +60,7 @@ logos and tier badges, and dims the non-interceptable ones.
 ## Critical caveat — proxy backend
 
 A single proxy forwards to **one upstream**. The proxy installed by `setup_simplicio.sh` targets
-DeepSeek (for Hermes). If you route a *different* client (e.g. Codex) through that same proxy, its
+DeepSeek (for Simplicio Agent). If you route a *different* client (e.g. Codex) through that same proxy, its
 requests also go to DeepSeek — that's a **model swap, not transparent capture**.
 
 For real multi-runtime capture you want the engine's **transparent provider routing** (each client
@@ -96,12 +103,12 @@ bash scripts/simplicio-economy.sh capture anthropic
 ```
 
 `status` reports: capture proxy, token monitor (`:9090`), menu-bar tray, the deterministic operator
-`simplicio-dev-cli`, the **auto-capture wiring** (Claude · Codex/OpenAI · Hermes), and lifetime savings.
+`simplicio-dev-cli`, the **auto-capture wiring** (Claude · Codex/OpenAI · Simplicio Agent), and lifetime savings.
 
 ### `wire` — all three runtimes measured, automatically
 
-`wire` (run by `setup_simplicio.sh` at the end of install) makes the monitor measure **Hermes +
-Claude + Codex** with no manual step. It sets, in the shell profile (cross-platform via
+`wire` (run by `setup_simplicio.sh` at the end of install) makes the monitor measure **Simplicio
+Agent + Claude + Codex** with no manual step. It sets, in the shell profile (cross-platform via
 `install_services.py wire` — `setx` on Windows):
 
 - `OPENAI_BASE_URL = http://127.0.0.1:<port>/v1` → Codex / Cursor / OpenCode / any OpenAI client
@@ -121,4 +128,4 @@ A **transparent** capture proxy (`--openai-api-url https://api.openai.com/v1`) w
 gpt-5.4-2026-03-05`, `usage` 108+4 tokens) and the proxy's own `/stats` recorded
 `api_requests: 4`, `primary_model: gpt-4o-mini`, `total_tokens_before: 124`. Proof that routing an
 OpenAI client through the transparent proxy **captures its tokens without changing its model** — the
-correct way to capture Codex/Cursor/OpenCode, kept separate from the Hermes→DeepSeek proxy.
+correct way to capture Codex/Cursor/OpenCode, kept separate from the Simplicio Agent→DeepSeek proxy.

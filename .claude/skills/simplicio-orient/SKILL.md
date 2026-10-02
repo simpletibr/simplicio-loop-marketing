@@ -3,7 +3,19 @@ name: simplicio-orient
 description: Terminal-first execution — answer facts with the shell, never with the LLM. Use whenever a step needs a fact about the filesystem, git, processes, or system resources, or runs a build/test/lint/diff whose output would flood context. Substitutes deterministic shell/CLI calls for native LLM operations and clamps their output 60–90% (rtk-style) with a failure-safe tee cache, signatures-only reads, and an optional auto-rewrite hook. This is the token-economy spine of simplicio-tasks, usable standalone.
 ---
 
+<!-- simplicio-contract:begin -->
+contract: simplicio-orient
+schema: simplicio.skill/v1
+purpose: Terminal-first execution — answer facts with the shell, never with the LLM.
+rules: Follow this skill end-to-end; mutable data (versions, dates, counts) lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # simplicio-orient — terminal-first, token-frugal execution
+
+For **max-speed delivery law** (Runtime decide, Mapper→Fast→dev-cli, Prism waves,
+economy-parallel, DONE|NEXT|BLOCKED), see `docs/LLM_MAX_SPEED_ORIENTATION.md` and the loop
+re-feed block `SIMPLICIO-LLM-ORIENTATION` in `simplicio-loop/SKILL.md`. This skill owns
+**terminal token clamps**; that doc owns **how the stack orients the LLM for speed**.
 
 The cheapest token is the one not spent. The terminal KNOWS facts exactly; the LLM
 APPROXIMATES them expensively. This skill routes every step to the leanest substrate that
@@ -72,7 +84,7 @@ write/confirm op). Tune per repo.
 | PR / list view | counts + titles only | ~87% | `--json`/`--jq` present |
 | package/image inventory | keep ≤50 rows | ~50% | — |
 | format / passthrough | run raw | 0% | always |
-| structured JSON payload → prompt (verdict-shaped, e.g. `task_anchor.py check`, `loop_journal.py stall`, mapper `handoff`) | encode via `toon_codec.encode_toon` (TOON — Token-Oriented Object Notation, lossless, `scripts/toon_codec.py`) | ~21–33% (chars4) / ~38–45% (bpe_estimate) measured on the first two real verdict payloads (`.orchestrator/savings/snapshots.jsonl`, #92); up to ~40%+ on an ideal uniform tabular array of objects, per the toon-format benchmark — real non-tabular verdict payloads (few scalar keys, no row-shaped array) measure lower; snapshot more items before trusting a number outside this range | payload is empty / non-uniform (differing keys, mixed types, nested arrays-or-objects per element) — the codec auto-falls-back to compact JSON for THAT value, never lossy-compact; measure, don't assume the ideal-case number |
+| structured JSON payload → prompt (verdict-shaped, e.g. `task_anchor.py check`, `loop_journal.py stall`, mapper `handoff`) | encode via `toon_codec.encode_toon` (TOON — Token-Oriented Object Notation, lossless, `scripts/toon_codec.py`) | ~21–33% (chars4) / ~38–45% (bpe_estimate) measured on the first two real verdict payloads (`.simplicio-loop/orchestrator/savings/snapshots.jsonl`, #92); up to ~40%+ on an ideal uniform tabular array of objects, per the toon-format benchmark — real non-tabular verdict payloads (few scalar keys, no row-shaped array) measure lower; snapshot more items before trusting a number outside this range | payload is empty / non-uniform (differing keys, mixed types, nested arrays-or-objects per element) — the codec auto-falls-back to compact JSON for THAT value, never lossy-compact; measure, don't assume the ideal-case number |
 
 ## Signal-tiered truncation caps (one shared set)
 
@@ -96,12 +108,12 @@ Aggressive truncation is only safe if full context is recoverable WITHOUT re-run
 command (re-running re-burns tokens and may be non-deterministic). So:
 
 - On any **non-zero exit**, OR whenever a cap clips a FAILING command, write the full
-  unfiltered output to `.orchestrator/tee/<ts>_<cmd-slug>.log` and surface only the path:
+  unfiltered output to `.simplicio-loop/orchestrator/tee/<ts>_<cmd-slug>.log` and surface only the path:
   ```
   FAILED: 2/15 tests
-  [full output: .orchestrator/tee/1707753600_npm_test.log]
+  [full output: .simplicio-loop/orchestrator/tee/1707753600_npm_test.log]
   ```
-- Config knob (in `.orchestrator/orient.toml`): `tee.mode = failures | always | never`
+- Config knob (in `.simplicio-loop/orchestrator/orient.toml`): `tee.mode = failures | always | never`
   (default `failures`). The agent reads the file lazily only if it needs more than the kept
   error lines.
 
@@ -138,7 +150,7 @@ full-body read only when actually editing the body.
 Where the host exposes a `PreToolUse`/pre-exec hook, bind `hooks/orient_rewrite.py`: it
 transparently rewrites a bare shell call into its clamped form before execution
 (`git status` → clamped, `<test>` → failures-only), so adoption is 100% across the main agent
-AND every subagent at zero token overhead. An exclusion list in `.orchestrator/orient.toml`
+AND every subagent at zero token overhead. An exclusion list in `.simplicio-loop/orchestrator/orient.toml`
 keeps streaming/interactive/binary commands raw:
 
 ```toml
@@ -187,3 +199,22 @@ skip an untrusted or hash-changed version.
 
 Run the command, return the clamped result (or the tee path on failure), and — when invoked
 standalone — a one-line note of the recipe applied and tokens saved.
+
+## What the model sees
+
+When a host loads this skill, the model receives the YAML frontmatter, the
+immutable `simplicio-contract` header, and this body, verbatim. Files under
+`references/` enter the context only when this body points to them. Nothing
+here is generated per run.
+
+### Token effect
+
+The body is paid once per session as input tokens. References are paid only on
+demand, so the always-loaded part stays the short hot path.
+
+### KV cache effect
+
+The frontmatter and header are byte-stable across releases (pinned in
+`contracts/headers.lock.json`), and mutable data lives only at the end of the
+file. The provider can therefore reuse the cached prefix from the second call
+on, and a release does not invalidate it unless a `header-change:` note says so.

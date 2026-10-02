@@ -15,8 +15,15 @@ import subprocess
 import sys
 from pathlib import Path
 
+
+try:  # Status icons and protocol output must survive Windows cp1252 consoles.
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
+except Exception:
+    pass
+
 HOME = os.path.expanduser("~")
-LOGS = os.path.join(HOME, ".simplicio", "logs")
+LOGS = os.path.join(HOME, ".simplicio-loop", "logs")
 REPO_ROOT = Path(__file__).resolve().parents[1]
 _SCRIPTS_DIR = str(REPO_ROOT / "scripts")
 if _SCRIPTS_DIR not in sys.path:
@@ -36,6 +43,11 @@ PROXY_SERVICE = "ai.simplicio.proxy"
 
 
 def log(msg):
+    encoding = getattr(sys.stdout, "encoding", None) or "utf-8"
+    try:
+        msg = str(msg).encode(encoding).decode(encoding)
+    except UnicodeEncodeError:
+        msg = str(msg).encode(encoding, errors="replace").decode(encoding)
     print(msg)
 
 
@@ -63,7 +75,7 @@ def status():
             log(f"  {line.strip()}")
     # Savings ledger — tolerant count (#127): a truncated/illegible line is counted, not silently
     # folded into the total as if it were a real event.
-    ledger = REPO_ROOT / ".simplicio" / "ledger" / "savings-events.jsonl"
+    ledger = REPO_ROOT / ".simplicio-loop" / "ledger" / "savings-events.jsonl"
     if ledger.is_file():
         if count_jsonl_lines is not None:
             valid, corrupt = count_jsonl_lines(str(ledger))

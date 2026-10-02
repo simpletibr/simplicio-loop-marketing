@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-tasks/token-economy
+schema: simplicio.skill-reference/v1
+purpose: The condensed rule lives in SKILL.md Step 1c; this is the full mechanism.
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # Token-economy routing gate (full detail)
 
 The condensed rule lives in SKILL.md Step 1c; this is the full mechanism. When `simplicio-orient`
@@ -62,9 +69,9 @@ If ANY error/warning line exists, fall back to signal-tiered caps — a collapse
 
 ## tee cache + CCR reversible retrieve (failure escape hatch)
 On any NON-ZERO exit, or when a cap clips a FAILING command, write full output to
-`.orchestrator/tee/<ts>_<cmd-slug>.log` and surface only the path + kept error lines. The agent
+`.simplicio-loop/orchestrator/tee/<ts>_<cmd-slug>.log` and surface only the path + kept error lines. The agent
 re-reads it lazily only if needed — recovering full context WITHOUT re-running (which re-burns
-tokens and may be non-deterministic). Config `.orchestrator/orient.toml` → `tee.mode =
+tokens and may be non-deterministic). Config `.simplicio-loop/orchestrator/orient.toml` → `tee.mode =
 failures|always|never` (default `failures`).
 
 **CCR (compress-cache-retrieve):** make the clamp REVERSIBLE, not lossy.
@@ -141,7 +148,7 @@ Detect platform once: `python3 -c "import platform; print(platform.system())"` �
 | Comment / close | `gh issue comment N --body "…"` · `gh issue close N` |
 | Workflow dispatch | `gh api repos/{owner}/{repo}/dispatches -f event_type=X` |
 
-### node (vscode, openclaw, claude-code) / python (hermes)
+### node (vscode, openclaw, claude-code) / python (simplicio-agent, formerly hermes)
 | intent | command |
 |---|---|
 | Deterministic install | `npm ci` · `pnpm install --frozen-lockfile` · `uv sync --locked` |
@@ -160,7 +167,7 @@ Detect platform once: `python3 -c "import platform; print(platform.system())"` �
 | Azure login / acct | `az login` · `az account show -o json` |
 | Azure DevOps boards (if used) | `az boards work-item show --id N` · `az boards query --wiql "…"` · `az repos pr list` · `az pipelines runs list` |
 
-> NOTE: the 5 scanned local repos (hermes-agent, openclaw, vscode, codex, claude-code) use
+> NOTE: the 5 scanned local repos (simplicio-agent (formerly hermes-agent), openclaw, vscode, codex, claude-code) use
 > **GitHub (`gh`) + GitHub Actions exclusively** — no Azure DevOps. The `az`/`az boards` rows are
 > provided for repos that DO use Azure DevOps; bind them as a `source_adapter` only when detected.
 

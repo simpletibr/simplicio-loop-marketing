@@ -139,6 +139,14 @@ reason = "Host tooling metadata; not application state"
 review = "2026-10-01"
 
 [[paths]]
+pattern = ".simplicio-loop/install-ownership.json"
+category = "toolchain_mandated"
+owner = "wesleysimplicio"
+target_format = "simplicio.loop-install-ownership/v1 (written by `simplicio-loop install`)"
+reason = "Ownership receipt emitted by the official Loop installer; marketing never writes it"
+review = "2026-10-02"
+
+[[paths]]
 pattern = ".codex/**"
 scope = "directory"
 category = "toolchain_mandated"

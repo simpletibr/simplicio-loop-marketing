@@ -12,7 +12,7 @@ not a pass. It still lets every benign command through, so it never bricks norma
 |---|---|---|
 | `loop_stop.py` | simplicio-loop: re-feed the goal or exit (evidence-gated promise + cap + STOP) | `stop` / Claude `Stop` |
 | `loop_capture.py` | simplicio-loop: raise the `done` flag when an evidence-backed `<promise>` is seen | Cursor `afterAgentResponse` |
-| `action_gate.py` | safety: **fail-closed** — block irreversible ops + secret-laden commits/pushes BEFORE they run | `PreToolUse` (Bash) / git pre-push |
+| `action_gate.py` | safety: **fail-closed** — block irreversible ops + secret-laden commits/pushes BEFORE they run; `pre-push` also requires a green `scripts/check.py --core-gate` (#291) | `PreToolUse` (Bash) / git pre-push / pre-commit |
 | `orient_clamp.py` | simplicio-orient: **wrapper** — run a command, return reduced output + tee-on-failure | called directly, any runtime |
 | `orient_rewrite.py` | simplicio-orient: auto-route heavy read-only commands through the clamp (opt-in) | `PreToolUse` |
 | `pre-commit.py` | packaging: auto-sync `plugin/` + `simplicio_loop/_bundle/` from source when a watched path is staged (#98) | git pre-commit |
@@ -51,20 +51,33 @@ chmod +x .git/hooks/pre-commit
 ## The safety gate (`action_gate.py`)
 
 Enforces `simplicio-tasks` Step 5 mechanically instead of trusting the model to remember it.
-Wire it as a Claude `PreToolUse` Bash hook (the installer does this) AND/OR a git pre-push hook:
+Wire it as a Claude `PreToolUse` Bash hook (the installer does this) AND a git pre-push hook
+(the installer does this too — `install_git_prepush_hook` in `scripts/install_lib.py`, project-
+local only, same as the pre-commit mirror-sync hook):
 
 ```bash
-# git pre-push: secret-scan the staged diff, block on a hit (zero CI cost)
-printf '#!/bin/sh\npython3 hooks/action_gate.py check --staged\nnpm run check\n' > .git/hooks/pre-push
+# git pre-push: secret-scan the REAL push range (HEAD vs. upstream, not the staged diff) AND
+# require a green `scripts/check.py --core-gate` — the local, mandatory-and-impossible-to-bypass
+# equivalent of CI now that GitHub Actions was removed from this repo (#311, #291).
+printf '#!/bin/sh\npython3 hooks/action_gate.py pre-push\n' > .git/hooks/pre-push
 chmod +x .git/hooks/pre-push
 ```
 
 It blocks (exit 2): force-push / history rewrite (`filter-branch`), remote-ref deletion,
 mass-delete (`rm -rf /`), destructive DDL (`DROP DATABASE`), infra teardown (`terraform destroy`),
-deletion or overwrite attempts under `outputs/` / `.marketing-engine/outputs/`, and any
-commit/push whose staged diff contains a secret (AWS/GitHub/Slack/OpenAI keys, private keys,
-hardcoded credentials — placeholder-aware). `python3 hooks/action_gate.py selftest` proves
-the ruleset mechanically.
+any commit/push whose diff contains a secret (AWS/GitHub/Slack/OpenAI keys, private keys,
+hardcoded credentials — placeholder-aware), and — for `pre-push` specifically — a failing local
+gate. There is no bypass flag: fix the gate, don't skip it. `python3 hooks/action_gate.py
+selftest` proves the ruleset. `action_gate.py check --staged` (the pre-commit-flavored,
+secret-scan-only mode) remains available for a lighter pre-commit wiring.
+
+One shape is read as data: the JSON plan a host pipes to `simplicio-loop turbo --repo R --apply - <<'PLAN'`. The
+gate reads the whole Bash command, so without this a plan that merely contains a destructive statement (a
+migration, a runbook) would be blocked for what it says. `strip_plan_heredoc` drops that heredoc body before
+classifying, and only when the first line is one plain `simplicio-loop turbo ... --apply -` command (no unquoted
+operator, so no other command can read the heredoc), the delimiter is quoted (the shell expands nothing in the
+body), it is the last line and no earlier line equals it. Any other command, and every other reader of a heredoc,
+is classified in full.
 
 ## The always-works one (no wiring needed)
 
@@ -75,7 +88,7 @@ python3 hooks/orient_clamp.py -- go test ./...          # reduced output, tee lo
 python3 hooks/orient_clamp.py --json -- git diff      # machine summary
 ```
 
-Config (optional) `.orchestrator/orient.toml`:
+Config (optional) `.simplicio-loop/orchestrator/orient.toml`:
 
 ```toml
 [tee]   mode = "failures"   # failures | always | never
@@ -115,7 +128,7 @@ Add (paths relative to the repo root, or absolute):
 `orient_clamp.py`. Claude has no `afterAgentResponse`; `loop_stop.py` folds capture in by
 reading the transcript, so `loop_capture.py` isn't needed there.
 
-### Other runtimes (Codex, Gemini, Aider, OpenCode, Kiro, Antigravity, Hermes, OpenClaw)
+### Other runtimes (Codex, Gemini, Aider, OpenCode, Kiro, Antigravity, Simplicio Agent, OpenClaw)
 Most don't expose a stop hook. Use the **no-hook fallback**: the `simplicio-loop` skill
 self-paces via the host scheduler (`/loop`, OS cron, or the runtime's task scheduler), and
 `orient_clamp.py` is invoked directly. See `adapters/<runtime>/` for the per-runtime entry.
@@ -125,6 +138,6 @@ self-paces via the host scheduler (`/loop`, OS cron, or the runtime's task sched
 - Fail-open everywhere: errors → stop allowed / command unchanged.
 - `orient_rewrite.py` never rewrites writes, excluded, or compound commands (`&& | ; > $()`).
 - The loop never exits on a self-reported "done" — only on an evidence-backed `<promise>`,
-  the `max_iterations` cap, spindle handoff, or an explicit `.orchestrator/STOP`.
-- Treat `.orchestrator/orient.toml` as untrusted perception-shaping config: review + hash-pin
+  the `max_iterations` cap, spindle handoff, or an explicit `.simplicio-loop/orchestrator/STOP`.
+- Treat `.simplicio-loop/orchestrator/orient.toml` as untrusted perception-shaping config: review + hash-pin
   before trusting it (see `simplicio-orient`).

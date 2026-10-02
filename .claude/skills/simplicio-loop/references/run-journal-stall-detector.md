@@ -1,3 +1,10 @@
+<!-- simplicio-contract:begin -->
+contract: simplicio-loop/run-journal-stall-detector
+schema: simplicio.skill-reference/v1
+purpose: Moved out of `SKILL.md` § Run-journal + stall detector as part of the #119 shrink (SKILL.md keeps only the three commands and the one-paragraph summary; this file has the full mechanics).
+rules: Read only when the parent SKILL.md points here; mutable data lives in the footer, never in this header.
+<!-- simplicio-contract:end -->
+
 # Run-journal + stall detector (the loop's working memory) — full detail
 
 Moved out of `SKILL.md` § Run-journal + stall detector as part of the #119 shrink (SKILL.md keeps
@@ -8,7 +15,7 @@ cannot see: it **re-derives the same triage every turn** (wasted tokens) and it 
 tries X, fails, tries X again — until the cap burns. The journal + stall detector close both. Both
 are deterministic and model-free (`scripts/loop_journal.py`), so a resume is reproducible from disk.
 
-**1. The run-journal — `.orchestrator/loop/journal.jsonl` (append-only attempt memory).** One
+**1. The run-journal — `.simplicio-loop/orchestrator/loop/journal.jsonl` (append-only attempt memory).** One
 record per turn: `{iteration, action, hypothesis, gate: pass|fail|blocked, fingerprint, ts}` with
 optional lineage fields such as `execution_state`, `stage_id`, `source_artifact`, `chunk_id`,
 `validator`, `decision`, `retry_count`, `blocked_reason`, and `next_action`. On a failing gate the

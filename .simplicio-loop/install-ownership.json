@@ -1,0 +1,10 @@
+{
+  "schema": "simplicio.loop-install-ownership/v1",
+  "owner": "simplicio-loop",
+  "version": "3.47.0",
+  "digest": "sha256:3906f590ab13de72b975d60142c2c390015e8c76734252bed9821103feeaabe1",
+  "paths": [
+    ".claude/skills",
+    "hooks"
+  ]
+}
