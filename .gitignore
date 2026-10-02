@@ -21,8 +21,18 @@ dist/
 .simplicio/*
 !.simplicio/ledger/
 # Runtime state (agent operator, simplicio-loop convention)
+# simplicio-loop >= 3.47 writes loop state (scratchpad, journal, anchor,
+# last_response.txt transcripts) under .simplicio-loop/orchestrator/; only the
+# installer's ownership receipt is tracked.
+.simplicio-loop/*
+!.simplicio-loop/install-ownership.json
+# Legacy (< 3.47) operator state dir
 .orchestrator/*
 
 # Simplicio local runtime worktrees
 .claude/worktrees/
 !.orchestrator/savings/
+
+# Python bytecode
+__pycache__/
+*.py[cod]

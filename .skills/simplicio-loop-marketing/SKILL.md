@@ -133,7 +133,7 @@ invariants apply verbatim:
    fake success.
 5. **Single source of truth.** Product state: `.simplicio/loop/journal.jsonl`
    (schema `marketing-loop-state/v1`, written by `lib/loop/journal.ts`) +
-   the yool board. Operator state: `.orchestrator/loop/*` (journal, anchor,
+   the yool board. Operator state: `.simplicio-loop/orchestrator/loop/*` (journal, anchor,
    backlog — the Python workers).
 6. **Two modes.** `converge` (one campaign/piece pushed to done, stall
    escalation) vs `drain` (queue breadth; empty rounds terminate).

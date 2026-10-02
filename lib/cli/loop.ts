@@ -14,7 +14,7 @@
  *
  * Optional operator bridge (fail-open): with MARKETING_LOOP_PY_WORKERS=1
  * and the simplicio-loop workers resolvable, verdicts are mirrored into
- * the Python journal (.orchestrator/loop/) so the agent-session operator
+ * the Python journal (.simplicio-loop/orchestrator/loop/) so the agent-session operator
  * sees the same attempt memory. Absence never blocks the TS loop.
  */
 

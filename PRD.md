@@ -7,7 +7,7 @@ Evoluir o `marketing-engine` de "pipeline completo em DRY_RUN dirigido por playb
 os padrões já battle-tested dos repos irmãos:
 
 - **simplicio-loop** → journal/anchor/backlog (memória de tentativa + freeze de AC), action-gate,
-  token-budget — consumidos como plugin/operador Python (camada de agente, `.orchestrator/`).
+  token-budget — consumidos como plugin/operador Python (camada de agente, `.simplicio-loop/orchestrator/`; `.orchestrator/` até o loop 3.46).
 - **simplicio-dev-cli** → observability two-track (stdout=payload, stderr=diagnóstico,
   events.jsonl versionado), pipeline apply+verify com retry classificado, doctor.
 - **simplicio-mapper** → contratos de artefato versionados (campo `schema` auto-descritivo +
@@ -27,7 +27,7 @@ Plano completo aprovado: ver histórico da sessão (plano "Evolução — simpli
 - [x] **F0 — Baseline verde e higiene**: 4 e2e vermelhos corrigidos (mock marker vs
       placeholder-check do watcher-gate; caption por plataforma no gate; claims-gate no teste de
       promote); lint de convenções (`scripts/lint-conventions.mjs`, node builtins);
-      `.gitignore` para `.simplicio/*` (exceto `ledger/`) e `.orchestrator/*` (exceto `savings/`);
+      `.gitignore` para `.simplicio/*` (exceto `ledger/`) e `.simplicio-loop/*` (exceto `install-ownership.json`; legado: `.orchestrator/*`);
       este PRD preenchido.
 - [ ] **F1 — Observabilidade two-track**: `lib/observability/events.ts` emite
       `marketing-event/v1` (stderr humano + `.simplicio/events.jsonl`, rotação 10MB, kill-switch
@@ -70,7 +70,7 @@ Arquivos-chave: `bin/marketing-engine.mjs` (dispatch + `spawnTsx`), `lib/cli/gen
 (`runGenerateLoop`), `lib/cli/promote.ts` (`runPromoteLoop`), `lib/yool/board.ts`
 (tuple-space + WorkerGovernor), `lib/gate/watcher-gate.ts` (disciplina MEASURED/UNVERIFIED).
 
-Divisão de estado: `.simplicio/` = produto (events, ledger, loop state); `.orchestrator/` =
+Divisão de estado: `.simplicio/` = produto (events, ledger, loop state); `.simplicio-loop/orchestrator/` =
 operador/agente (journal/anchor/backlog do plugin Python); `.marketing-engine/` = artefatos de
 peça no host (inalterado).
 

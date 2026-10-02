@@ -5,12 +5,15 @@ Este repo roda com **duas camadas de orquestração** que nunca competem entre s
 | Camada | Quem escreve | Diretório de estado | Conteúdo |
 |---|---|---|---|
 | **Produto** (marketing-engine, TS) | `lib/observability/*`, `lib/loop/journal.ts`, `lib/cli/loop.ts` | `.simplicio/` | `events.jsonl` (`marketing-event/v1`), `ledger/marketing-savings-events.jsonl` (`simplicio.savings-event/v1`, hash-chained), `loop/journal.jsonl` (`marketing-loop-state/v1`, mirrored into `outputs/<client>/<date>/<piece>/journal.jsonl` when the piece directory exists) |
-| **Operador** (agente/sessão, Python) | workers do plugin simplicio-loop | `.orchestrator/` | `loop/` (scratchpad, journal, anchor, done flag), `backlog/backlog.jsonl`, `tee/` (evidências), `savings/` (ledger trackeado) |
+| **Operador** (agente/sessão, Python) | workers do plugin simplicio-loop | `.simplicio-loop/orchestrator/` (simplicio-loop ≥ 3.47; antes `.orchestrator/`) | `loop/` (scratchpad, journal, anchor, done flag, `last_response.txt`), `backlog/backlog.jsonl`, `tee/` (evidências) — nada disso é trackeado |
 
 Regra de bolso: `.simplicio/` é o **estado do produto** (auditável, contratos
-versionados em `contracts/marketing-artifacts/v1/`); `.orchestrator/` é o
-**estado da sessão do agente** que dirige o produto. O `.gitignore` mantém
-apenas os ledgers trackeados (`.simplicio/ledger/`, `.orchestrator/savings/`).
+versionados em `contracts/marketing-artifacts/v1/`); `.simplicio-loop/orchestrator/` é o
+**estado da sessão do agente** que dirige o produto (pode conter transcrições,
+por isso nunca vai para o git). O `.gitignore` ignora `.simplicio-loop/*` e mantém
+trackeados apenas `.simplicio-loop/install-ownership.json` (recibo do instalador)
+e o ledger do produto (`.simplicio/ledger/`). `.orchestrator/*` continua ignorado
+para checkouts com estado legado (< 3.47).
 
 ## O que o instalador wireou
 
