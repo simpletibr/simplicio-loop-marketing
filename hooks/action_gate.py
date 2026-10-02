@@ -15,10 +15,10 @@ Runs four ways:
   • Claude PreToolUse (Bash matcher) — reads `{tool_name, tool_input:{command}}` on stdin; a block
     exits 2 (Claude blocks the tool call and feeds `reason` back to the model).
   • git pre-push hook — `action_gate.py pre-push` secret-scans the REAL push range (HEAD vs.
-    upstream, not the staged diff — see `_push_diff`) AND requires a green
-    `scripts/check.py --core-gate` (#291: the local, mandatory-and-impossible-to-bypass
-    equivalent of CI now that GitHub Actions was removed in #311). `--full` runs the complete
-    gate instead of the fast core one.
+    upstream, not the staged diff — see `_push_diff`) AND requires a green local gate:
+    `scripts/check.py --core-gate` when the repo ships it (simplicio-loop core), otherwise
+    the repo's `npm run check` (marketing-engine). No gate found → BLOCK, never a silent skip.
+    `--full` runs the complete core gate instead of the fast one.
   • git pre-commit hook — `action_gate.py check --staged` secret-scans the staged diff.
   • CLI / tests — `check --command "<cmd>"`, `scan-diff --diff FILE`, `selftest`.
 
@@ -208,7 +208,13 @@ def _delivery_contract(cwd):
             return None, None
         if REPO not in sys.path:
             sys.path.insert(0, REPO)
-        from simplicio_loop.delivery_contract import normalize_contract
+        try:
+            from simplicio_loop.delivery_contract import normalize_contract
+        except ImportError as exc:
+            return None, (
+                "frozen delivery contract present but simplicio_loop.delivery_contract "
+                "is not importable (%s) - fail-closed" % exc
+            )
         return normalize_contract(contract), None
     except FileNotFoundError:
         return None, None
@@ -463,6 +469,28 @@ def cmd_check(opts):
     _emit_and_exit(gate_command(cmd, staged=bool(opts.get("staged"))), cmd=cmd)
 
 
+def _local_gate_command(repo, full=False):
+    """Resolve the repo's real local gate: (argv, display name) or (None, None).
+
+    simplicio-loop core ships `scripts/check.py`; consumer repos such as marketing-engine
+    expose their gate as the `check` script in package.json (`npm run check`).
+    """
+    check_py = os.path.join(repo, "scripts", "check.py")
+    if os.path.exists(check_py):
+        args = [sys.executable, check_py] + ([] if full else ["--core-gate"])
+        return args, ("scripts/check.py" if full else "scripts/check.py --core-gate")
+    package_json = os.path.join(repo, "package.json")
+    try:
+        with open(package_json, encoding="utf-8") as handle:
+            scripts = (json.load(handle) or {}).get("scripts") or {}
+    except (OSError, ValueError, AttributeError):
+        scripts = {}
+    if isinstance(scripts, dict) and scripts.get("check"):
+        npm = shutil.which("npm.cmd" if os.name == "nt" else "npm") or "npm"
+        return [npm, "run", "check"], "npm run check"
+    return None, None
+
+
 def cmd_pre_push(opts):
     """git pre-push: secret-scan the real push range AND require a green local gate (#291).
 
@@ -477,8 +505,9 @@ def cmd_pre_push(opts):
          clean-env + token-budget + repo-budget + the core/mandatory test set, skipping only the
          satellite-only tests `--core-gate` already excludes — see `scripts/check.py`'s
          docstring and `docs/SCRIPTS_INVENTORY.md`). A repo without `scripts/check.py` (this
-         hook copied into a project that doesn't ship it) skips step 2 rather than blocking a
-         push it cannot verify against a script that doesn't exist.
+         hook copied into a consumer project) runs its `npm run check` script instead
+         (`_local_gate_command`). A repo with neither is BLOCKED with an explicit message:
+         a push that cannot be verified is not a pass, and the gate never skips silently.
 
     `--full` runs the complete gate (no `--core-gate`) instead, for a deliberate slower/thorough
     push (e.g. right before a release). Exit 2 on ANY failure — never partial-pass.
@@ -498,17 +527,28 @@ def cmd_pre_push(opts):
               % labels)
         _hbp_append_gate_blocked("secret in push diff (%s)" % labels, "pre-push")
         sys.exit(2)
-    check_py = os.path.join(REPO, "scripts", "check.py")
-    if os.path.exists(check_py):
-        gate_args = [sys.executable, check_py] + ([] if opts.get("full") else ["--core-gate"])
+    gate_args, gate_name = _local_gate_command(REPO, full=bool(opts.get("full")))
+    if gate_args is None:
+        print("block")
+        print("  no local gate found: expected scripts/check.py or a \"check\" script in "
+              "package.json. The pre-push gate never skips silently — add one before pushing.")
+        _hbp_append_gate_blocked("no local gate configured — fail-closed", "pre-push")
+        sys.exit(2)
+    print("pre-push: running local gate: %s" % gate_name, file=sys.stderr)
+    try:
         r = subprocess.run(gate_args, cwd=REPO)
-        if r.returncode != 0:
-            gate_name = "scripts/check.py" if opts.get("full") else "scripts/check.py --core-gate"
-            print("block")
-            print("  local gate failed (%s) — fix before pushing. Re-run it directly to see "
-                  "the failures; there is no bypass flag by design (#291)." % gate_name)
-            _hbp_append_gate_blocked("local gate failed (%s)" % gate_name, "pre-push")
-            sys.exit(2)
+        rc = r.returncode
+    except OSError as exc:
+        print("block")
+        print("  cannot run local gate (%s): %s — fail-closed" % (gate_name, exc))
+        _hbp_append_gate_blocked("local gate not runnable (%s)" % gate_name, "pre-push")
+        sys.exit(2)
+    if rc != 0:
+        print("block")
+        print("  local gate failed (%s) — fix before pushing. Re-run it directly to see "
+              "the failures; there is no bypass flag by design (#291)." % gate_name)
+        _hbp_append_gate_blocked("local gate failed (%s)" % gate_name, "pre-push")
+        sys.exit(2)
     print("allow")
     sys.exit(0)
 

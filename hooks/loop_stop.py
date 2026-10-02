@@ -305,8 +305,9 @@ def _delivery_stop_guard(cwd, iteration):
 
     The baseline is persisted after each clean turn. The first observation uses HEAD as the
     conservative baseline, so an untracked or newly staged file cannot silently pass. This is
-    deliberately fail-closed only when a valid contract exists; absent or unreadable loop state
-    keeps the historic stop-hook fail-open behavior.
+    deliberately fail-closed when a contract exists (including when the contract module cannot
+    be imported); absent or unreadable loop state keeps the historic stop-hook fail-open
+    behavior.
     """
     try:
         anchor_path = os.path.join(cwd, ANCHOR)
@@ -317,7 +318,13 @@ def _delivery_stop_guard(cwd, iteration):
             return None
         if cwd not in sys.path:
             sys.path.insert(0, cwd)
-        from simplicio_loop.delivery_contract import normalize_contract
+        try:
+            from simplicio_loop.delivery_contract import normalize_contract
+        except ImportError as exc:
+            return (
+                "delivery contract present but simplicio_loop.delivery_contract is not "
+                "importable (%s) - fail-closed" % exc
+            )
         contract = normalize_contract(contract)
 
         baseline_path = os.path.join(cwd, ".simplicio-loop/orchestrator", "loop", "delivery_baseline.json")
