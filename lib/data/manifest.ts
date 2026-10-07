@@ -34,6 +34,9 @@ export interface ManifestPayload {
   watcher_report_path?: string;
   outputs?: string[];
   fallback_used?: boolean;
+  /** Render manifest of the video factory and the sha256 of the MP4 it vouches for. */
+  render_manifest_path?: string;
+  render_sha256?: string;
 }
 
 export const MANIFEST_SCHEMA = "marketing-manifest/v1";
@@ -97,6 +100,8 @@ export function writeManifest(
     watcher_report_path: normalizeStoredPath(payload.watcher_report_path),
     outputs: (payload.outputs ?? []).map((output) => normalize(output)),
     fallback_used: payload.fallback_used ?? false,
+    ...(payload.render_manifest_path ? { render_manifest_path: normalizeStoredPath(payload.render_manifest_path) } : {}),
+    ...(payload.render_sha256 ? { render_sha256: payload.render_sha256 } : {}),
     release_identity: releaseIdentity(),
   };
 

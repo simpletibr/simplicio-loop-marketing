@@ -37,6 +37,8 @@
     "watcher_report_path": { "type": "string" },
     "outputs": { "type": "array", "items": { "type": "string" } },
     "fallback_used": { "type": "boolean" },
+    "render_manifest_path": { "type": "string" },
+    "render_sha256": { "type": "string" },
     "release_identity": {
       "type": "object",
       "required": ["ecosystem_release_id", "core_version", "core_commit", "extension_version", "composed_graph_hash"],

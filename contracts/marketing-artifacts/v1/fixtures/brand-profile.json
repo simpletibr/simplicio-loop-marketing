@@ -1,0 +1,48 @@
+{
+  "schema": "brand-profile/v1",
+  "generated_at": "1970-01-01T00:00:00.000Z",
+  "client": "fixture-client",
+  "name": "Fixture-client",
+  "url": "https://fixture-client.example",
+  "sector": "servicos",
+  "city": "Sao Paulo",
+  "country": "BR",
+  "language": "pt-BR",
+  "colors": [
+    "#0F172A",
+    "#38BDF8"
+  ],
+  "logo": {
+    "ref": "fixture://fixture-client.example/logo.svg",
+    "source": "fixture:dry-run:fixture-client.example"
+  },
+  "tone": "direto e acolhedor",
+  "persona": "Cliente local que procura fixture-client",
+  "pillars": [
+    "educacao",
+    "prova social",
+    "bastidores"
+  ],
+  "pains": [
+    "pouco tempo para criar conteudo"
+  ],
+  "collection": {
+    "mode": "dry-run",
+    "robots_respected": true,
+    "pii_collected": false
+  },
+  "facts": [
+    {
+      "field": "name",
+      "value": "Fixture-client",
+      "source": "fixture:dry-run:fixture-client.example",
+      "collected_at": "1970-01-01T00:00:00.000Z"
+    },
+    {
+      "field": "sector",
+      "value": "servicos",
+      "source": "fixture:dry-run:fixture-client.example",
+      "collected_at": "1970-01-01T00:00:00.000Z"
+    }
+  ]
+}

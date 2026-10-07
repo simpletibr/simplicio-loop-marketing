@@ -26,6 +26,8 @@ const { emitEvent, eventsPath } = await import(join(ROOT, "lib/observability/eve
 const { appendSavingsEvent } = await import(join(ROOT, "lib/observability/savings.ts"));
 const { runGenerateLoop } = await import(join(ROOT, "lib/cli/generate.ts"));
 const { serializePiece } = await import(join(ROOT, "lib/pieces/frontmatter.ts"));
+const { readHbi } = await import(join(ROOT, "lib/formats/binary.ts"));
+const { buildBrandProfile, fixtureCollection } = await import(join(ROOT, "lib/profile/brand-profile.ts"));
 
 const EPOCH = "1970-01-01T00:00:00.000Z";
 
@@ -103,9 +105,9 @@ const manifestPath = join(
   "fixture-client",
   "2026-01-01",
   "PIECE-fixture-001",
-  "manifest.json",
+  "manifest.hbi",
 );
-writeFixture("marketing-manifest.json", JSON.parse(readFileSync(manifestPath, "utf8")), host);
+writeFixture("marketing-manifest.json", readHbi(manifestPath), host);
 
 // --- simplicio.savings-event/v1: append through the real producer ---------
 const ev = appendSavingsEvent(host, {
@@ -128,5 +130,16 @@ const { producePublishReceiptFixture } = await import(join(ROOT, "lib/publish/ve
 if (typeof producePublishReceiptFixture === "function") {
   writeFixture("publish-receipt.json", producePublishReceiptFixture(), host);
 }
+
+// --- brand-profile/v1: built by the real producer from the dry-run collector
+writeFixture(
+  "brand-profile.json",
+  buildBrandProfile(fixtureCollection("https://fixture-client.example"), {
+    client: "fixture-client",
+    url: "https://fixture-client.example",
+    mode: "dry-run",
+  }),
+  host,
+);
 
 process.stderr.write("gen-fixtures: done\n");

@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { GenerationResult, ProviderConstraint, VideoTask } from "./types";
@@ -5,6 +6,12 @@ import { selectConstrainedProvider, type ProviderCapabilities } from "./constrai
 import { loadProviderMatrix, videoRow } from "./matrix";
 import { MOCK_VIDEO_REGISTRY } from "./__mocks__/video";
 import { withRetry } from "./policy";
+import {
+  runSimplicioVideo,
+  verifyRenderManifest,
+  writeContractFile,
+  type VideoContractInput,
+} from "../video/contract";
 
 export interface VideoGenerateOptions {
   task: VideoTask;
@@ -19,6 +26,8 @@ export interface VideoGenerateOptions {
     field: string;
     values: string[];
   };
+  /** Factory contract derived from the piece; built from the brief when absent. */
+  contract?: VideoContractInput;
 }
 
 export interface VideoProvider {
@@ -158,21 +167,55 @@ export class TopviewVideoProvider extends RealVideoBase {
   }
 }
 
-export class HyperframesVideoProvider extends RealVideoBase {
-  readonly name = "hyperframes";
+export class SimplicioVideoProvider extends RealVideoBase {
+  readonly name = "simplicio-video";
   async realGenerate(
-    _brief: string,
-    _opts: VideoGenerateOptions,
+    brief: string,
+    opts: VideoGenerateOptions,
   ): Promise<GenerationResult<string | string[]>> {
-    if (process.env.HYPERFRAMES_ACTIVE !== "true") {
-      throw new Error("hyperframes: HYPERFRAMES_ACTIVE not true");
+    const bin = process.env.SIMPLICIO_VIDEO_BIN;
+    if (!bin) throw new Error("simplicio-video: SIMPLICIO_VIDEO_BIN missing");
+    if ((process.env.SIMPLICIO_VIDEO_MODE ?? "cli") !== "cli") {
+      throw new Error(
+        "simplicio-video: MCP transport required in caller context; " +
+          "set SIMPLICIO_VIDEO_MODE=cli or use DRY_RUN=true for tests.",
+      );
     }
-    throw new Error(
-      "hyperframes video: local CLI render required in caller context; stub. " +
-        "Invoke the `hyperframes-cli` skill (lint -> inspect -> render). " +
-        "Use DRY_RUN=true for tests.",
-    );
+    const t0 = Date.now();
+    const contract = opts.contract ?? defaultContract(brief, opts);
+    const outDir = resolve(opts.output_dir ?? resolve(process.cwd(), "outputs"), contract.slug);
+    ensureDir(outDir);
+    const contractPath = writeContractFile(outDir, contract);
+    const run = await runSimplicioVideo({ bin, contractPath, outDir });
+    const check = verifyRenderManifest(resolve(outDir, run.manifest));
+    if (!check.ok || !check.manifest || !check.mp4_path) {
+      throw new Error(`simplicio-video: render evidence rejected: ${check.reasons.join("; ")}`);
+    }
+    return {
+      ok: true,
+      provider: this.name,
+      task: opts.task,
+      output: check.mp4_path,
+      tokens: 0,
+      cost_usd: check.manifest.voice?.cost_usd ?? 0,
+      latency_ms: Date.now() - t0,
+      render_manifest_path: resolve(outDir, run.manifest),
+      output_sha256: check.manifest.output.sha256,
+    };
   }
+}
+
+export function defaultContract(brief: string, opts: VideoGenerateOptions): VideoContractInput {
+  const slug = `${sanitizeLabel(brief)}-${createHash("sha256").update(brief).digest("hex").slice(0, 8)}`;
+  return {
+    slug,
+    client: "unknown",
+    language: "pt-BR",
+    aspect: opts.aspect,
+    duration_s: opts.duration_s,
+    script: brief,
+    ...(opts.seed !== undefined ? { seed: opts.seed } : {}),
+  };
 }
 
 export class WavespeedVideoProvider extends RealVideoBase {
@@ -292,14 +335,16 @@ const REAL_VIDEO_REGISTRY: Record<string, () => VideoProvider> = {
   higgsfield: () => new HiggsfieldVideoProvider(),
   topview: () => new TopviewVideoProvider(),
   wavespeed: () => new WavespeedVideoProvider(),
-  hyperframes: () => new HyperframesVideoProvider(),
+  "simplicio-video": () => new SimplicioVideoProvider(),
 };
 
 export const VIDEO_PROVIDER_CAPABILITIES: Readonly<Record<string, ProviderCapabilities>> = {
   higgsfield: { brand_strict: true, estimated_cost_usd: 0.12, estimated_latency_ms: 60_000, quality: "high" },
   topview: { brand_strict: false, estimated_cost_usd: 0.06, estimated_latency_ms: 45_000, quality: "medium" },
   wavespeed: { brand_strict: false, estimated_cost_usd: 0.04, estimated_latency_ms: 25_000, quality: "medium" },
-  hyperframes: { brand_strict: true, estimated_cost_usd: 0, estimated_latency_ms: 10_000, quality: "high" },
+  // Render-only estimate: local deterministic render. Voice cost is recorded
+  // afterwards from the render manifest, not predicted here.
+  "simplicio-video": { brand_strict: true, estimated_cost_usd: 0, estimated_latency_ms: 90_000, quality: "high" },
 };
 
 export interface VideoFactoryOptions {

@@ -22,6 +22,11 @@ import { estimateTokens } from "../lib/providers/cost.ts";
 import { fanOutCaptions } from "../lib/content/captions.ts";
 import { selectConstrainedProvider } from "../lib/providers/constraints.ts";
 import { IMAGE_PROVIDER_CAPABILITIES } from "../lib/providers/image.ts";
+import { serializeVideoContract, verifyRenderManifest } from "../lib/video/contract.ts";
+import { createHash } from "node:crypto";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = resolve(__dirname, "..");
@@ -61,6 +66,13 @@ results.push(timeit("toon.decode (25-piece batch)", () => decodeToon(encoded), 2
 results.push(timeit("tokenizer.bpe (PT-BR caption)", () => estimateTokens("Olá 👋🏽 — conteúdo final para Instagram com ação e transparência.", "gpt-4o"), 500));
 results.push(timeit("caption.fan-out (4 platforms)", () => fanOutCaptions("Uma atualização técnica com evidência. ".repeat(20), ["instagram", "tiktok", "linkedin", "x", "ig"]), 10_000));
 results.push(timeit("provider.constraint-selection", () => selectConstrainedProvider("wavespeed", Object.keys(IMAGE_PROVIDER_CAPABILITIES), IMAGE_PROVIDER_CAPABILITIES, { brand_strict: true, quality_min: "high" }), 25_000));
+
+const contractInput = { slug: "bench-001", client: "acme", language: "pt-BR", aspect: "9:16", duration_s: 30, script: "Pare de perder cliente por falta de constância. ".repeat(8), voice: { provider: "default" }, brand: { name: "Acme", colors: ["#111111", "#222222"], tone: "direto" } };
+results.push(timeit("video.contract-serialize", () => serializeVideoContract(contractInput), 20_000));
+const benchDir = mkdtempSync(join(tmpdir(), "me-bench-"));
+writeFileSync(join(benchDir, "final.mp4"), "x".repeat(256 * 1024));
+writeFileSync(join(benchDir, "render.manifest.json"), JSON.stringify({ output: { path: "final.mp4", sha256: createHash("sha256").update("x".repeat(256 * 1024)).digest("hex") } }));
+results.push(timeit("video.render-manifest-verify (256 KiB mp4)", () => { if (!verifyRenderManifest(join(benchDir, "render.manifest.json")).ok) throw new Error("bench manifest rejected"); }, 500));
 
 results.push(
   timeit(

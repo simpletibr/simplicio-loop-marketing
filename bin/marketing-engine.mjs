@@ -32,6 +32,7 @@ Commands:
   findings    findings list|report|reconcile|doctor (Loop receipt projections)
   campaign    Plan a piece queue from a CAMPAIGN.md brief, or review one
   reference   Ingest or transcribe an authorized reference
+  profile     Build the brand-profile/v1 of a client from its URL (profile <url> --client <slug>)
   low-ticket  Plan the complete Low Ticket lifecycle (dry-run)
   anchor      Freeze/check/gate a campaign anchor with durable AC receipts
   new-piece   Create a new piece markdown from the template
@@ -739,6 +740,12 @@ function commandLowTicket(args) {
   spawnTsx(script, args._.slice(1), hostRoot);
 }
 
+function commandProfile(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "profile.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
 function commandAnchor(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "anchor.ts");
@@ -862,6 +869,9 @@ function main() {
       return;
     case "reference":
       commandReference(args);
+      return;
+    case "profile":
+      commandProfile(args);
       return;
     case "low-ticket":
       commandLowTicket(args);

@@ -1,0 +1,54 @@
+{
+  "$id": "brand-profile/v1",
+  "type": "object",
+  "required": ["schema", "generated_at", "client", "name", "url", "sector", "country", "language", "colors", "logo", "tone", "persona", "pillars", "pains", "facts"],
+  "properties": {
+    "schema": { "const": "brand-profile/v1" },
+    "generated_at": { "type": "string" },
+    "client": { "type": "string" },
+    "name": { "type": "string" },
+    "url": { "type": "string" },
+    "sector": { "type": "string" },
+    "city": { "type": "string" },
+    "country": { "type": "string" },
+    "language": { "type": "string" },
+    "colors": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "logo": {
+      "type": "object",
+      "required": ["ref", "source"],
+      "properties": {
+        "ref": { "type": "string" },
+        "source": { "type": "string" }
+      }
+    },
+    "tone": { "type": "string" },
+    "persona": { "type": "string" },
+    "pillars": { "type": "array", "minItems": 1, "items": { "type": "string" } },
+    "pains": { "type": "array", "items": { "type": "string" } },
+    "languages": { "type": "array", "items": { "type": "string" } },
+    "voice_routes": { "type": "object" },
+    "collection": {
+      "type": "object",
+      "required": ["mode", "robots_respected", "pii_collected"],
+      "properties": {
+        "mode": { "enum": ["dry-run", "live"] },
+        "robots_respected": { "type": "boolean" },
+        "pii_collected": { "type": "boolean" }
+      }
+    },
+    "facts": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["field", "value", "source", "collected_at"],
+        "properties": {
+          "field": { "type": "string" },
+          "value": { "type": "string" },
+          "source": { "type": "string" },
+          "collected_at": { "type": "string" }
+        }
+      }
+    }
+  }
+}

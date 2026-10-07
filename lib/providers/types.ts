@@ -49,6 +49,9 @@ export interface GenerationResult<T = string> {
   cost_usd?: number;
   latency_ms?: number;
   attempt?: number;
+  /** Set by providers that return a render manifest with the output hash. */
+  render_manifest_path?: string;
+  output_sha256?: string;
 }
 
 export interface ProviderConstraint {

@@ -11,7 +11,7 @@ test("creative routing and four-platform caption fan-out stay constraint-safe en
   ]);
 
   expect(image.name).toBe("gpt-image");
-  expect(video.name).toBe("hyperframes");
+  expect(video.name).toBe("simplicio-video");
   expect(variants.map(({ platform }) => platform)).toEqual(["instagram", "tiktok", "linkedin", "x"]);
   expect(variants.every(({ text, cta }) => text.endsWith(cta))).toBe(true);
 });

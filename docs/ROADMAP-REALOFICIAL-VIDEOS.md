@@ -1,7 +1,7 @@
 # Roadmap: simplicio-loop-marketing + simplicio-videos + Real Oficial
 
 > Planejamento aprovado pelo Wesley em 02/10/2026. Épico: [#159](https://github.com/simpletibr/simplicio-loop-marketing/issues/159).
-> Estado: **plano**. Nada desta página está implementado ainda. `DRY_RUN=true` continua como padrão.
+> Estado: **em implementação**. A tabela "Estado por issue" no fim da página diz o que já existe. `DRY_RUN=true` continua como padrão.
 
 ## Objetivo
 
@@ -100,3 +100,26 @@ cobrança: Stripe no exterior (#167) · AbacatePay no Brasil (simplicio-video ve
 | Postar MP4 pronto sem re-corte não confirmado | Spike da Fase 0 (#161), com OK do Wesley |
 | Qualidade da dublagem | QA humano de 1 vídeo por idioma; Gemini nativo quando possível |
 | Duas stacks (TS + Python) | Só contrato + MCP; e2e com contrato real |
+
+## Fase 0 em uso: comandos reais
+
+### Perfil da marca (#160)
+
+```bash
+# DRY_RUN=true (padrão): usa o coletor de fixture, nada externo roda.
+marketing-engine profile https://www.lothus.com.br --client lothus
+
+# Ao vivo: DRY_RUN=false + o CLI instalado (pip install -e simplicio-videos; Node >= 22; ffmpeg).
+SIMPLICIO_VIDEO_BIN=/caminho/simplicio-video DRY_RUN=false \
+  marketing-engine profile https://www.lothus.com.br --client lothus
+```
+
+Grava `clients/<slug>/brand-profile.hbi` (contrato `brand-profile/v1`, cada fato com a fonte). O coletor do `simplicio-video` é quem respeita robots.txt e LGPD: uma coleta que declare PII ou robots ignorado é recusada.
+
+### Vídeo pelo contrato (#160)
+
+O provider `simplicio-video` (matriz `PROVIDERS.md`, tarefas `motion-typography`, `data-viz-reel`, `programmatic-short`; ou `provider_override: { video: simplicio-video }` na peça) escreve `contract.yaml` (`simplicio.video-contract/v1`), roda `simplicio-video run --json --contract <yaml> --out <dir>` sem shell e valida o `render.manifest.json` (o sha256 do MP4 precisa bater). O manifest entra na peça (`render_manifest_path`, `render_sha256`) e o `publishVerified` bloqueia com `render_evidence_blocked` se o arquivo mudar.
+
+Formato esperado do manifest (estrito): `{ "output": { "path", "sha256", "bytes?", "duration_s?" }, "voice?": { "provider", "seconds", "cost_usd", "cache_hit" }, "qa?": { "passed" } }`. A saída do CLI precisa terminar com uma linha JSON `{ "ok": true, "mp4": "...", "manifest": "..." }`.
+
+> Não verificado contra o `simplicio-videos` real nesta sessão (o CLI não estava instalado e o repo não era acessível): os nomes dos subcomandos e os campos do contrato YAML estão isolados em `lib/video/contract.ts` (`cliArgs`, `serializeVideoContract`) e em `lib/profile/brand-profile.ts` (`collectProspect`). O primeiro run ao vivo com `SIMPLICIO_VIDEO_BIN` confirma ou ajusta esses pontos.

@@ -37,9 +37,9 @@ This file is the single source of truth for provider routing across the Marketin
 | Product demo (URL) | topview | scrape + auto script |
 | Talking head | topview | AI presenter |
 | Batch hook test | wavespeed | cheap/fast |
-| Motion typography | hyperframes | HTML/GSAP kinetic type, brand-faithful, deterministic |
-| Data viz reel | hyperframes | declared variables → re-renderable charts (NYT-style) |
-| Programmatic short | hyperframes | parametrized HTML composition; byte-identical re-renders |
+| Motion typography | simplicio-video | HyperFrames kinetic type rendered by the video factory, brand-faithful, deterministic |
+| Data viz reel | simplicio-video | declared variables → re-renderable charts (NYT-style) |
+| Programmatic short | simplicio-video | parametrized composition; byte-identical re-renders; render manifest carries the file sha256 |
 
 ## Override per piece
 

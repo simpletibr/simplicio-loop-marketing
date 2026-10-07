@@ -50,12 +50,12 @@ Every stage transition is a tuple write on the Yool board
 (`.specs/architecture/YOOL-BOARD.md`) so the loop's state is inspectable
 without re-deriving it from scratch.
 
-## Integração SimpleTI: simplicio-videos + Real Oficial (planejada, épico #159)
+## Integração SimpleTI: fábrica de vídeo + Real Oficial (épico #159)
 
 Plano: `docs/ROADMAP-REALOFICIAL-VIDEOS.md`.
 
-- **Fábrica de vídeo:** [simpletibr/simplicio-videos](https://github.com/simpletibr/simplicio-videos).
-  O loop escreve `simplicio.video-contract/v1` e chama `simplicio-video-mcp`/CLI.
+- **Fábrica de vídeo:** repositório externo citado no roadmap. O loop escreve
+  `simplicio.video-contract/v1` e chama o CLI da fábrica pelo provider de vídeo roteado na matriz.
   Recebe MP4 + `render.manifest.json` (sha256) como evidência. Voz principal: **Gemini TTS**.
 - **Real Oficial:**
   - `publisher` → TikTok/Reels/Shorts, agenda ≤ 30 dias (#161, #162).
