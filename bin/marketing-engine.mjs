@@ -32,6 +32,7 @@ Commands:
   findings    findings list|report|reconcile|doctor (Loop receipt projections)
   campaign    Plan a piece queue from a CAMPAIGN.md brief, or review one
   reference   Ingest or transcribe an authorized reference
+  calendar    Show the month of a client (calendar --client <slug> [--format table|markdown])
   approval    Client approval link: request | page | record | serve | adjustments
   profile     Build the brand-profile/v1 of a client from its URL (profile <url> --client <slug>)
   low-ticket  Plan the complete Low Ticket lifecycle (dry-run)
@@ -747,6 +748,12 @@ function commandProfile(args) {
   spawnTsx(script, args._.slice(1), hostRoot);
 }
 
+function commandCalendar(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "calendar.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
 function commandApproval(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "approval.ts");
@@ -882,6 +889,9 @@ function main() {
       return;
     case "approval":
       commandApproval(args);
+      return;
+    case "calendar":
+      commandCalendar(args);
       return;
     case "low-ticket":
       commandLowTicket(args);

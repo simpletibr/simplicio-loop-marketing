@@ -8,6 +8,7 @@ import {
 } from "../campaigns/campaign";
 import { emitEvent } from "../observability/events";
 import { loadExtensionManifest } from "../extension/core";
+import { planCommand } from "./plan-commands";
 
 export async function cliEntry(argv: string[]): Promise<void> {
   const root = process.cwd();
@@ -15,6 +16,8 @@ export async function cliEntry(argv: string[]): Promise<void> {
 
   // Fail before creating work: Loop core owns workflow, queue, leases and budgets.
   loadExtensionManifest();
+
+  if (await planCommand(argv, process.env.MARKETING_ENGINE_HOST_ROOT ?? root)) return;
 
   if (sub === "review") {
     const campaignId = argv[1];
@@ -35,7 +38,9 @@ export async function cliEntry(argv: string[]): Promise<void> {
   if (!briefPath) {
     process.stderr.write(
       "campaign: usage: marketing-engine campaign --brief <path/to/CAMPAIGN.md>\n" +
-        "       or: marketing-engine campaign review <campaign-id>\n",
+        "       or: marketing-engine campaign review <campaign-id>\n" +
+        "       or: marketing-engine campaign --client <slug> --days 30 [--start YYYY-MM-DD|next-month] [--per-week N] [--networks a,b] [--tz Zone] [--mix hero=0.2,...]\n" +
+        "       or: marketing-engine campaign render|approvals|schedule --client <slug> [--plan <id>]\n",
     );
     process.exit(1);
   }

@@ -26,6 +26,8 @@ import { serializeVideoContract, verifyRenderManifest } from "../lib/video/contr
 import { createHash } from "node:crypto";
 import { recordDecision, requestApproval, verifyApproval } from "../lib/approval/store.ts";
 import { DryRunPublisher, scheduleVerified } from "../lib/publish/publisher.ts";
+import { planContent } from "../lib/plan/content-plan.ts";
+import { buildBrandProfile, fixtureCollection } from "../lib/profile/brand-profile.ts";
 import { writeWatcherReport } from "../lib/gate/watcher-gate.ts";
 import { mkdirSync } from "node:fs";
 import { mkdtempSync, writeFileSync } from "node:fs";
@@ -105,6 +107,9 @@ const gated = [];
 for (let d = 8; d <= 30; d++) gated.push(await scheduleVerified(pubReq(d), { root: pubRoot, publisher: dryPub, now: benchNow }));
 if (gated.some((r) => r.verdict !== "scheduled")) throw new Error("bench schedule rejected");
 results.push(timeit("publisher.schedule-idempotent-hit (23-receipt ledger)", () => { void scheduleVerified(pubReq(15), { root: pubRoot, publisher: dryPub, now: benchNow }); }, 300));
+
+const benchProfile = buildBrandProfile(fixtureCollection("https://bench.example"), { client: "bench", url: "https://bench.example", mode: "dry-run" });
+results.push(timeit("plan.content (30 days x 3 networks x 3/week)", () => planContent({ client: "bench", profile: benchProfile, start: "2026-10-08", days: 30, perWeek: 3, now: benchNow }), 300));
 
 results.push(
   timeit(

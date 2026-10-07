@@ -29,6 +29,7 @@ const { serializePiece } = await import(join(ROOT, "lib/pieces/frontmatter.ts"))
 const { readHbi } = await import(join(ROOT, "lib/formats/binary.ts"));
 const { buildBrandProfile, fixtureCollection } = await import(join(ROOT, "lib/profile/brand-profile.ts"));
 const { requestApproval, recordDecision } = await import(join(ROOT, "lib/approval/store.ts"));
+const { planContent } = await import(join(ROOT, "lib/plan/content-plan.ts"));
 const { DryRunPublisher, scheduleVerified } = await import(join(ROOT, "lib/publish/publisher.ts"));
 const { writeWatcherReport } = await import(join(ROOT, "lib/gate/watcher-gate.ts"));
 
@@ -170,5 +171,20 @@ writeFixture(
   );
   writeFixture("publish-receipt-scheduled.json", receipt, schedHost);
 }
+
+// --- content-plan/v1: the deterministic planner over the fixture profile ---
+writeFixture(
+  "content-plan.json",
+  planContent({
+    client: "fixture-client",
+    profile: buildBrandProfile(fixtureCollection("https://fixture-client.example"), { client: "fixture-client", url: "https://fixture-client.example", mode: "dry-run" }),
+    start: "2026-10-08",
+    days: 7,
+    perWeek: 2,
+    networks: ["tiktok", "ig_reels"],
+    now: new Date("2026-10-07T12:00:00Z"),
+  }),
+  host,
+);
 
 process.stderr.write("gen-fixtures: done\n");

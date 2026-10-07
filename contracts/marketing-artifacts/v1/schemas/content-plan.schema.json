@@ -1,0 +1,46 @@
+{
+  "$id": "content-plan/v1",
+  "type": "object",
+  "required": ["schema", "plan_id", "client", "generated_at", "timezone", "start", "days", "window_days", "networks", "slots"],
+  "properties": {
+    "schema": { "const": "content-plan/v1" },
+    "plan_id": { "type": "string" },
+    "client": { "type": "string" },
+    "generated_at": { "type": "string" },
+    "timezone": { "type": "string" },
+    "start": { "type": "string" },
+    "days": { "type": "integer" },
+    "window_days": { "type": "integer" },
+    "networks": { "type": "array", "minItems": 1, "items": { "enum": ["tiktok", "ig_reels", "yt_shorts"] } },
+    "slots": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["slot_id", "piece_id", "network", "publish_at", "local_time", "format", "route", "angle", "hook", "caption", "window"],
+        "properties": {
+          "slot_id": { "type": "string" },
+          "piece_id": { "type": "string" },
+          "network": { "enum": ["tiktok", "ig_reels", "yt_shorts"] },
+          "publish_at": { "type": "string" },
+          "local_time": { "type": "string" },
+          "format": { "enum": ["hero", "cutdown", "hook_variant", "slideshow", "carousel", "long_cut"] },
+          "route": {
+            "type": "object",
+            "required": ["lane", "task", "spends_credits"],
+            "properties": {
+              "lane": { "enum": ["video-factory", "local-composition", "realoficial-clips"] },
+              "task": { "type": "string" },
+              "spends_credits": { "type": "boolean" }
+            }
+          },
+          "angle": { "type": "string" },
+          "hook": { "type": "string" },
+          "caption": { "type": "string" },
+          "language": { "type": "string" },
+          "variant_of": { "type": "string" },
+          "window": { "enum": ["in_window", "next_cycle"] }
+        }
+      }
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, unlinkSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
+import { readdirSync } from "node:fs";
 
 const MARKER_BEGIN = "# >>> marketing-engine begin >>>";
 const MARKER_END = "# <<< marketing-engine end <<<";
@@ -27,12 +28,27 @@ function shellQuote(value: string): string {
   return `"${value.replace(/["\\$`]/g, "\\$&")}"`;
 }
 
+/** Clients that already have a brand profile get a monthly plan on day 25. */
+function clientsWithProfile(cmdRoot: string): string[] {
+  const dir = join(cmdRoot, ".marketing-engine", "clients");
+  if (!existsSync(dir)) return [];
+  return readdirSync(dir)
+    .filter((name) => /^[a-z0-9][a-z0-9-]{0,63}$/.test(name) && existsSync(join(dir, name, "brand-profile.hbi")))
+    .sort();
+}
+
 function cronBlock(cmdRoot: string, entries: CronEntries = defaultEntries()): string {
   const quotedRoot = shellQuote(cmdRoot);
+  // Day 25: plan the next month, render it and queue the client approvals.
+  // Sending the approval link and scheduling stay manual steps.
+  const monthly = clientsWithProfile(cmdRoot).map(
+    (client) =>
+      `0 7 25 * * cd ${quotedRoot} && npx marketing-engine campaign --client ${client} --days 30 --start next-month >> .marketing-engine/data/cron.log 2>&1 && npx marketing-engine campaign render --client ${client} >> .marketing-engine/data/cron.log 2>&1 && npx marketing-engine campaign approvals --client ${client} >> .marketing-engine/data/cron.log 2>&1`,
+  );
   return `${MARKER_BEGIN}
 0 ${entries.generateHour} * * * cd ${quotedRoot} && npx marketing-engine generate >> .marketing-engine/data/cron.log 2>&1
 0 ${entries.promoteHour} * * * cd ${quotedRoot} && npx marketing-engine promote >> .marketing-engine/data/cron.log 2>&1
-${MARKER_END}
+${monthly.length ? `${monthly.join("\n")}\n` : ""}${MARKER_END}
 `;
 }
 

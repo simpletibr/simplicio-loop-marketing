@@ -114,3 +114,19 @@ test("schedule install on Windows surfaces manual Task Scheduler guidance", () =
   expect(result.status).toBe(0);
   expect(result.stdout).toContain("Task Scheduler manually");
 });
+
+test("schedule install adds a day-25 monthly plan for each client with a brand profile", () => {
+  const host = mkdtempSync(join(tmpdir(), "me-schedule-monthly-"));
+  mkdirSync(join(host, ".marketing-engine", "clients", "lothus"), { recursive: true });
+  mkdirSync(join(host, ".marketing-engine", "clients", "no-profile"), { recursive: true });
+  writeFileSync(join(host, ".marketing-engine", "clients", "lothus", "brand-profile.hbi"), "x");
+  const crontabFile = join(host, "crontab.txt");
+  const env = { MARKETING_ENGINE_SCHEDULE_PLATFORM: "linux", MARKETING_ENGINE_SCHEDULE_CRONTAB_FILE: crontabFile };
+  expect(run(["schedule", "install", "--yes"], host, env).status).toBe(0);
+  const cron = readFileSync(crontabFile, "utf8");
+  expect(cron).toContain("0 7 25 * * cd");
+  expect(cron).toContain("campaign --client lothus --days 30 --start next-month");
+  expect(cron).toContain("campaign render --client lothus");
+  expect(cron).toContain("campaign approvals --client lothus");
+  expect(cron).not.toContain("no-profile");
+});
