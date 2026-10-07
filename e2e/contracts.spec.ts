@@ -26,6 +26,7 @@ test("every shipped schema has an $id and loads into the registry", () => {
       "marketing-loop-state/v1",
       "marketing-publish-receipt/v1",
       "brand-profile/v1",
+      "approval/v1",
     ]),
   );
 });

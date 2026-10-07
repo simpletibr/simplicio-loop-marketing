@@ -24,6 +24,7 @@ import { selectConstrainedProvider } from "../lib/providers/constraints.ts";
 import { IMAGE_PROVIDER_CAPABILITIES } from "../lib/providers/image.ts";
 import { serializeVideoContract, verifyRenderManifest } from "../lib/video/contract.ts";
 import { createHash } from "node:crypto";
+import { recordDecision, requestApproval, verifyApproval } from "../lib/approval/store.ts";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -73,6 +74,16 @@ const benchDir = mkdtempSync(join(tmpdir(), "me-bench-"));
 writeFileSync(join(benchDir, "final.mp4"), "x".repeat(256 * 1024));
 writeFileSync(join(benchDir, "render.manifest.json"), JSON.stringify({ output: { path: "final.mp4", sha256: createHash("sha256").update("x".repeat(256 * 1024)).digest("hex") } }));
 results.push(timeit("video.render-manifest-verify (256 KiB mp4)", () => { if (!verifyRenderManifest(join(benchDir, "render.manifest.json")).ok) throw new Error("bench manifest rejected"); }, 500));
+
+const approvalRoot = mkdtempSync(join(tmpdir(), "me-bench-approval-"));
+for (let i = 0; i < 200; i++) {
+  const sha = createHash("sha256").update(`m${i}`).digest("hex");
+  requestApproval(approvalRoot, { client: "acme", pieceId: `P-${i}`, month: "2026-10", mediaSha256: sha, preview: "p.mp4", captions: {} });
+  recordDecision(approvalRoot, { client: "acme", pieceId: `P-${i}`, mediaSha256: sha, decision: "approved", decidedBy: "bench" });
+}
+const lastSha = createHash("sha256").update("m199").digest("hex");
+const lastRef = (await import("../lib/approval/store.ts")).findApproval(approvalRoot, "P-199", lastSha).approval_id;
+results.push(timeit("approval.verify (200-piece log)", () => { if (!verifyApproval(approvalRoot, { pieceId: "P-199", mediaSha256: lastSha, approvalRef: lastRef }).ok) throw new Error("bench approval rejected"); }, 300));
 
 results.push(
   timeit(

@@ -1,0 +1,18 @@
+{
+  "$id": "approval/v1",
+  "type": "object",
+  "required": ["schema", "approval_id", "client", "piece_id", "media_sha256", "decision", "decided_by", "decided_at"],
+  "properties": {
+    "schema": { "const": "approval/v1" },
+    "approval_id": { "type": "string" },
+    "request_id": { "type": "string" },
+    "client": { "type": "string" },
+    "piece_id": { "type": "string" },
+    "month": { "type": "string" },
+    "media_sha256": { "type": "string" },
+    "decision": { "enum": ["approved", "changes_requested"] },
+    "note": { "type": "string" },
+    "decided_by": { "type": "string" },
+    "decided_at": { "type": "string" }
+  }
+}

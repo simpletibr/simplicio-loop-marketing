@@ -1,0 +1,12 @@
+{
+  "schema": "approval/v1",
+  "approval_id": "9b201d5898d82f248f58f97a",
+  "request_id": "d8e667863653b718602f5732",
+  "client": "fixture-client",
+  "piece_id": "PIECE-fixture-001",
+  "month": "2026-01",
+  "media_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "decision": "approved",
+  "decided_by": "client:Fixture",
+  "decided_at": "1970-01-01T00:00:00.000Z"
+}

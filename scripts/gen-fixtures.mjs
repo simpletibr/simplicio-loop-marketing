@@ -28,6 +28,7 @@ const { runGenerateLoop } = await import(join(ROOT, "lib/cli/generate.ts"));
 const { serializePiece } = await import(join(ROOT, "lib/pieces/frontmatter.ts"));
 const { readHbi } = await import(join(ROOT, "lib/formats/binary.ts"));
 const { buildBrandProfile, fixtureCollection } = await import(join(ROOT, "lib/profile/brand-profile.ts"));
+const { requestApproval, recordDecision } = await import(join(ROOT, "lib/approval/store.ts"));
 
 const EPOCH = "1970-01-01T00:00:00.000Z";
 
@@ -139,6 +140,15 @@ writeFixture(
     url: "https://fixture-client.example",
     mode: "dry-run",
   }),
+  host,
+);
+
+// --- approval/v1: request + decision through the real store ---------------
+const epochDate = new Date(EPOCH);
+requestApproval(host, { client: "fixture-client", pieceId: "PIECE-fixture-001", month: "2026-01", mediaSha256: "a".repeat(64), preview: "previews/PIECE-fixture-001.mp4", captions: { tiktok: "caption" }, now: epochDate });
+writeFixture(
+  "approval.json",
+  recordDecision(host, { client: "fixture-client", pieceId: "PIECE-fixture-001", mediaSha256: "a".repeat(64), decision: "approved", decidedBy: "client:Fixture", now: epochDate }),
   host,
 );
 
