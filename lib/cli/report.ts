@@ -11,3 +11,12 @@ export function cliEntry(argv: string[]): void {
   }
 }
 
+
+if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}`.replace(/^file:\/\/\/\//, "file:///")) {
+  try {
+    cliEntry(process.argv.slice(2));
+  } catch (err) {
+    process.stderr.write(`report failed: ${String(err)}\n`);
+    process.exitCode = 1;
+  }
+}

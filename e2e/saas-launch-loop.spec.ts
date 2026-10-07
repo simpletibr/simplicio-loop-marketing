@@ -164,10 +164,10 @@ test("mocked SaaS launch loop wires campaign -> pieces -> compliance -> gate -> 
     });
     writeWatcherReport(root, watcherReport);
 
-    // 5. manifest under outputs/<client>/<date>/<piece-id>/manifest.json
+    // 5. manifest under outputs/<client>/<date>/<piece-id>/manifest.hbi
     const outDir = resolve(root, "outputs", brief.client_id, "2026-07-02", pieceId);
     mkdirSync(outDir, { recursive: true });
-    writeManifest(join(outDir, "manifest.json"), {
+    writeManifest(join(outDir, "manifest.hbi"), {
       piece_id: pieceId,
       client: brief.client_id,
       date: "2026-07-02",
@@ -192,7 +192,7 @@ test("mocked SaaS launch loop wires campaign -> pieces -> compliance -> gate -> 
     pieceResults.push({
       piece_id: pieceId,
       channel_id: item.channel_id,
-      manifest_path: join(outDir, "manifest.json"),
+      manifest_path: join(outDir, "manifest.hbi"),
       compliance_pass: genericReport.pass,
       watcher_tag: watcherReport.tag,
     });
@@ -344,7 +344,7 @@ test("capstone: the autonomous loop command drives brief -> publish -> promote e
   expect(summary.stopped_reason).toBe("drained");
   for (const id of ["PIECE-cap-winner", "PIECE-cap-loser"]) {
     const dir = join(ws, "outputs", "mock-saas", "2026-07-02", id);
-    expect(existsSync(join(dir, "manifest.json"))).toBe(true);
+    expect(existsSync(join(dir, "manifest.hbi"))).toBe(true);
     const receipt = JSON.parse(readFileSync(join(dir, "publish-receipt.json"), "utf8"));
     expect(receipt.verdict).toBe("published");
     expect(receipt.dry_run).toBe(true);

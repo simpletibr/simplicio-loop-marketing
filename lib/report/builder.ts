@@ -1,11 +1,13 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { gateEvidence, type EvidenceGateResult } from "../gate/evidence";
+import { readHbi } from "../formats/binary";
 
 export interface ReportOptions { requireEvidence?: boolean; }
 export class EvidenceRequiredError extends Error { exitCode = 3; }
 function load(path: string): Record<string, unknown> { try { return JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>; } catch { return {}; } }
 function engineRoot(root: string): string { const nested = resolve(root, ".marketing-engine"); return existsSync(nested) ? nested : root; }
+function loadHbi(path: string): Record<string, unknown> { try { return readHbi<Record<string, unknown>>(path); } catch { return {}; } }
 function loadText(path: string): string { try { return readFileSync(path, "utf8"); } catch { return ""; } }
 
 interface ChecklistItem {
@@ -14,12 +16,12 @@ interface ChecklistItem {
 }
 
 const CHECKLIST: ChecklistItem[] = [
-  { label: "manifest.json", missing: ["manifest.json"] },
+  { label: "manifest.hbi", missing: ["manifest.hbi"] },
   { label: "compliance.pass=true", missing: ["compliance.pass=true"] },
   { label: "qa-tech-specs.pass=true", missing: ["qa-tech-specs.json", "qa-tech-specs.pass=true"] },
   { label: "4-platform captions", missing: ["captions.json", "captions.instagram", "captions.tiktok", "captions.linkedin", "captions.x"] },
   { label: "watcher evidence", missing: ["watcher_report_path", "watcher_report.passed=true"] },
-  { label: "run logs", missing: ["data/runs.jsonl", "data/llm-usage.jsonl"] },
+  { label: "run logs", missing: ["data/runs.hbp", "data/llm-usage.jsonl"] },
   { label: "embedded evidence artifact", missing: ["evidence artifact (Playwright/watcher)"] },
 ];
 
@@ -67,8 +69,8 @@ export function buildReport(root: string, pieceId: string, opts: ReportOptions =
   if (opts.requireEvidence && (gate.evidence_paths.length === 0 || checklist.length === 0)) {
     throw new EvidenceRequiredError(`blocked: no checklist/evidence for ${pieceId}`);
   }
-  const manifestPath = meta.client && meta.date ? resolve(base, "outputs", meta.client, meta.date.slice(0, 10), pieceId, "manifest.json") : "";
-  const manifest = manifestPath ? load(manifestPath) : {};
+  const manifestPath = meta.client && meta.date ? resolve(base, "outputs", meta.client, meta.date.slice(0, 10), pieceId, "manifest.hbi") : "";
+  const manifest = manifestPath ? loadHbi(manifestPath) : {};
   const claims: { tag?: string } = manifest.watcher_report_path ? load(String(manifest.watcher_report_path)) as { tag?: string } : {};
   const journalPath = manifestPath ? join(resolve(manifestPath, ".."), "journal.jsonl") : "";
   const journalRows = journalPath && existsSync(journalPath) ? readFileSync(journalPath, "utf8").split("\n").filter(Boolean) : [];

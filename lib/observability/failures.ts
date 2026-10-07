@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { readRuns, runsLogPath } from "../data/runs";
 
 interface UsageRow {
   timestamp?: string;
@@ -8,12 +9,6 @@ interface UsageRow {
   ok?: boolean;
   error?: string;
   fallback_used?: boolean;
-}
-interface RunRow {
-  timestamp?: string;
-  piece_id?: string;
-  status?: string;
-  notes?: string;
 }
 
 export interface FailureEvent {
@@ -53,7 +48,7 @@ export function collectFailures(
 ): FailureSummary {
   const cutoff = Date.now() - windowHours * 3600 * 1000;
   const usage = readJsonl<UsageRow>(resolve(root, "data", "llm-usage.jsonl"));
-  const runs = readJsonl<RunRow>(resolve(root, "data", "runs.jsonl"));
+  const runs = readRuns(runsLogPath(root));
   const events: FailureEvent[] = [];
   const providerTotals: Record<string, { ok: number; fail: number }> = {};
 

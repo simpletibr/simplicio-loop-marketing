@@ -65,7 +65,7 @@ test("fresh producer output validates against the schemas (drift gate, side B)",
 
   const outDir = join(root, "outputs");
   mkdirSync(outDir, { recursive: true });
-  const doc = writeManifest(join(outDir, "manifest.json"), {
+  const doc = writeManifest(join(outDir, "manifest.hbi"), {
     piece_id: "PIECE-ct-001",
     client: "acme",
     date: "2026-01-01",

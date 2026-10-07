@@ -23,6 +23,7 @@ import { getPublishClient, type PublishClient } from "./adaptlypost";
 import { readPiece, transitionStatus } from "../pieces/store";
 import { readWatcherReport, type ClaimsTag } from "../gate/watcher-gate";
 import { enforceClaimsGate } from "../gate/claims-gate";
+import { readHbi } from "../formats/binary";
 import { loadSchemaRegistry } from "../contracts/registry";
 import { validateArtifact } from "../contracts/validate";
 import { emitEvent } from "../observability/events";
@@ -183,16 +184,16 @@ export async function publishVerified(
   };
 
   // --- stage 1: manifest exists and validates against its contract ---------
-  const manifestPath = join(pieceDir, "manifest.json");
+  const manifestPath = join(pieceDir, "manifest.hbi");
   if (!existsSync(manifestPath)) {
-    stages.push({ stage: "manifest_valid", ok: false, detail: "manifest.json missing" });
+    stages.push({ stage: "manifest_valid", ok: false, detail: "manifest.hbi missing" });
     return finish("blocked", 0, "UNVERIFIED", { failure_class: "missing_manifest" });
   }
   let manifest: Record<string, unknown>;
   try {
-    manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    manifest = readHbi<Record<string, unknown>>(manifestPath);
   } catch {
-    stages.push({ stage: "manifest_valid", ok: false, detail: "manifest.json unparseable" });
+    stages.push({ stage: "manifest_valid", ok: false, detail: "manifest.hbi unreadable" });
     return finish("blocked", 0, "UNVERIFIED", { failure_class: "invalid_manifest" });
   }
   const validation = validateArtifact(manifest, loadSchemaRegistry());

@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import { readRuns, runsLogPath, type RunRow } from "../data/runs";
 
 interface UsageRow {
   piece_id?: string;
@@ -12,11 +13,6 @@ interface AnalyticsRow {
   impressions?: number;
   saves?: number;
   watch_time_s?: number;
-}
-interface RunRow {
-  piece_id?: string;
-  providers_used?: string[];
-  cost_estimate_usd?: number;
 }
 
 export interface AbRow {
@@ -43,7 +39,7 @@ function readJsonl<T>(path: string): T[] {
 }
 
 export function buildReport(root: string): AbRow[] {
-  const runs = readJsonl<RunRow>(resolve(root, "data", "runs.jsonl"));
+  const runs = readRuns(runsLogPath(root));
   const analytics = readJsonl<AnalyticsRow>(resolve(root, "data", "analytics.jsonl"));
   const usage = readJsonl<UsageRow>(resolve(root, "data", "llm-usage.jsonl"));
   const pieceSaves = new Map<string, { saves: number; watch: number; impressions: number }>();

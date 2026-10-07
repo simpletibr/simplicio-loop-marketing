@@ -8,3 +8,12 @@ export function cliEntry(argv: string[]): void {
   if (!result.pass) process.exitCode = 3;
 }
 
+
+if (import.meta.url === `file://${process.argv[1]?.replace(/\\/g, "/")}`.replace(/^file:\/\/\/\//, "file:///")) {
+  try {
+    cliEntry(process.argv.slice(2));
+  } catch (err) {
+    process.stderr.write(`evidence failed: ${String(err)}\n`);
+    process.exitCode = 1;
+  }
+}

@@ -31,7 +31,7 @@
 | Entity | Description | Storage |
 |---|---|---|
 | Piece frontmatter | metadados como `client`, `platforms`, `status`, `claims_tag`, `watcher_report_path` | markdown under `.marketing-engine/pieces/` |
-| Manifest | consolidated outputs + providers + reports for one piece | `outputs/<client>/<date>/<piece-id>/manifest.json` |
+| Manifest | consolidated outputs + providers + reports for one piece | `outputs/<client>/<date>/<piece-id>/manifest.hbi` |
 | Gate enforcement | persisted decision explaining why a piece can/cannot be promoted | `.marketing-engine/data/gate/<piece-id>.enforcement.json` |
 | Learning entry | loser / blocked-piece note for future iteration | `.marketing-engine/data/learnings.md` |
 
@@ -43,7 +43,7 @@
 2. Entry point: `bin/marketing-engine.mjs` -> `lib/cli/generate.ts`.
 3. Main modules: router, provider adapters, compliance gate, watcher gate, manifest writer.
 4. Output: piece transitions (`draft` -> `scheduled` or `review`), manifests, gate reports, run logs.
-5. Evidence: stdout, `.marketing-engine/data/*.jsonl`, `outputs/.../manifest.json`, Playwright suite.
+5. Evidence: stdout, `.marketing-engine/data/*.jsonl`, `outputs/.../manifest.hbi`, Playwright suite.
 
 ### Promote loop
 

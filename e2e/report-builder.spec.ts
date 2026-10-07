@@ -3,6 +3,8 @@ import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { buildReport, EvidenceRequiredError } from "../lib/report/builder";
+import { appendHbp, writeHbiAtomic } from "../lib/formats/binary";
+import { releaseIdentity } from "../lib/release-train/receipt";
 
 test("require-evidence fails closed with exit code 3", () => {
   const root = mkdtempSync(join(tmpdir(), "me-report-empty-"));
@@ -22,7 +24,7 @@ test("report mechanically exposes the claims-gate block", () => {
   const watcher = join(ws, "data", "gate.json");
   mkdirSync(join(ws, "data"), { recursive: true });
   writeFileSync(watcher, JSON.stringify({ tag: "UNVERIFIED" }));
-  writeFileSync(join(out, "manifest.json"), JSON.stringify({ schema: "marketing-manifest/v1", piece_id: "p", client: "acme", date: "2026-05-08", providers: {}, prompts: {}, cost_estimate_usd: 0, compliance_report_path: "x", watcher_report_path: watcher, outputs: [] }));
+  writeHbiAtomic(join(out, "manifest.hbi"), { schema: "marketing-manifest/v1", piece_id: "p", client: "acme", date: "2026-05-08", providers: {}, prompts: {}, cost_estimate_usd: 0, compliance_report_path: "x", watcher_report_path: watcher, outputs: [], release_identity: releaseIdentity() });
   expect(buildReport(root, "p")).toContain("CLAIMS GATE BLOCK");
 });
 
@@ -37,7 +39,7 @@ test("report includes every checklist item, embedded evidence, journal summary, 
   mkdirSync(out, { recursive: true });
   writeFileSync(join(root, ".github", "PULL_REQUEST_TEMPLATE.md"), "## Summary\n\n## Changes");
   writeFileSync(join(ws, "pieces", "p2.md"), "---\nid: p2\nclient: acme\ndate: 2026-05-08\nstatus: draft\ntype: reel\npillar: education\nplatforms: [instagram]\nlocale: en\n---\nbrief");
-  writeFileSync(join(ws, "data", "runs.jsonl"), "{\"kind\":\"run\"}\n");
+  appendHbp(join(ws, "data", "runs.hbp"), { piece_id: "p2", status: "success" });
   writeFileSync(join(ws, "data", "llm-usage.jsonl"), "{\"kind\":\"llm\"}\n");
   writeFileSync(watcher, JSON.stringify({ tag: "MEASURED", passed: true }));
   writeFileSync(join(out, "compliance.json"), JSON.stringify({ pass: true }));
@@ -45,7 +47,7 @@ test("report includes every checklist item, embedded evidence, journal summary, 
   writeFileSync(join(out, "captions.json"), JSON.stringify({ instagram: "ig", tiktok: "tt", linkedin: "li", x: "xx" }));
   writeFileSync(join(out, "evidence.png"), "img");
   writeFileSync(join(out, "journal.jsonl"), `${JSON.stringify({ action: "generate", gate: "pass", hypothesis: "complete" })}\n`);
-  writeFileSync(join(out, "manifest.json"), JSON.stringify({
+  writeHbiAtomic(join(out, "manifest.hbi"), {
     schema: "marketing-manifest/v1",
     generated_at: new Date().toISOString(),
     piece_id: "p2",
@@ -58,9 +60,10 @@ test("report includes every checklist item, embedded evidence, journal summary, 
     qa_report_path: join(out, "qa-tech-specs.json"),
     watcher_report_path: watcher,
     outputs: [join(out, "evidence.png")],
-  }));
+    release_identity: releaseIdentity(),
+  });
   const report = buildReport(root, "p2", { requireEvidence: true });
-  for (const item of ["manifest.json", "compliance.pass=true", "qa-tech-specs.pass=true", "4-platform captions", "watcher evidence", "run logs", "embedded evidence artifact"]) {
+  for (const item of ["manifest.hbi", "compliance.pass=true", "qa-tech-specs.pass=true", "4-platform captions", "watcher evidence", "run logs", "embedded evidence artifact"]) {
     expect(report).toContain(item);
   }
   expect(report).toContain(join(out, "evidence.png"));

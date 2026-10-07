@@ -8,6 +8,7 @@ import {
   writeFileSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
+import { appendHbp } from "../lib/formats/binary";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -101,16 +102,13 @@ locale: en
 # Brief
 `,
   );
-  writeFileSync(
-    join(host, ".marketing-engine", "data", "runs.jsonl"),
-    `${JSON.stringify({
-      timestamp: new Date().toISOString(),
-      piece_id: "PIECE-2026W19-001",
-      providers_used: ["claude"],
-      cost_estimate_usd: 1.23,
-      status: "success",
-    })}\n`,
-  );
+  appendHbp(join(host, ".marketing-engine", "data", "runs.hbp"), {
+    timestamp: new Date().toISOString(),
+    piece_id: "PIECE-2026W19-001",
+    providers_used: ["claude"],
+    cost_estimate_usd: 1.23,
+    status: "success",
+  });
   const r = run(["status"], host);
   expect(r.status).toBe(0);
   expect(r.stdout).toContain("Pieces");

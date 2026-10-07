@@ -8,6 +8,7 @@ import { serializePiece, type PieceFrontmatter } from "../lib/pieces/frontmatter
 import { gateEvidence } from "../lib/gate/evidence";
 import { runGenerateLoop } from "../lib/cli/generate";
 import { appendHbp, writeHbiAtomic } from "../lib/formats/binary";
+import { releaseIdentity } from "../lib/release-train/receipt";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -31,7 +32,7 @@ function fixture() {
   writeFileSync(join(out, "evidence.png"), "evidence");
   appendHbp(join(ws, "data", "runs.hbp"), { piece_id: id, status: "success" });
   writeFileSync(join(ws, "data", "llm-usage.jsonl"), JSON.stringify({ piece_id: id, ok: true }));
-  writeHbiAtomic(join(out, "manifest.hbi"), { schema: "marketing-manifest/v1", generated_at: new Date().toISOString(), piece_id: id, client: "acme", date: "2026-05-08", providers: {}, prompts: {}, cost_estimate_usd: 0, compliance_report_path: join(out, "compliance.json"), qa_report_path: join(out, "qa-tech-specs.json"), watcher_report_path: watcher, outputs: [join(out, "evidence.png")] });
+  writeHbiAtomic(join(out, "manifest.hbi"), { schema: "marketing-manifest/v1", generated_at: new Date().toISOString(), piece_id: id, client: "acme", date: "2026-05-08", providers: {}, prompts: {}, cost_estimate_usd: 0, compliance_report_path: join(out, "compliance.json"), qa_report_path: join(out, "qa-tech-specs.json"), watcher_report_path: watcher, outputs: [join(out, "evidence.png")], release_identity: releaseIdentity() });
   return { root, id, out };
 }
 
