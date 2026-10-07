@@ -29,6 +29,8 @@ const { serializePiece } = await import(join(ROOT, "lib/pieces/frontmatter.ts"))
 const { readHbi } = await import(join(ROOT, "lib/formats/binary.ts"));
 const { buildBrandProfile, fixtureCollection } = await import(join(ROOT, "lib/profile/brand-profile.ts"));
 const { requestApproval, recordDecision } = await import(join(ROOT, "lib/approval/store.ts"));
+const { DryRunPublisher, scheduleVerified } = await import(join(ROOT, "lib/publish/publisher.ts"));
+const { writeWatcherReport } = await import(join(ROOT, "lib/gate/watcher-gate.ts"));
 
 const EPOCH = "1970-01-01T00:00:00.000Z";
 
@@ -151,5 +153,22 @@ writeFixture(
   recordDecision(host, { client: "fixture-client", pieceId: "PIECE-fixture-001", mediaSha256: "a".repeat(64), decision: "approved", decidedBy: "client:Fixture", now: epochDate }),
   host,
 );
+
+// --- marketing-publish-receipt/v1 (scheduled): the publisher seam in dry-run
+{
+  const schedHost = mkdtempSync(join(tmpdir(), "me-fixtures-sched-"));
+  mkdirSync(join(schedHost, "data"), { recursive: true });
+  const media = join(schedHost, "final.mp4");
+  writeFileSync(media, "bytes");
+  const now = new Date("2026-10-07T12:00:00Z");
+  writeWatcherReport(schedHost, { piece_id: "PIECE-fixture-001", tag: "MEASURED", passed: true, checked: [], checked_at: now.toISOString() });
+  requestApproval(schedHost, { client: "fixture-client", pieceId: "PIECE-fixture-001", month: "2026-10", mediaSha256: "a".repeat(64), preview: "p.mp4", captions: {}, now });
+  const approval = recordDecision(schedHost, { client: "fixture-client", pieceId: "PIECE-fixture-001", mediaSha256: "a".repeat(64), decision: "approved", decidedBy: "client:Fixture", now });
+  const receipt = await scheduleVerified(
+    { clientSlug: "fixture-client", pieceId: "PIECE-fixture-001", mediaPath: media, mediaSha256: "a".repeat(64), caption: "caption", network: "tiktok", publishAt: "2026-10-20T18:00:00.000Z", approvalRef: approval.approval_id },
+    { root: schedHost, publisher: new DryRunPublisher(), now },
+  );
+  writeFixture("publish-receipt-scheduled.json", receipt, schedHost);
+}
 
 process.stderr.write("gen-fixtures: done\n");

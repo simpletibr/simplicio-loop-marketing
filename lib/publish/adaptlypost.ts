@@ -25,6 +25,11 @@ function isDryRun(): boolean {
   return v === undefined || v === "" || v === "true";
 }
 
+/**
+ * @deprecated Scheduling goes through the `Publisher` seam
+ * (lib/publish/publisher.ts), which binds every post to a client approval and
+ * the media hash. This client stays until its callers migrate; do not add new ones.
+ */
 export class AdaptlyPostClient implements PublishClient {
   readonly name = "adaptlypost";
 

@@ -144,6 +144,35 @@ export function simulate<T>(
   };
 }
 
+export type PublisherId = "dry-run" | "realoficial-browser" | "realoficial-api";
+
+const PUBLISHER_IDS: readonly PublisherId[] = ["dry-run", "realoficial-browser", "realoficial-api"];
+
+/**
+ * Picks the scheduling implementation. `DRY_RUN` (the default) always resolves
+ * to the dry-run publisher; a live run must name its publisher explicitly in
+ * `PUBLISHER`, so a missing or unknown value fails closed instead of guessing.
+ */
+export function choosePublisher(
+  channelId: string,
+  env: NodeJS.ProcessEnv = process.env,
+): { publisher: PublisherId; channel_id: string; rationale: string } {
+  const dry = env.DRY_RUN === undefined || env.DRY_RUN === "" || env.DRY_RUN === "true";
+  if (dry) return { publisher: "dry-run", channel_id: channelId, rationale: "DRY_RUN is on: receipts are written, nothing is sent." };
+  const wanted = env.PUBLISHER;
+  if (!wanted || !PUBLISHER_IDS.includes(wanted as PublisherId) || wanted === "dry-run") {
+    throw new Error(`broker: live scheduling needs PUBLISHER set to one of ${PUBLISHER_IDS.filter((p) => p !== "dry-run").join(", ")}`);
+  }
+  return {
+    publisher: wanted as PublisherId,
+    channel_id: channelId,
+    rationale:
+      wanted === "realoficial-api"
+        ? "Official Real Oficial API/MCP route (reserved: not available yet)."
+        : "Interim route: the Real Oficial web app driven through the governed browser lane.",
+  };
+}
+
 export function explain(channelId: string, capability: Capability): string {
   return chooseAdapter(channelId, capability).rationale;
 }

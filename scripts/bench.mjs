@@ -25,6 +25,9 @@ import { IMAGE_PROVIDER_CAPABILITIES } from "../lib/providers/image.ts";
 import { serializeVideoContract, verifyRenderManifest } from "../lib/video/contract.ts";
 import { createHash } from "node:crypto";
 import { recordDecision, requestApproval, verifyApproval } from "../lib/approval/store.ts";
+import { DryRunPublisher, scheduleVerified } from "../lib/publish/publisher.ts";
+import { writeWatcherReport } from "../lib/gate/watcher-gate.ts";
+import { mkdirSync } from "node:fs";
 import { mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
@@ -84,6 +87,24 @@ for (let i = 0; i < 200; i++) {
 const lastSha = createHash("sha256").update("m199").digest("hex");
 const lastRef = (await import("../lib/approval/store.ts")).findApproval(approvalRoot, "P-199", lastSha).approval_id;
 results.push(timeit("approval.verify (200-piece log)", () => { if (!verifyApproval(approvalRoot, { pieceId: "P-199", mediaSha256: lastSha, approvalRef: lastRef }).ok) throw new Error("bench approval rejected"); }, 300));
+
+// publisher: gated dry-run schedule, then the idempotent hit (what a re-run of a 30-day plan pays per post)
+process.env.DRY_RUN = "true";
+const pubRoot = mkdtempSync(join(tmpdir(), "me-bench-pub-"));
+mkdirSync(join(pubRoot, "data"), { recursive: true });
+writeFileSync(join(pubRoot, "final.mp4"), "bytes");
+const benchNow = new Date("2026-10-07T12:00:00Z");
+const benchSha = "a".repeat(64);
+writeWatcherReport(pubRoot, { piece_id: "P-pub", tag: "MEASURED", passed: true, checked: [], checked_at: benchNow.toISOString() });
+requestApproval(pubRoot, { client: "acme", pieceId: "P-pub", month: "2026-10", mediaSha256: benchSha, preview: "p.mp4", captions: {} });
+const benchApproval = recordDecision(pubRoot, { client: "acme", pieceId: "P-pub", mediaSha256: benchSha, decision: "approved", decidedBy: "bench" });
+const pubReq = (day) => ({ clientSlug: "acme", pieceId: "P-pub", mediaPath: join(pubRoot, "final.mp4"), mediaSha256: benchSha, caption: "c", network: "tiktok", publishAt: `2026-10-${String(day).padStart(2, "0")}T18:00:00.000Z`, approvalRef: benchApproval.approval_id });
+let pubDay = 8;
+const dryPub = new DryRunPublisher();
+const gated = [];
+for (let d = 8; d <= 30; d++) gated.push(await scheduleVerified(pubReq(d), { root: pubRoot, publisher: dryPub, now: benchNow }));
+if (gated.some((r) => r.verdict !== "scheduled")) throw new Error("bench schedule rejected");
+results.push(timeit("publisher.schedule-idempotent-hit (23-receipt ledger)", () => { void scheduleVerified(pubReq(15), { root: pubRoot, publisher: dryPub, now: benchNow }); }, 300));
 
 results.push(
   timeit(

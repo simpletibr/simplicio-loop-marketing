@@ -57,7 +57,7 @@ export interface PublishReceipt {
   client?: string;
   provider?: string;
   dry_run: boolean;
-  verdict: "published" | "blocked" | "failed";
+  verdict: "scheduled" | "published" | "blocked" | "failed" | "cancelled";
   claims_tag: ClaimsTag;
   attempts: number;
   stages: ReceiptStage[];
