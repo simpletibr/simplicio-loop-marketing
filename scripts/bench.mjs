@@ -27,6 +27,14 @@ import { createHash } from "node:crypto";
 import { recordDecision, requestApproval, verifyApproval } from "../lib/approval/store.ts";
 import { DryRunPublisher, scheduleVerified } from "../lib/publish/publisher.ts";
 import { planContent } from "../lib/plan/content-plan.ts";
+import { cockpit } from "../lib/dashboard/views/cockpit.ts";
+import { pipeline } from "../lib/dashboard/views/pipeline.ts";
+import { calendar } from "../lib/dashboard/views/calendar.ts";
+import { defaultSources } from "../lib/observability/dashboard/index.ts";
+import { syntheticOperation } from "../tests/helpers/dashboard-fixture.ts";
+import { appendSnapshot } from "../lib/analytics/score.ts";
+import { buildMonthlyReport } from "../lib/report/monthly.ts";
+import { markdownToPdf } from "../lib/report/pdf.ts";
 import { costByFormat } from "../lib/cost/by-format.ts";
 import { EventStore } from "../lib/dashboard/store.ts";
 import { makeEvent } from "../lib/dashboard/events.ts";
@@ -55,6 +63,17 @@ function timeit(label, fn, iterations) {
     `${label}: ${iterations} iterations in ${totalMs.toFixed(1)}ms ` +
       `(mean ${meanMs.toFixed(4)}ms/op, ${opsPerSec.toFixed(0)} ops/sec)`,
   );
+  return { label, iterations, totalMs, meanMs, opsPerSec };
+}
+
+async function timeitAsync(label, fn, iterations) {
+  for (let i = 0; i < Math.min(20, iterations); i++) await fn();
+  const t0 = performance.now();
+  for (let i = 0; i < iterations; i++) await fn();
+  const totalMs = performance.now() - t0;
+  const meanMs = totalMs / iterations;
+  const opsPerSec = 1000 / meanMs;
+  console.log(`${label}: ${iterations} iterations in ${totalMs.toFixed(1)}ms (mean ${meanMs.toFixed(4)}ms/op, ${opsPerSec.toFixed(0)} ops/sec)`);
   return { label, iterations, totalMs, meanMs, opsPerSec };
 }
 
@@ -134,6 +153,20 @@ const treeStore = new EventStore(treeRoot);
 syncDashboard(treeRoot, treeStore);
 results.push(timeit("dashboard.sync (nothing new, 40 pieces)", () => { if (syncDashboard(treeRoot, treeStore).added !== 0) throw new Error("bench sync not idempotent"); }, 30));
 
+// dashboard views over 5 clients x 12 pieces (the reference fixture of the view tests)
+const viewOp = syntheticOperation();
+const viewCtx = { root: viewOp.root, store: viewOp.store, sources: defaultSources(viewOp.root), now: viewOp.now, query: new URLSearchParams(), alerts: () => [] };
+results.push(await timeitAsync("dashboard.cockpit (5 clients, 60 pieces)", () => cockpit(viewCtx), 300));
+results.push(await timeitAsync("dashboard.pipeline (5 clients, 60 pieces)", () => pipeline(viewCtx), 300));
+results.push(await timeitAsync("dashboard.calendar (5 clients, 60 pieces)", () => calendar(viewCtx), 300));
+
+// metrics loop: winners vary the next plan; the monthly report and its PDF
+const winnersIn = [{ piece_id: "P-w1", hook: "Gancho um", angle: "a" }, { piece_id: "P-w2", hook: "Gancho dois", angle: "b" }, { piece_id: "P-w3", hook: "Gancho três", angle: "c" }];
+results.push(timeit("plan.content with winners (30 days, 3 winners)", () => planContent({ client: "bench", profile: benchProfile, start: "2026-10-08", days: 30, perWeek: 3, winners: winnersIn, now: benchNow }), 300));
+const repRoot = mkdtempSync(join(tmpdir(), "me-bench-report-"));
+const repPlan = planContent({ client: "bench", profile: benchProfile, start: "2026-10-01", days: 30, perWeek: 3, now: benchNow });
+for (const [i, slot] of repPlan.slots.entries()) appendSnapshot(repRoot, { piece_id: slot.piece_id, channel_id: slot.network, metric: "views", value: 100 + i, polled_at: "2026-10-30T00:00:00Z", source: "manual" });
+results.push(timeit(`report.monthly + pdf (${repPlan.slots.length} posts)`, () => markdownToPdf(buildMonthlyReport(repRoot, [repPlan], "bench", "2026-10").markdown), 300));
 // cost per format: credits ledger rows joined with the plan's formats
 const costPlan = planContent({ client: "bench", profile: benchProfile, start: "2026-10-01", days: 30, perWeek: 3, now: benchNow });
 const feeCredits = Array.from({ length: 200 }, (_, i) => ({ ts: "2026-10-01T00:00:00Z", client: "bench", piece_id: costPlan.slots[i % costPlan.slots.length].piece_id, provider: "realoficial", credits: 3, purpose: "cortes", approved_by: "bench" }));

@@ -13,7 +13,7 @@ import type { DashboardEvent } from "../../dashboard/events";
 import { EventStore } from "../../dashboard/store";
 import { readHbi, writeHbiAtomic } from "../../formats/binary";
 import { fromCredits, fromMetricSnapshots, fromStripeLog, fromTtsQuota, fromTtsUsage } from "./billing";
-import { fromApprovals, fromDubbing, fromJournal, fromManifests, fromMarketingEvents, fromReceipts, fromYoolBoard } from "./internal";
+import { fromApprovals, fromDubbing, fromJournal, fromManifests, fromMarketingEvents, fromReceipts, fromWinners, fromYoolBoard } from "./internal";
 import { fromProspectCsv, fromVideosDir } from "./videos";
 
 export interface SyncOptions {
@@ -75,6 +75,7 @@ export function syncDashboard(root: string, store: EventStore, options: SyncOpti
     ...fromReceipts(root),
     ...fromApprovals(root),
     ...fromDubbing(root),
+    ...fromWinners(root),
     ...fromManifests(root),
     ...fromMetricSnapshots(root),
     ...fromTtsQuota(root),

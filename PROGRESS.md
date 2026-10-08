@@ -345,3 +345,7 @@ Mix mensal de formatos, faixa de cortes de vídeo longo da Real Oficial (estimat
 ## Checkpoint 21 (2026-10-08 — issue #165 dubbing adapter)
 
 Interface `Dubbing` com estimativa que nunca gasta, `dub()` que falha fechado sem a aprovação do Wesley, recibo com schema, matriz de idiomas por cliente e implementações dry-run e Real Oficial (ferramentas oficiais em vez do navegador provisório). Gate completo verde (unit 361, integration 67, regression 22, e2e 295). BLOQUEADO-EXTERNO: o piloto em 1 idioma precisa de sessão ao vivo da Real Oficial e do consentimento de voz dado no app.
+
+## Checkpoint 22 (2026-10-08 — issue #166 metrics loop)
+
+Fontes de métricas somente leitura, snapshots ligados ao recibo, vencedores do mês, plano do mês seguinte com variações dos vencedores e relatório mensal em markdown e PDF sem números inventados. Gate completo verde (unit 361, integration 67, regression 22, e2e 295, cobertura 88,42% das linhas). Ao vivo depende de credenciais por cliente e de uma sessão MCP da Real Oficial; o piloto com posts reais com recibo fica para quando houver publicação ao vivo.

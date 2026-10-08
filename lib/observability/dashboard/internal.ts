@@ -14,6 +14,7 @@ import { makeEvent, type DashboardEvent, type MarketingKind } from "../../dashbo
 import { readHbi } from "../../formats/binary";
 import { readJournal } from "../../loop/journal";
 import { eventsPath, type MarketingEvent } from "../events";
+import { listWinners } from "../../analytics/winners";
 import { listDubReceipts } from "../../dubbing/dubbing";
 import { listReceipts } from "../../publish/publisher";
 import { readBoard } from "../../yool/board";
@@ -27,6 +28,7 @@ const SRC = {
   receipts: "marketing-publish-receipt/v1",
   approvals: "approval/v1",
   dubbing: "dubbing-receipt/v1",
+  winners: "winners-ledger",
   manifests: "marketing-manifest/v1",
 };
 
@@ -111,6 +113,13 @@ export function fromReceipts(root: string): DashboardEvent[] {
     }
   }
   return out;
+}
+
+/** Winners the metrics loop marked: the post that earned the next month's variations. */
+export function fromWinners(root: string): DashboardEvent[] {
+  return listWinners(root).map((w) =>
+    makeEvent({ source: SRC.winners, key: `${w.client}|${w.month}|${w.piece_id}`, ts: w.marked_at, kind: "winner_marked", client: w.client, piece_id: w.piece_id, network: w.network, data: { month: w.month, metric: "views", value: w.views, format: w.format, hook: w.hook } }),
+  );
 }
 
 /** A dubbing receipt is the final state of one request: it opens and (when it ended) closes the dubbing. */

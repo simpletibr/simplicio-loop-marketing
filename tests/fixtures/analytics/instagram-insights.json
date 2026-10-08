@@ -1,0 +1,1 @@
+{ "data": [ { "name": "views", "period": "lifetime", "values": [ { "value": 8800 } ] }, { "name": "likes", "values": [ { "value": 640 } ] }, { "name": "comments", "values": [ { "value": 31 } ] }, { "name": "saved", "total_value": { "value": 77 } } ] }

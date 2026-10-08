@@ -1,71 +1,42 @@
-export type MetricsWindow = "24h" | "48h" | "7d";
+import { defaultFetcher, pick, type Fetcher, type PostMetrics } from "./post-metrics";
 
-export interface MetricsResult {
-  reach: number;
-  engagement: number;
-  saves: number;
-  profile_visits: number;
-  window: string;
+interface VideoList {
+  data?: { videos?: Array<{ id?: string; view_count?: unknown; like_count?: unknown; comment_count?: unknown; share_count?: unknown }>; cursor?: number; has_more?: boolean };
+  error?: { code?: string };
 }
 
-function isDryRun(): boolean {
-  const v = process.env.DRY_RUN;
-  return v === undefined || v === "" || v === "true";
-}
+const MAX_PAGES = 10;
 
-function seedFromId(piece_id: string): number {
-  let sum = 0;
-  for (let i = 0; i < piece_id.length; i++) {
-    sum += piece_id.charCodeAt(i);
-  }
-  return sum;
-}
-
-function windowMultiplier(window: MetricsWindow): number {
-  if (window === "24h") return 1;
-  if (window === "48h") return 2;
-  return 7;
-}
-
-export async function fetchMetrics(
-  piece_id: string,
-  window: MetricsWindow,
-): Promise<MetricsResult> {
-  if (isDryRun()) {
-    const seed = seedFromId(piece_id);
-    const mult = windowMultiplier(window);
-    return {
-      reach: ((seed * 313) % 120000) * mult,
-      engagement: ((seed * 89) % 9000) * mult,
-      saves: ((seed * 31) % 1500) * mult,
-      profile_visits: ((seed * 47) % 2200) * mult,
-      window,
-    };
-  }
-  const token = process.env.TIKTOK_ACCESS_TOKEN;
-  if (!token) {
-    throw new Error("tiktok: TIKTOK_ACCESS_TOKEN required");
-  }
-  const res = await fetch(
-    `https://open.tiktokapis.com/v2/research/video/query/?fields=video_views,likes,shares,comments`,
-    {
+/**
+ * TikTok Display API `video.list` with the account owner's token (scope
+ * `video.list`), read-only. The Research API is not used: it is not available
+ * for a client's own account. Pages are followed until every wanted id is found.
+ */
+export async function fetchTiktokVideos(videoIds: string[], token: string, fetcher: Fetcher = defaultFetcher): Promise<Map<string, PostMetrics>> {
+  if (!token) throw new Error("tiktok: the account owner's token is required");
+  const wanted = new Set(videoIds);
+  const out = new Map<string, PostMetrics>();
+  let cursor = 0;
+  for (let page = 0; page < MAX_PAGES && out.size < wanted.size; page++) {
+    const res = await fetcher("https://open.tiktokapis.com/v2/video/list/?fields=id,view_count,like_count,comment_count,share_count", {
       method: "POST",
       headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
-      body: JSON.stringify({ filters: { video_ids: [piece_id] } }),
-    },
-  );
-  if (!res.ok) {
-    throw new Error(`tiktok: HTTP ${res.status}: ${await res.text()}`);
+      body: JSON.stringify({ max_count: 20, cursor }),
+    });
+    if (!res.ok) throw new Error(`tiktok: HTTP ${res.status}`);
+    const body = (await res.json()) as VideoList;
+    if (body.error?.code && body.error.code !== "ok") throw new Error(`tiktok: ${body.error.code}`);
+    for (const v of body.data?.videos ?? []) {
+      if (!v.id || !wanted.has(v.id)) continue;
+      const m: PostMetrics = {};
+      pick(m, "views", v.view_count);
+      pick(m, "likes", v.like_count);
+      pick(m, "comments", v.comment_count);
+      pick(m, "shares", v.share_count);
+      out.set(v.id, m);
+    }
+    if (!body.data?.has_more || typeof body.data.cursor !== "number") break;
+    cursor = body.data.cursor;
   }
-  const data = (await res.json()) as {
-    data?: { videos?: Array<{ video_views?: number; likes?: number; shares?: number }> };
-  };
-  const v = data.data?.videos?.[0] ?? {};
-  return {
-    reach: v.video_views ?? 0,
-    engagement: (v.likes ?? 0) + (v.shares ?? 0),
-    saves: 0,
-    profile_visits: 0,
-    window,
-  };
+  return out;
 }

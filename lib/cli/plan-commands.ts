@@ -6,6 +6,7 @@ import { requestApprovals, renderBatch, scheduleApproved, planStatus } from "../
 import { DEFAULT_MIX, frequencyViolations, loadPlan, planContent, savePlan, timezoneForCountry, type ContentPlan, type Mix } from "../plan/content-plan";
 import { FORMATS, type Format } from "../plan/formats";
 import { statusCounts } from "../plan/calendar";
+import { listWinners } from "../analytics/winners";
 
 function flag(argv: string[], name: string): string | undefined {
   const i = argv.indexOf(name);
@@ -21,6 +22,15 @@ function parseMix(raw: string | undefined): Mix {
     mix[key as Format] = Number(value);
   }
   return mix;
+}
+
+/** `--winners YYYY-MM`: the winners recorded for that month (`metrics winners`); none recorded is an error, never a silent plain plan. */
+function winnersOf(root: string, client: string, month: string | undefined) {
+  if (!month) return undefined;
+  if (!/^\d{4}-\d{2}$/.test(month)) throw new Error("campaign: --winners expects a month as YYYY-MM");
+  const winners = listWinners(root, { client, month });
+  if (winners.length === 0) throw new Error(`campaign: no winners recorded for ${client} in ${month}; run \`marketing-engine metrics winners --client ${client} --month ${month}\``);
+  return winners;
 }
 
 function localDate(now: Date, tz: string): string {
@@ -74,6 +84,7 @@ export async function planCommand(argv: string[], root: string): Promise<boolean
     networks,
     perWeek: flag(argv, "--per-week") ? Number(flag(argv, "--per-week")) : undefined,
     mix: parseMix(flag(argv, "--mix")),
+    winners: winnersOf(root, client, flag(argv, "--winners")),
     now,
   });
   const violations = frequencyViolations(plan);
@@ -81,6 +92,6 @@ export async function planCommand(argv: string[], root: string): Promise<boolean
   const path = savePlan(root, plan);
   emitEvent(root, { kind: "campaign_planned", phase: "campaign", client, data: { plan_id: plan.plan_id, slots: plan.slots.length } });
   const views = planStatus(root, plan);
-  out({ plan_id: plan.plan_id, path, timezone: plan.timezone, slots: plan.slots.length, in_window: plan.slots.filter((s) => s.window === "in_window").length, next_cycle: plan.slots.filter((s) => s.window === "next_cycle").length, status: statusCounts(views) });
+  out({ plan_id: plan.plan_id, path, timezone: plan.timezone, slots: plan.slots.length, in_window: plan.slots.filter((s) => s.window === "in_window").length, next_cycle: plan.slots.filter((s) => s.window === "next_cycle").length, variations_of_winners: plan.slots.filter((s) => s.variant_of).length, status: statusCounts(views) });
   return true;
 }

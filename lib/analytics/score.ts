@@ -70,6 +70,8 @@ export interface MetricSnapshot {
   value: number;
   polled_at: string;
   source?: "api" | "manual" | "browser-evidence";
+  /** The publish receipt of the post the metric belongs to. */
+  receipt_id?: string;
 }
 
 export function snapshotsPath(root: string): string {

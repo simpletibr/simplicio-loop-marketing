@@ -47,7 +47,7 @@ Hierarchy: `client -> campaign_id -> piece_id -> network`. The stored form (`dat
 | `publish_failed` | publish receipt ledger | `failure_class`, `publisher`, `publish_at` |
 | `dubbing_requested`, `dubbing_finished` | dubbing receipts (`data/dubbing.hbp`, issue #165) | `language`, `route`, `ai_generated_voice`, `verdict`, `failure_class?` |
 | `metrics_snapshot` | `data/analytics-snapshots.jsonl` | `metric`, `value`, `source` |
-| `winner_marked` | yool `winner.promote` (done) | |
+| `winner_marked` | yool `winner.promote` (done), winners ledger (`data/winners.hbp`, issue #166) | `month`, `metric`, `value`, `format`, `hook` |
 | `credit_spent` | `data/credits.jsonl` | `provider`, `credits`, `purpose`, `approved_by` (rows without it are dropped and counted) |
 | `tts_quota` | `tts-bloqueado-ate.txt`, `data/tts-usage.jsonl` | `blocked_until`, `requests`, `limit`, `exhausted` |
 | `payment_received` | verified Stripe webhooks (JSONL), `venda.json` | `amount`, `currency`, `processor`, `amount_brl?` |

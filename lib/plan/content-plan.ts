@@ -156,6 +156,19 @@ export function assignFormats(count: number, mix: Mix): Format[] {
   return out;
 }
 
+/** A winning post of the previous month, as much as the planner needs to vary it. */
+export interface WinnerRef {
+  piece_id: string;
+  hook: string;
+  angle: string;
+}
+
+/** Variations of a winner rotate through these formats: the same idea, a new opening, length or shape. */
+export const VARIATION_FORMATS: readonly Format[] = ["hook_variant", "cutdown", "slideshow"];
+
+/** Share of the slots given to variations of winners when there are winners. */
+export const DEFAULT_WINNER_SHARE = 0.4;
+
 export interface PlanInput {
   client: string;
   profile: BrandProfile;
@@ -167,7 +180,26 @@ export interface PlanInput {
   /** Posts per week on each network. */
   perWeek?: number;
   mix?: Mix;
+  /** Winners of the previous month: part of the slots become variations of them. */
+  winners?: WinnerRef[];
+  winnerShare?: number;
   now?: Date;
+}
+
+/** Spreads `share` of the slots evenly over the month and turns each into a variation of a winner, round-robin. */
+function applyVariations(slots: PlanSlot[], winners: WinnerRef[], share: number): void {
+  const k = Math.min(slots.length, Math.round(slots.length * share));
+  for (let j = 0; j < k; j++) {
+    const slot = slots[Math.floor((j * slots.length) / k)] as PlanSlot;
+    const winner = winners[j % winners.length] as WinnerRef;
+    const format = VARIATION_FORMATS[Math.floor(j / winners.length) % VARIATION_FORMATS.length] as Format;
+    slot.format = format;
+    slot.route = routeForFormat(format);
+    slot.angle = winner.angle;
+    slot.hook = winner.hook;
+    slot.caption = `${winner.hook}\n${winner.angle}`;
+    slot.variant_of = winner.piece_id;
+  }
 }
 
 function copyFor(profile: BrandProfile, index: number): { angle: string; hook: string; caption: string } {
@@ -230,6 +262,9 @@ export function planContent(input: PlanInput): ContentPlan {
       window: at.getTime() <= horizon ? "in_window" : "next_cycle",
     };
   });
+  const share = input.winnerShare ?? DEFAULT_WINNER_SHARE;
+  if (!(share >= 0 && share <= 1)) throw new Error("plan: winnerShare must be between 0 and 1");
+  if (input.winners?.length) applyVariations(slots, input.winners, share);
   const plan: ContentPlan = {
     schema: PLAN_SCHEMA,
     plan_id: `${input.client}-${input.start}-${input.days}d`,
