@@ -48,6 +48,7 @@ main:focus{outline:none}
 .kpi .value{font-size:1.9rem;font-weight:700;line-height:1.2}
 .kpi .delta{font-size:.8rem;color:var(--muted)}
 .kpi .detail{font-size:.8rem;color:var(--muted)}
+.cards{grid-template-columns:repeat(auto-fill,minmax(340px,1fr));align-items:start}
 .two{grid-template-columns:minmax(0,2fr) minmax(0,1fr);align-items:start}
 @media (max-width:900px){.two{grid-template-columns:1fr}}
 .feed{list-style:none;margin:0;padding:0;max-height:480px;overflow:auto}
@@ -99,6 +100,8 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
 #palette-results li[aria-selected=true]{background:var(--info-bg)}
 .error{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad);border-radius:var(--radius);padding:12px}
 .muted{color:var(--muted)}
+.mt{margin-top:var(--gap)}
+.chart{color:var(--accent);display:block;max-width:100%;height:auto}
 body[data-present="1"] .top::after{content:"Modo apresentação: nomes e valores por cliente ocultos";color:var(--warn);font-size:.8rem;width:100%}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 @media (max-width:640px){.top{padding:8px}.filters{flex-wrap:wrap}.kpis{grid-template-columns:1fr 1fr}}

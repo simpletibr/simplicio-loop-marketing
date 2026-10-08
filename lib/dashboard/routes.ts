@@ -40,11 +40,12 @@ import { approvalsRoute } from "./views/approvals";
 import { calendarRoute } from "./views/calendar";
 import { cockpitRoute } from "./views/cockpit";
 import { funnelRoute } from "./views/funnel";
+import { performanceRoute } from "./views/performance";
 import { pipelineRoute } from "./views/pipeline";
 import { creditsRoute } from "./views/credits";
 import { qualityRoute } from "./views/quality";
 import { statusRoute } from "./views/status";
 
 export function buildViews(): ViewRoute[] {
-  return [cockpitRoute, pipelineRoute, calendarRoute, statusRoute, qualityRoute, creditsRoute, funnelRoute, approvalsRoute, alertsRoute];
+  return [cockpitRoute, pipelineRoute, calendarRoute, statusRoute, qualityRoute, creditsRoute, funnelRoute, performanceRoute, approvalsRoute, alertsRoute];
 }

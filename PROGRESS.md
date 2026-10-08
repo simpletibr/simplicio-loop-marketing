@@ -369,3 +369,7 @@ Fila de aprovações (cliente e Wesley) com SLA por cor, somente leitura, e cent
 ## Checkpoint 27 (2026-10-08 — issue #181 funnel and revenue)
 
 Funil por país e lote, receita por processador na moeda original, assinaturas, churn, mínimo de 3 meses e LTV por cliente, tudo somente leitura; fixture de 200 prospects, 4 vendas e 2 assinaturas confere com o cálculo de referência. Gate completo verde (unit 361, integration 110, regression 22, e2e 307, cobertura 89,08% das linhas). PARTIAL: sem leitor do webhook da AbacatePay; `frontend-design` indisponível.
+
+## Checkpoint 28 (2026-10-08 — issue #183 performance, winners and double down)
+
+Ranking por métrica, vencedores do mês 1 ligados às variações do mês 2, comparação por formato, gancho e idioma, e crescimento por cliente; métrica ausente nunca vira zero. Gate completo verde (unit 361, integration 115, regression 22, e2e 309, cobertura 89,18% das linhas). PARTIAL: retenção e miniatura sem fonte; `frontend-design` indisponível.

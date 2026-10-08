@@ -87,3 +87,14 @@ A step counts everyone who got that far: collected, preview (a preview render, o
 Money keeps its original currency; reais are summed only when every payment carries `amount_brl` (else `brl: null` and `brl_missing`). A payment is recurring when its event type is `invoice.paid`, one-off otherwise. MRR sums the active subscriptions; churn is the cancellations of the last 30 days over (active + cancellations); the minimum is 3 months from the first active event (`minimum_until`, `minimum_met`). A client is `entregue` when `venda.json` says so or a final render finished after the first payment, `pago` before that.
 
 AbacatePay sales arrive through `venda.json` (processor `abacatepay`); there is no reader for its webhook yet because its payload is not confirmed. Not billing: nothing here creates a charge, a subscription or a refund.
+
+## Performance, winners and double down (issue #183)
+
+`GET /api/performance` is read-only (filters `client`, `network`, `metric` = `views|likes|comments|shares|saves`, `days` for the growth curve). It reads the `metrics_snapshot` events of the metrics loop (issue #166), the winners ledger (`data/winners.hbp`) and the content plans.
+
+- Ranking: the latest reading of each metric of each post, ranked by the chosen metric. A metric the source did not report is `null` ("sem dado"), never zero; a post without the chosen metric comes last and has no rank. Retention has no source and is listed in `unavailable_metrics`.
+- Winners: each winner of the ledger with the slots of the plans that vary it (`variant_of`), their month, format, production stage (`planned` until an event exists) and views (`null` until measured).
+- Comparison by format, by hook (the opening line, first two seconds) and by original or dubbed language (a piece with a finished dubbing receipt counts as dubbed): posts, measured posts, mean, median and total of the chosen metric over the measured posts only; a group with none has no mean.
+- Growth per client: the sum of each post's latest views as of each day; a day with no reading is `null` (a gap), never zero.
+- Previews load on demand: only the first 12 ranked posts that have a preview file show one, and with `preload="metadata"`. There is no thumbnail (still frame) source.
+
