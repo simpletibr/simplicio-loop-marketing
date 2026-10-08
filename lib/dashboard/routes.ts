@@ -6,12 +6,26 @@
 import type { SyncOptions } from "../observability/dashboard";
 import type { EventStore } from "./store";
 
+export interface DashboardAlert {
+  key: string;
+  rule: string;
+  severity: "info" | "warn" | "error";
+  client?: string;
+  piece_id?: string;
+  message: string;
+  since: string;
+}
+
 export interface ViewContext {
   root: string;
   store: EventStore;
   sources: Required<SyncOptions>;
   now: Date;
   query: URLSearchParams;
+  /** Active alerts, for the views that show client health. */
+  alerts: () => DashboardAlert[];
+  /** Read-only Real Oficial window, present only when the operator enabled it. */
+  ro?: import("./realoficial").ReadOnlyRo;
 }
 
 export interface ViewRoute {
@@ -19,6 +33,10 @@ export interface ViewRoute {
   handle(ctx: ViewContext): Promise<unknown> | unknown;
 }
 
+import { calendarRoute } from "./views/calendar";
+import { cockpitRoute } from "./views/cockpit";
+import { pipelineRoute } from "./views/pipeline";
+
 export function buildViews(): ViewRoute[] {
-  return [];
+  return [cockpitRoute, pipelineRoute, calendarRoute];
 }

@@ -4,7 +4,7 @@
  * reads; nothing here can render, schedule, approve or spend.
  */
 
-import { existsSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { join, resolve } from "node:path";
 import { listDecisions, listRequests } from "../approval/store";
 import { engineRoot } from "../clients/paths";
@@ -15,6 +15,7 @@ import { readBrandProfile, type BrandProfile } from "../profile/brand-profile";
 import { listReceipts } from "../publish/publisher";
 import type { EventStore, StoredEvent } from "./store";
 import { mediaCandidate, pieceOutputDir, safeFile, allowedRoots } from "./media";
+import { scrubPii } from "./events";
 
 export interface ClientSummary {
   slug: string;
@@ -123,6 +124,23 @@ export function campaignDetail(root: string, store: EventStore, planId: string):
   };
 }
 
+const ARTIFACTS: Array<[string, string]> = [["script", "script.md"], ["captions", "captions.json"], ["contract", "contract.yaml"], ["timing", "timing.lock.json"], ["final_command", "FINAL-COMANDO.md"], ["compliance", "compliance.json"], ["qa", "qa-tech-specs.json"]];
+
+/** Text artifacts of a piece for the detail drawer: read-only, capped, scrubbed of contact data. */
+function textArtifacts(dirs: string[]): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [name, file] of ARTIFACTS) {
+    for (const dir of dirs) {
+      const path = join(dir, file);
+      if (existsSync(path)) {
+        out[name] = scrubPii(readFileSync(path, "utf8").slice(0, 20_000));
+        break;
+      }
+    }
+  }
+  return out;
+}
+
 export function pieceDetail(root: string, store: EventStore, videosDir: string, pieceId: string) {
   const events = store.query({ piece_id: pieceId });
   if (events.length === 0 && !pieceOutputDir(root, pieceId)) return null;
@@ -150,6 +168,7 @@ export function pieceDetail(root: string, store: EventStore, videosDir: string, 
     approvals: listDecisions(root).filter((d) => d.piece_id === pieceId).map((d) => ({ decision: d.decision, decided_at: d.decided_at, decided_by_role: d.decided_by.startsWith("client:") ? "client" : "operator", media_sha256: d.media_sha256, note: d.note })),
     approval_requests: listRequests(root).filter((r) => r.piece_id === pieceId).map((r) => ({ request_id: r.request_id, media_sha256: r.media_sha256, month: r.month, created_at: r.created_at })),
     media: { preview: has("preview"), final: has("final") },
+    artifacts: textArtifacts([...(dir ? [dir] : []), join(videosDir, pieceId)]),
   };
 }
 

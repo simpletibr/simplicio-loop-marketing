@@ -26,7 +26,9 @@ import { allowedRoots, contentTypeOf, mediaCandidate, parseRange, safeFile, type
 import { campaignDetail, clientDetail, listClients, pieceDetail } from "./queries";
 import { EventStore, type StoredEvent } from "./store";
 import { sourceSignature } from "./watch";
-import { buildViews, type ViewRoute } from "./routes";
+import { buildViews, type DashboardAlert, type ViewRoute } from "./routes";
+import type { ReadOnlyRo } from "./realoficial";
+import { aliasMap, maskTree } from "./views/common";
 
 const UI_DIR = resolve(fileURLToPath(new URL(".", import.meta.url)), "ui");
 const UI_TYPES: Record<string, string> = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml" };
@@ -46,6 +48,10 @@ export interface DashboardOptions {
   now?: () => Date;
   /** Extra read-only view routes (calendar, credits, ...). */
   views?: ViewRoute[];
+  /** Read-only Real Oficial window; absent unless the operator enabled it and supplied a transport. */
+  ro?: ReadOnlyRo;
+  /** Active alerts for the views that show health. */
+  alerts?: () => DashboardAlert[];
 }
 
 export interface DashboardServer {
@@ -114,17 +120,24 @@ export async function startDashboard(opts: DashboardOptions): Promise<DashboardS
 
   const onEvent = (event: StoredEvent): void => {
     for (const res of clients) {
-      const filter = (res as ServerResponse & { filter?: { client?: string; campaign?: string } }).filter;
-      if (filter?.client && event.client !== filter.client) continue;
-      if (filter?.campaign && event.campaign_id !== filter.campaign) continue;
+      const conn = res as ServerResponse & { filter?: { client?: string; campaign?: string }; present?: boolean };
+      if (conn.filter?.client && event.client !== conn.filter.client) continue;
+      if (conn.filter?.campaign && event.campaign_id !== conn.filter.campaign) continue;
       if (res.writableLength > MAX_BUFFERED) {
         res.destroy();
         continue;
       }
-      res.write(`id: ${event.seq}\nevent: marketing\ndata: ${JSON.stringify(event)}\n\n`);
+      res.write(`id: ${event.seq}\nevent: marketing\ndata: ${JSON.stringify(present(event, conn.present === true))}\n\n`);
     }
   };
   store.bus.on("event", onEvent);
+
+  /** Presentation mode (?present=1): client slugs and names become stable aliases before anything leaves the server. */
+  const present = <T>(data: T, on: boolean): T => {
+    if (!on) return data;
+    const known = listClients(root, store);
+    return maskTree(data, aliasMap(known.map((c) => c.slug)), new Map(known.filter((c) => c.name).map((c) => [c.name as string, `Cliente ${known.findIndex((k) => k.slug === c.slug) + 1}`])));
+  };
 
   const hostOk = (req: IncomingMessage): boolean => {
     const host = req.headers.host;
@@ -151,13 +164,14 @@ export async function startDashboard(opts: DashboardOptions): Promise<DashboardS
       const after = Number(url.searchParams.get("after") ?? 0) || 0;
       const limit = Math.min(Number(url.searchParams.get("limit") ?? 200) || 200, MAX_REPLAY);
       const events = store.query({ afterSeq: after, client, campaign_id: campaign, limit });
-      return sendJson(res, 200, { events, last_seq: store.lastSeq });
+      return sendJson(res, 200, present({ events, last_seq: store.lastSeq }, url.searchParams.get("present") === "1"));
     }
     res.writeHead(200, baseHeaders({ "content-type": "text/event-stream; charset=utf-8", connection: "keep-alive", "x-accel-buffering": "no" }));
-    (res as ServerResponse & { filter?: object }).filter = { client, campaign };
+    const masked = url.searchParams.get("present") === "1";
+    Object.assign(res, { filter: { client, campaign }, present: masked });
     res.write(`retry: 2000\n: connected seq=${store.lastSeq}\n\n`);
     for (const event of store.query({ afterSeq: lastId, client, campaign_id: campaign, limit: MAX_REPLAY })) {
-      res.write(`id: ${event.seq}\nevent: marketing\ndata: ${JSON.stringify(event)}\n\n`);
+      res.write(`id: ${event.seq}\nevent: marketing\ndata: ${JSON.stringify(present(event, masked))}\n\n`);
     }
     clients.add(res);
     req.on("close", () => clients.delete(res));
@@ -208,33 +222,35 @@ export async function startDashboard(opts: DashboardOptions): Promise<DashboardS
           }
           if (path === "/" || path === "/index.html") return serveStatic(res, "index.html", head);
           if (path === "/app.js" || path === "/style.css") return serveStatic(res, path.slice(1), head);
+          if (/^\/ui\/[a-z0-9-]{1,40}\.js$/.test(path)) return serveStatic(res, path.slice(4), head);
           return sendError(res, 404, "not found");
         }
         if (!authed) return sendError(res, 401, "missing or invalid session token");
 
+        const masked = url.searchParams.get("present") === "1";
         if (path === "/api/health") {
           return sendJson(res, 200, { ok: true, events: store.size, last_seq: store.lastSeq, sse_clients: clients.size, time: (opts.now ?? (() => new Date()))().toISOString() }, head);
         }
         if (path === "/api/events") return serveEvents(req, res, url);
-        if (path === "/api/clients") return sendJson(res, 200, { clients: listClients(root, store, opts.now?.()) }, head);
+        if (path === "/api/clients") return sendJson(res, 200, present({ clients: listClients(root, store, opts.now?.()) }, masked), head);
         let m: RegExpExecArray | null;
         if ((m = /^\/api\/clients\/([a-z0-9-]{1,64})$/.exec(path))) {
           const detail = clientDetail(root, store, m[1] as string);
-          return detail ? sendJson(res, 200, detail, head) : sendError(res, 404, "unknown client");
+          return detail ? sendJson(res, 200, present(detail, masked), head) : sendError(res, 404, "unknown client");
         }
         if ((m = /^\/api\/campaigns\/([A-Za-z0-9._-]{1,160})$/.exec(path))) {
           const detail = campaignDetail(root, store, m[1] as string);
-          return detail ? sendJson(res, 200, detail, head) : sendError(res, 404, "unknown campaign");
+          return detail ? sendJson(res, 200, present(detail, masked), head) : sendError(res, 404, "unknown campaign");
         }
         if ((m = /^\/api\/pieces\/([A-Za-z0-9._-]{1,160})$/.exec(path))) {
           const detail = pieceDetail(root, store, sources.videosDir, m[1] as string);
-          return detail ? sendJson(res, 200, detail, head) : sendError(res, 404, "unknown piece");
+          return detail ? sendJson(res, 200, present(detail, masked), head) : sendError(res, 404, "unknown piece");
         }
         if ((m = /^\/api\/media\/([A-Za-z0-9._-]{1,160})\/([a-z]{1,16})$/.exec(path))) {
           return serveMedia(req, res, m[1] as string, m[2] as string, head);
         }
         const view = viewRoutes.get(path);
-        if (view) return sendJson(res, 200, await view.handle({ root, store, sources, now: (opts.now ?? (() => new Date()))(), query: url.searchParams }), head);
+        if (view) return sendJson(res, 200, present(await view.handle({ root, store, sources, now: (opts.now ?? (() => new Date()))(), query: url.searchParams, alerts: opts.alerts ?? (() => []), ro: opts.ro }), masked), head);
         return sendError(res, 404, "not found");
       } catch (error) {
         sendError(res, 500, error instanceof Error ? error.message.slice(0, 200) : "internal error");

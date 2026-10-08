@@ -328,3 +328,12 @@ Restored the issue #93 extension conformance payload in `buildDoctorReport`
 without replacing the existing release-train payload. The merged, typed doctor
 contract is covered by the focused doctor and extension Playwright specs;
 typecheck and lint are clean.
+
+## Checkpoint 19 (2026-10-08 — issues #175, #176, #177 dashboard views)
+
+Cockpit, pipeline and calendar views of the distribution dashboard, with the
+framework-free UI, presentation mode masked on the server and the per-piece
+stage model. Full gate green on the committed tree (unit 340, integration 59,
+regression 22, e2e 287, coverage 88.5% statements). PARTIAL: the
+`frontend-design` skill and the shared `sl-*` kit were not available. Evidence:
+`docs/evidence/issues-175-176-177-dashboard-views.md`.
