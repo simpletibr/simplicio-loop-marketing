@@ -241,7 +241,7 @@ test("parseRange covers open, suffix and unsatisfiable ranges", () => {
 });
 
 test("the panel can only call the read-only Real Oficial tools, and caches them", async () => {
-  assert.deepEqual([...RO_READ_ONLY_TOOLS], ["ro_whoami", "ro_list_projects", "ro_list_renders"]);
+  assert.deepEqual([...RO_READ_ONLY_TOOLS], ["ro_whoami", "ro_list_projects", "ro_list_renders", "ro_list_social_accounts"]);
   assert.equal(RO_SPENDING_TOOLS.filter((t) => (RO_READ_ONLY_TOOLS as readonly string[]).includes(t)).length, 0);
   const calls: string[] = [];
   let clock = 1_000;

@@ -349,3 +349,7 @@ Interface `Dubbing` com estimativa que nunca gasta, `dub()` que falha fechado se
 ## Checkpoint 22 (2026-10-08 — issue #166 metrics loop)
 
 Fontes de métricas somente leitura, snapshots ligados ao recibo, vencedores do mês, plano do mês seguinte com variações dos vencedores e relatório mensal em markdown e PDF sem números inventados. Gate completo verde (unit 361, integration 67, regression 22, e2e 295, cobertura 88,42% das linhas). Ao vivo depende de credenciais por cliente e de uma sessão MCP da Real Oficial; o piloto com posts reais com recibo fica para quando houver publicação ao vivo.
+
+## Checkpoint 23 (2026-10-08 — issue #178 status per network)
+
+Matriz cliente por rede, saúde do publicador da Real Oficial, capacidade de contas e recibos com motivo e próximo passo humano; nenhuma credencial exibida (teste). Gate completo verde (unit 361, integration 81, regression 22, e2e 300, cobertura 88,8% das linhas). PARTIAL: a skill `frontend-design` não estava disponível; o limite do plano (Lite) é suposição do texto da issue.

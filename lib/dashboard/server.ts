@@ -15,7 +15,7 @@
  * cheap source-signature poll that runs the adapters when something changed.
  */
 
-import { createReadStream, existsSync, readFileSync, statSync } from "node:fs";
+import { createReadStream, existsSync, readFileSync, realpathSync, statSync } from "node:fs";
 import { randomBytes, timingSafeEqual } from "node:crypto";
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from "node:http";
 import type { AddressInfo } from "node:net";
@@ -26,9 +26,12 @@ import { allowedRoots, contentTypeOf, mediaCandidate, parseRange, safeFile, type
 import { campaignDetail, clientDetail, listClients, pieceDetail } from "./queries";
 import { EventStore, type StoredEvent } from "./store";
 import { sourceSignature } from "./watch";
+import { engineRoot } from "../clients/paths";
+import { listReceipts } from "../publish/publisher";
 import { buildViews, type DashboardAlert, type ViewRoute } from "./routes";
 import type { ReadOnlyRo } from "./realoficial";
 import { aliasMap, maskTree } from "./views/common";
+import { receiptDetail } from "./views/status";
 
 const UI_DIR = resolve(fileURLToPath(new URL(".", import.meta.url)), "ui");
 const UI_TYPES: Record<string, string> = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml" };
@@ -199,6 +202,17 @@ export async function startDashboard(opts: DashboardOptions): Promise<DashboardS
     createReadStream(file, range ? { start: range.start, end: range.end } : undefined).pipe(res);
   }
 
+  /** The confirmation or failure screenshot of a receipt, from the evidence folder only. */
+  function serveEvidence(res: ServerResponse, receiptId: string, head: boolean): void {
+    const shot = listReceipts(root).find((r) => r.receipt_id === receiptId)?.evidence?.screenshot;
+    const dir = resolve(engineRoot(root), "data", "evidence");
+    const file = shot && existsSync(dir) ? safeFile(shot, [realpathSync(dir)]) : null;
+    if (!file) return sendError(res, 404, "no evidence");
+    res.writeHead(200, baseHeaders({ "content-type": contentTypeOf(file) as string, "content-length": String(statSync(file).size), "cache-control": "private, max-age=60" }));
+    if (head) return void res.end();
+    createReadStream(file).pipe(res);
+  }
+
   const server: Server = createServer((req, res) => {
     void (async () => {
       try {
@@ -249,6 +263,11 @@ export async function startDashboard(opts: DashboardOptions): Promise<DashboardS
         if ((m = /^\/api\/media\/([A-Za-z0-9._-]{1,160})\/([a-z]{1,16})$/.exec(path))) {
           return serveMedia(req, res, m[1] as string, m[2] as string, head);
         }
+        if ((m = /^\/api\/receipts\/([a-f0-9]{20})$/.exec(path))) {
+          const detail = receiptDetail({ root }, m[1] as string);
+          return detail ? sendJson(res, 200, present(detail, masked), head) : sendError(res, 404, "unknown receipt");
+        }
+        if ((m = /^\/api\/evidence\/([a-f0-9]{20})$/.exec(path))) return serveEvidence(res, m[1] as string, head);
         const view = viewRoutes.get(path);
         if (view) return sendJson(res, 200, present(await view.handle({ root, store, sources, now: (opts.now ?? (() => new Date()))(), query: url.searchParams, alerts: opts.alerts ?? (() => []), ro: opts.ro }), masked), head);
         return sendError(res, 404, "not found");

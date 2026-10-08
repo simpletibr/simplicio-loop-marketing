@@ -1,13 +1,13 @@
 /**
  * realoficial.ts — the dashboard's read-only window on Real Oficial.
  *
- * Only three tools may ever be called from the panel, and none of them spends
+ * Only four read tools may ever be called from the panel, and none of them spends
  * credits. Anything else, including the tools that create clips, render or
  * start a purchase, is refused here, before a transport is touched. Results
  * are cached so an open panel does not poll the account.
  */
 
-export const RO_READ_ONLY_TOOLS = ["ro_whoami", "ro_list_projects", "ro_list_renders"] as const;
+export const RO_READ_ONLY_TOOLS = ["ro_whoami", "ro_list_projects", "ro_list_renders", "ro_list_social_accounts"] as const;
 export type RoReadTool = (typeof RO_READ_ONLY_TOOLS)[number];
 
 /** Tools that spend credits or money. Listed so tests can prove the panel never reaches them. */

@@ -36,7 +36,8 @@ export interface ViewRoute {
 import { calendarRoute } from "./views/calendar";
 import { cockpitRoute } from "./views/cockpit";
 import { pipelineRoute } from "./views/pipeline";
+import { statusRoute } from "./views/status";
 
 export function buildViews(): ViewRoute[] {
-  return [cockpitRoute, pipelineRoute, calendarRoute];
+  return [cockpitRoute, pipelineRoute, calendarRoute, statusRoute];
 }
