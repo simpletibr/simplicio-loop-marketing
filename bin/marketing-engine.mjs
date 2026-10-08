@@ -34,6 +34,7 @@ Commands:
   reference   Ingest or transcribe an authorized reference
   dashboard   Local read-only panel of the distribution loop (--client --campaign --port --no-browser --stop --status --json --snapshot --present)
   clips       Cut a client's long video into its long_cut slots (clips --client <slug> --url <url> [--estimate] [--approved-by-wesley]); DRY_RUN-safe, live spend needs the owner's OK
+  dubbing     Language versions of a piece (dubbing estimate|dub|list|matrix --client <slug> ...); dub needs --approved-by-wesley
   calendar    Show the month of a client (calendar --client <slug> [--format table|markdown])
   approval    Client approval link: request | page | record | serve | adjustments
   profile     Build the brand-profile/v1 of a client from its URL (profile <url> --client <slug>)
@@ -762,6 +763,12 @@ function commandClips(args) {
   spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
 }
 
+function commandDubbing(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "dubbing.ts");
+  spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
+}
+
 function commandCalendar(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "calendar.ts");
@@ -909,6 +916,9 @@ function main() {
       return;
     case "clips":
       commandClips(args);
+      return;
+    case "dubbing":
+      commandDubbing(args);
       return;
     case "dashboard":
       commandDashboard(args);

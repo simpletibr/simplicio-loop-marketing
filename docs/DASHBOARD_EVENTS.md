@@ -45,7 +45,7 @@ Hierarchy: `client -> campaign_id -> piece_id -> network`. The stored form (`dat
 | `scheduled` | publish receipt ledger | `publish_at`, `publisher`, `receipt_id`, `dry_run` |
 | `published` | `publish_verified` event | |
 | `publish_failed` | publish receipt ledger | `failure_class`, `publisher`, `publish_at` |
-| `dubbing_requested`, `dubbing_finished` | dubbing receipts (issue #165) | `language`, `route` |
+| `dubbing_requested`, `dubbing_finished` | dubbing receipts (`data/dubbing.hbp`, issue #165) | `language`, `route`, `ai_generated_voice`, `verdict`, `failure_class?` |
 | `metrics_snapshot` | `data/analytics-snapshots.jsonl` | `metric`, `value`, `source` |
 | `winner_marked` | yool `winner.promote` (done) | |
 | `credit_spent` | `data/credits.jsonl` | `provider`, `credits`, `purpose`, `approved_by` (rows without it are dropped and counted) |

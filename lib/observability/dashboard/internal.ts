@@ -14,6 +14,7 @@ import { makeEvent, type DashboardEvent, type MarketingKind } from "../../dashbo
 import { readHbi } from "../../formats/binary";
 import { readJournal } from "../../loop/journal";
 import { eventsPath, type MarketingEvent } from "../events";
+import { listDubReceipts } from "../../dubbing/dubbing";
 import { listReceipts } from "../../publish/publisher";
 import { readBoard } from "../../yool/board";
 import { verifyRenderManifest } from "../../video/contract";
@@ -25,6 +26,7 @@ const SRC = {
   yool: "yool-board",
   receipts: "marketing-publish-receipt/v1",
   approvals: "approval/v1",
+  dubbing: "dubbing-receipt/v1",
   manifests: "marketing-manifest/v1",
 };
 
@@ -107,6 +109,19 @@ export function fromReceipts(root: string): DashboardEvent[] {
     } else if (r.verdict === "blocked" || r.verdict === "failed") {
       out.push(makeEvent({ ...common, kind: "publish_failed", severity: "warn", data: { failure_class: r.failure_class, publisher: r.publisher, receipt_id: r.receipt_id, publish_at: r.publish_at, dry_run: r.dry_run } }));
     }
+  }
+  return out;
+}
+
+/** A dubbing receipt is the final state of one request: it opens and (when it ended) closes the dubbing. */
+export function fromDubbing(root: string): DashboardEvent[] {
+  const out: DashboardEvent[] = [];
+  for (const r of listDubReceipts(root)) {
+    const common = { source: SRC.dubbing, ts: r.ts, client: r.client, piece_id: r.piece_id } as const;
+    const data = { language: r.language, route: r.route, receipt_id: r.receipt_id, dry_run: r.dry_run, ai_generated_voice: r.ai_generated_voice };
+    out.push(makeEvent({ ...common, key: `${r.receipt_id}|requested`, kind: "dubbing_requested", data }));
+    if (r.verdict === "dubbed" || r.verdict === "handoff") out.push(makeEvent({ ...common, key: `${r.receipt_id}|${r.verdict}|${r.ts}`, kind: "dubbing_finished", data: { ...data, verdict: r.verdict } }));
+    else if (r.verdict === "failed" || r.verdict === "blocked") out.push(makeEvent({ ...common, key: `${r.receipt_id}|${r.verdict}|${r.ts}`, kind: "dubbing_finished", severity: "warn", data: { ...data, verdict: r.verdict, failure_class: r.failure_class } }));
   }
   return out;
 }
