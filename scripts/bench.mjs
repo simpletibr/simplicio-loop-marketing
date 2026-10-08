@@ -27,6 +27,8 @@ import { createHash } from "node:crypto";
 import { recordDecision, requestApproval, verifyApproval } from "../lib/approval/store.ts";
 import { DryRunPublisher, scheduleVerified } from "../lib/publish/publisher.ts";
 import { planContent } from "../lib/plan/content-plan.ts";
+import { EventStore } from "../lib/dashboard/store.ts";
+import { makeEvent } from "../lib/dashboard/events.ts";
 import { buildBrandProfile, fixtureCollection } from "../lib/profile/brand-profile.ts";
 import { writeWatcherReport } from "../lib/gate/watcher-gate.ts";
 import { mkdirSync } from "node:fs";
@@ -110,6 +112,12 @@ results.push(timeit("publisher.schedule-idempotent-hit (23-receipt ledger)", () 
 
 const benchProfile = buildBrandProfile(fixtureCollection("https://bench.example"), { client: "bench", url: "https://bench.example", mode: "dry-run" });
 results.push(timeit("plan.content (30 days x 3 networks x 3/week)", () => planContent({ client: "bench", profile: benchProfile, start: "2026-10-08", days: 30, perWeek: 3, now: benchNow }), 300));
+
+const dashRoot = mkdtempSync(join(tmpdir(), "me-bench-dash-"));
+const dashStore = new EventStore(dashRoot);
+let dashBatch = 0;
+results.push(timeit("dashboard.ingest (50 new events per batch)", () => { dashBatch++; dashStore.ingest(Array.from({ length: 50 }, (_, i) => makeEvent({ source: "bench", key: `${dashBatch}-${i}`, ts: "2026-10-07T12:00:00Z", kind: "scheduled", client: "acme", piece_id: `P-${i}` }))); }, 40));
+results.push(timeit("dashboard.query (client filter over the store)", () => dashStore.query({ client: "acme", afterSeq: dashStore.lastSeq - 500 }), 2000));
 
 results.push(
   timeit(

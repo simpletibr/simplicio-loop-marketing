@@ -28,6 +28,7 @@ test("every shipped schema has an $id and loads into the registry", () => {
       "brand-profile/v1",
       "approval/v1",
       "content-plan/v1",
+      "simplicio.dashboard-event/v1",
     ]),
   );
 });

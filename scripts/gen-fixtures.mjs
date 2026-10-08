@@ -30,6 +30,7 @@ const { readHbi } = await import(join(ROOT, "lib/formats/binary.ts"));
 const { buildBrandProfile, fixtureCollection } = await import(join(ROOT, "lib/profile/brand-profile.ts"));
 const { requestApproval, recordDecision } = await import(join(ROOT, "lib/approval/store.ts"));
 const { planContent } = await import(join(ROOT, "lib/plan/content-plan.ts"));
+const { makeEvent } = await import(join(ROOT, "lib/dashboard/events.ts"));
 const { DryRunPublisher, scheduleVerified } = await import(join(ROOT, "lib/publish/publisher.ts"));
 const { writeWatcherReport } = await import(join(ROOT, "lib/gate/watcher-gate.ts"));
 
@@ -184,6 +185,13 @@ writeFixture(
     networks: ["tiktok", "ig_reels"],
     now: new Date("2026-10-07T12:00:00Z"),
   }),
+  host,
+);
+
+// --- simplicio.dashboard-event/v1: the envelope built by the real mapper ---
+writeFixture(
+  "dashboard-event.json",
+  makeEvent({ source: "marketing-publish-receipt/v1", key: "fixture", ts: EPOCH, kind: "scheduled", client: "fixture-client", campaign_id: "fixture-client-2026-10-08-30d", piece_id: "PIECE-fixture-001", network: "tiktok", data: { publish_at: EPOCH, publisher: "dry-run", dry_run: true } }),
   host,
 );
 

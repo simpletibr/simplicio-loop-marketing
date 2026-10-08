@@ -1,0 +1,17 @@
+{
+  "schema": "simplicio.dashboard-event/v1",
+  "event_id": "000000000000000000000000",
+  "ts": "1970-01-01T00:00:00.000Z",
+  "kind": "marketing.scheduled",
+  "source": "marketing-publish-receipt/v1",
+  "client": "fixture-client",
+  "campaign_id": "fixture-client-2026-10-08-30d",
+  "piece_id": "PIECE-fixture-001",
+  "network": "tiktok",
+  "severity": "info",
+  "data": {
+    "publish_at": "1970-01-01T00:00:00.000Z",
+    "publisher": "dry-run",
+    "dry_run": true
+  }
+}

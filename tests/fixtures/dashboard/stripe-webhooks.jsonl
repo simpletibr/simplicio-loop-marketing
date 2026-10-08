@@ -1,0 +1,5 @@
+{"id":"evt_1","type":"checkout.session.completed","created":1790000000,"data":{"object":{"amount_total":35600,"currency":"usd","payment_status":"paid","metadata":{"client":"wjr-pilot"}}}}
+{"id":"evt_2","type":"customer.subscription.created","created":1790000100,"data":{"object":{"status":"active","metadata":{"client":"wjr-pilot","plan":"pacote-4"},"items":{"data":[{"quantity":1,"price":{"id":"price_pacote4","unit_amount":35600,"currency":"usd","recurring":{"interval":"month"}}}]}}}}
+{"id":"evt_3","type":"invoice.paid","created":1790000200,"data":{"object":{"amount_paid":35600,"currency":"usd","subscription_details":{"metadata":{"client":"wjr-pilot"}}}}}
+{"id":"evt_4","type":"customer.subscription.deleted","created":1790000300,"data":{"object":{"status":"canceled","metadata":{"client":"wjr-pilot","plan":"pacote-4"},"items":{"data":[{"quantity":1,"price":{"id":"price_pacote4","unit_amount":35600,"currency":"usd","recurring":{"interval":"month"}}}]}}}}
+{"id":"evt_5","type":"charge.refunded","created":1790000400,"data":{"object":{}}}
