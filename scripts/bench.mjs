@@ -29,6 +29,8 @@ import { DryRunPublisher, scheduleVerified } from "../lib/publish/publisher.ts";
 import { planContent } from "../lib/plan/content-plan.ts";
 import { EventStore } from "../lib/dashboard/store.ts";
 import { makeEvent } from "../lib/dashboard/events.ts";
+import { sourceSignature } from "../lib/dashboard/watch.ts";
+import { syncDashboard } from "../lib/observability/dashboard/index.ts";
 import { buildBrandProfile, fixtureCollection } from "../lib/profile/brand-profile.ts";
 import { writeWatcherReport } from "../lib/gate/watcher-gate.ts";
 import { mkdirSync } from "node:fs";
@@ -118,6 +120,18 @@ const dashStore = new EventStore(dashRoot);
 let dashBatch = 0;
 results.push(timeit("dashboard.ingest (50 new events per batch)", () => { dashBatch++; dashStore.ingest(Array.from({ length: 50 }, (_, i) => makeEvent({ source: "bench", key: `${dashBatch}-${i}`, ts: "2026-10-07T12:00:00Z", kind: "scheduled", client: "acme", piece_id: `P-${i}` }))); }, 40));
 results.push(timeit("dashboard.query (client filter over the store)", () => dashStore.query({ client: "acme", afterSeq: dashStore.lastSeq - 500 }), 2000));
+
+// a realistic tree: 40 pieces with 5 small artifacts each, polled every 200 ms by the server
+const treeRoot = mkdtempSync(join(tmpdir(), "me-bench-tree-"));
+for (let i = 0; i < 40; i++) {
+  const dir = join(treeRoot, ".marketing-engine", "outputs", "acme", "2026-10-07", `P-${i}`);
+  mkdirSync(dir, { recursive: true });
+  for (const f of ["compliance.json", "qa-tech-specs.json", "captions.json", "script.md", "manifest.hbi"]) writeFileSync(join(dir, f), "{}");
+}
+results.push(timeit("dashboard.source-signature (40 pieces, 200 files)", () => sourceSignature(treeRoot), 300));
+const treeStore = new EventStore(treeRoot);
+syncDashboard(treeRoot, treeStore);
+results.push(timeit("dashboard.sync (nothing new, 40 pieces)", () => { if (syncDashboard(treeRoot, treeStore).added !== 0) throw new Error("bench sync not idempotent"); }, 30));
 
 results.push(
   timeit(
