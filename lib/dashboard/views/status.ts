@@ -143,7 +143,7 @@ export interface PublisherHealth {
   next_step: string | null;
 }
 
-function healthOf(receipts: ScheduleReceipt[], now: number): PublisherHealth {
+export function healthOf(receipts: ScheduleReceipt[], now: number): PublisherHealth {
   const mine = receipts.filter((r) => r.publisher === "realoficial-browser").sort((a, b) => a.ts.localeCompare(b.ts));
   const latest = mine.at(-1);
   const success = mine.filter((r) => r.verdict === "scheduled" || r.verdict === "cancelled").at(-1);

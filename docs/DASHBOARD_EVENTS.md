@@ -40,7 +40,7 @@ Hierarchy: `client -> campaign_id -> piece_id -> network`. The stored form (`dat
 | `qa_result` | factory `result.json`, piece `qa-tech-specs.json` | `passed`, `resolution`, `lufs`, `freeze_s`, `cuts`, `rules?` (rule ids of the tech-specs report) |
 | `compliance_result` | piece `compliance.json` | `pass`, `violations`, `rules?` (rule ids only, never the matched text) |
 | `watcher_gate` | watcher report | `passed`, `tag` |
-| `approval_requested` | approval log (queue `client`), yool `human.approval_required` (queue `operator`) | `queue`, `request_id`, `media_sha256` |
+| `approval_requested` | approval log (queue `client`), yool `human.approval_required` (queue `operator`) | `queue`, `request_id`, `media_sha256`; operator queue: `tuple_id`, `status`, `request` or `reason`, `credit_estimate` or `credits`, `impact` (from the tuple payload) |
 | `approval_decided` | approval log | `decision`, `decided_by_role`, `media_sha256`, `note` |
 | `scheduled` | publish receipt ledger | `publish_at`, `publisher`, `receipt_id`, `dry_run` |
 | `published` | `publish_verified` event | |
@@ -69,3 +69,11 @@ Documented from the roadmap, not from the factory's code (not readable from the 
 ```
 
 `<out>` is `SIMPLICIO_VIDEOS_OUT` (default `data/prospects`); the control spreadsheet export is `MARKETING_CONTROL_CSV` (default `data/controle-prospects.csv`, columns `slug,country,batch,status,updated_at`). The fixtures under `tests/fixtures/dashboard/` follow this layout and are synthetic reproductions: replacing them with captures of a real pilot prospect is pending.
+
+## Approval queue and alerts (issues #182 and #184)
+
+`GET /api/approvals` is read-only and has no decision control: deciding goes through `marketing-engine approval record` (an `approval/v1` record behind the action gate). The client queue is the approval log's requests with no decision for the same media hash, coloured by the time to the post (red under 24 h or late, yellow under 72 h, green after). The operator queue is the `human.approval_required` tuples whose status is not `done`, coloured by age. `MARKETING_APPROVAL_PAGE_URL` (optional) is the address where the month's approval page is published; without it the panel offers the command that generates the page, and never a token.
+
+`GET /api/alerts` evaluates the rules in `lib/dashboard/alerts.ts` as a pure function of the event stream, the receipts and the plans. An alert exists exactly while its condition holds (it clears by itself), its `key` is rule plus subject (no duplicates) and `since` is when the condition began. Rules: post not published 15 min after its time, publish failed (by type), Real Oficial session expired or asking login or a check, connected accounts near the plan limit, Real Oficial balance below the minimum, voice quota exhausted (with the time it returns), client approval due, piece stuck in a step, QA or compliance failing in a row, month with too few scheduled posts, payment received with no delivery started.
+
+Thresholds come from the environment: `MARKETING_ALERT_STUCK_HOURS` (48), `MARKETING_ALERT_MIN_SCHEDULED` (8), `MARKETING_ALERT_MIN_CREDITS` (50). Nothing is sent outside by default. The only outbound path is `MARKETING_DASHBOARD_ALERT_WEBHOOK` (an `http(s)` URL, unset by default): it receives `{ source, alerts }` with only the alerts that began since the last check, and the alerts already active when the panel starts are not repeated. Browser (desktop) notifications are opt-in in the Alertas section and live only in the browser.

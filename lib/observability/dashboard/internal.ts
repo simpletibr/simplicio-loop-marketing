@@ -100,7 +100,7 @@ export function fromYoolBoard(root: string): DashboardEvent[] {
         kind,
         piece_id: pieceId,
         severity: t.status === "blocked" ? "warn" : "info",
-        data: { tuple_class: t.class, status: t.status, ...(kind === "approval_requested" ? { queue: "operator" } : {}), ...(t.payload ?? {}) },
+        data: { tuple_class: t.class, status: t.status, ...(kind === "approval_requested" ? { queue: "operator" } : {}), ...(t.payload ?? {}), tuple_id: t.id },
       }),
     );
   }

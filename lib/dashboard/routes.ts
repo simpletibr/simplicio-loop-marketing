@@ -13,6 +13,8 @@ export interface DashboardAlert {
   client?: string;
   piece_id?: string;
   message: string;
+  /** What a human has to do about it. */
+  next_step?: string;
   since: string;
 }
 
@@ -33,6 +35,8 @@ export interface ViewRoute {
   handle(ctx: ViewContext): Promise<unknown> | unknown;
 }
 
+import { alertsRoute } from "./views/alerts";
+import { approvalsRoute } from "./views/approvals";
 import { calendarRoute } from "./views/calendar";
 import { cockpitRoute } from "./views/cockpit";
 import { pipelineRoute } from "./views/pipeline";
@@ -41,5 +45,5 @@ import { qualityRoute } from "./views/quality";
 import { statusRoute } from "./views/status";
 
 export function buildViews(): ViewRoute[] {
-  return [cockpitRoute, pipelineRoute, calendarRoute, statusRoute, qualityRoute, creditsRoute];
+  return [cockpitRoute, pipelineRoute, calendarRoute, statusRoute, qualityRoute, creditsRoute, approvalsRoute, alertsRoute];
 }

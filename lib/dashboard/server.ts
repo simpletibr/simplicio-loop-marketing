@@ -32,6 +32,8 @@ import { buildViews, type DashboardAlert, type ViewRoute } from "./routes";
 import type { ReadOnlyRo } from "./realoficial";
 import { aliasMap, maskTree } from "./views/common";
 import { receiptDetail } from "./views/status";
+import { currentAlerts } from "./alerts";
+import { postWebhook } from "../observability/failures";
 
 const UI_DIR = resolve(fileURLToPath(new URL(".", import.meta.url)), "ui");
 const UI_TYPES: Record<string, string> = { ".html": "text/html; charset=utf-8", ".js": "text/javascript; charset=utf-8", ".css": "text/css; charset=utf-8", ".svg": "image/svg+xml" };
@@ -64,6 +66,8 @@ export interface DashboardServer {
   store: EventStore;
   /** Runs the adapters now; returns how many events were new. */
   syncNow(): number;
+  /** Sends the alerts that began since the last call to the operator's webhook; does nothing unless the webhook is set. */
+  notifyAlerts(): void;
   close(): Promise<void>;
 }
 
@@ -109,12 +113,33 @@ export async function startDashboard(opts: DashboardOptions): Promise<DashboardS
     signature = sourceSignature(root, sources);
     return added;
   };
+  const nowFn = opts.now ?? (() => new Date());
+  const alertsNow = opts.alerts ?? ((): DashboardAlert[] => currentAlerts(root, store.all(), nowFn()));
+
+  // The one outbound path, off unless the operator sets the webhook: it carries only alerts that just began,
+  // and a restart does not repeat the ones already active.
+  const webhook = /^https?:\/\//.test(process.env.MARKETING_DASHBOARD_ALERT_WEBHOOK ?? "") ? (process.env.MARKETING_DASHBOARD_ALERT_WEBHOOK as string) : null;
+  let announced: Set<string> | null = null;
+  const notifyAlerts = (): void => {
+    if (!webhook) return;
+    const active = alertsNow();
+    const fresh = announced === null ? [] : active.filter((a) => !announced?.has(a.key));
+    announced = new Set(active.map((a) => a.key));
+    if (fresh.length > 0) void postWebhook(webhook, { source: "simplicio-marketing-dashboard", alerts: fresh });
+  };
+
   syncNow();
+  notifyAlerts();
   const timer = setInterval(() => {
     const next = sourceSignature(root, sources);
-    if (next !== signature) syncNow();
+    if (next !== signature) {
+      syncNow();
+      notifyAlerts();
+    }
   }, opts.pollMs ?? 200);
   timer.unref();
+  const alertTimer = setInterval(notifyAlerts, 60_000);
+  alertTimer.unref();
 
   const heartbeat = setInterval(() => {
     for (const res of clients) res.write(": ping\n\n");
@@ -269,7 +294,7 @@ export async function startDashboard(opts: DashboardOptions): Promise<DashboardS
         }
         if ((m = /^\/api\/evidence\/([a-f0-9]{20})$/.exec(path))) return serveEvidence(res, m[1] as string, head);
         const view = viewRoutes.get(path);
-        if (view) return sendJson(res, 200, present(await view.handle({ root, store, sources, now: (opts.now ?? (() => new Date()))(), query: url.searchParams, alerts: opts.alerts ?? (() => []), ro: opts.ro }), masked), head);
+        if (view) return sendJson(res, 200, present(await view.handle({ root, store, sources, now: (opts.now ?? (() => new Date()))(), query: url.searchParams, alerts: alertsNow, ro: opts.ro }), masked), head);
         return sendError(res, 404, "not found");
       } catch (error) {
         sendError(res, 500, error instanceof Error ? error.message.slice(0, 200) : "internal error");
@@ -289,9 +314,11 @@ export async function startDashboard(opts: DashboardOptions): Promise<DashboardS
     token,
     store,
     syncNow,
+    notifyAlerts,
     close: () =>
       new Promise<void>((done) => {
         clearInterval(timer);
+        clearInterval(alertTimer);
         clearInterval(heartbeat);
         store.bus.off("event", onEvent);
         for (const res of clients) res.destroy();

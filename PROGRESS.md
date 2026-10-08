@@ -361,3 +361,7 @@ Selos por peça, bloqueio por hash divergente, taxa de aprovação de primeira, 
 ## Checkpoint 25 (2026-10-08 — issue #180 credits and costs)
 
 Créditos e custos somente leitura, conferidos contra um cálculo de referência, com estimativas rotuladas e "sem dado" onde falta taxa, preço ou fonte. Gate completo verde (unit 361, integration 81, regression 22, e2e 300, cobertura 88,8% das linhas). PARTIAL: histórico de compras e tempo de máquina do render não têm fonte; `frontend-design` indisponível.
+
+## Checkpoint 26 (2026-10-08 — issues #182 approval queue and #184 distribution alerts)
+
+Fila de aprovações (cliente e Wesley) com SLA por cor, somente leitura, e centro de alertas com 11 regras que disparam e limpam sozinhas, sem duplicata, sem envio externo por padrão. Gate completo verde (unit 361, integration 102, regression 22, e2e 304, cobertura 88,97% das linhas). PARTIAL: `frontend-design` indisponível; motor compartilhado do simplicio-loop#1406 não acessível.
