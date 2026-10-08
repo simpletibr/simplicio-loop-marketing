@@ -1,0 +1,145 @@
+/* Simplicio Live: design tokens for every <sl-*> element.
+   Direction "signal box" (docs/DASHBOARD_DESIGN.md): enamel panel, lit lamps, track lines.
+   Load once per page; the custom properties inherit into every component's shadow root.
+   Themes: automatic (prefers-color-scheme / prefers-contrast) or forced with
+   data-sl-theme="dark" | "light" | "contrast" on <html> or on any container. */
+
+:root,
+[data-sl-theme] {
+  color-scheme: light dark;
+
+  /* Type: one humanist family built for legibility, plus its mono sibling for logs and diffs. */
+  --sl-font-sans: "Atkinson Hyperlegible Next", "Atkinson Hyperlegible", system-ui, sans-serif;
+  --sl-font-mono: "Atkinson Hyperlegible Mono", ui-monospace, "Cascadia Mono", Menlo, monospace;
+  --sl-weight-body: 450;
+  --sl-weight-strong: 680;
+  /* Classical scale (12 14 16 18 21 24 36 48), fluid on wall-sized screens. */
+  --sl-fluid: clamp(1rem, 0.86rem + 0.3vw, 1.3rem);
+  --sl-step--2: calc(var(--sl-fluid) * 0.75);
+  --sl-step--1: calc(var(--sl-fluid) * 0.875);
+  --sl-step-0: var(--sl-fluid);
+  --sl-step-1: calc(var(--sl-fluid) * 1.125);
+  --sl-step-2: calc(var(--sl-fluid) * 1.3125);
+  --sl-step-3: calc(var(--sl-fluid) * 1.5);
+  --sl-step-4: calc(var(--sl-fluid) * 2.25);
+  --sl-step-5: calc(var(--sl-fluid) * 3);
+  --sl-leading: 1.45;
+  --sl-leading-tight: 1.15;
+
+  /* Spacing: 4 px grid. */
+  --sl-space-1: 0.25rem;
+  --sl-space-2: 0.5rem;
+  --sl-space-3: 0.75rem;
+  --sl-space-4: 1rem;
+  --sl-space-5: 1.5rem;
+  --sl-space-6: 2rem;
+  --sl-space-7: 3rem;
+
+  /* Radius follows hierarchy: lamps are round, plates are cut sheet metal, panels are housings. */
+  --sl-radius-plate: 3px;
+  --sl-radius-panel: 10px;
+  --sl-radius-pill: 999px;
+  --sl-track-width: 6px;
+  --sl-lamp: 1.75em;
+  --sl-focus-width: 3px;
+
+  /* Motion: only lamps that are live pulse; everything else answers a person's action. */
+  --sl-dur-fast: 120ms;
+  --sl-dur-base: 220ms;
+  --sl-dur-pulse: 1.8s;
+  --sl-ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+
+  /* Surfaces: enamel panel at night, track drawing by day. */
+  --sl-bg: light-dark(#e6edeb, #11252a);
+  --sl-panel: light-dark(#f6f9f8, #173137);
+  --sl-raised: light-dark(#ffffff, #1e3d44);
+  --sl-line: light-dark(#8ea5a7, #4a6c73);
+  --sl-line-soft: light-dark(#cbd8d7, #2b4c53);
+  --sl-ink: light-dark(#0f2a30, #ebf3f0);
+  --sl-ink-muted: light-dark(#43605f, #a9c1bf);
+  --sl-on-lamp: light-dark(#ffffff, #0d1f23);
+  --sl-focus: light-dark(#0f2a30, #ebf3f0);
+  --sl-shadow: 0 1px 0 light-dark(#ffffff, #2a4b52) inset, 0 2px 0 light-dark(#cbd8d7, #0b1b1f);
+
+  /* State lamps: every state also has its own shape (see base.js), never colour alone. */
+  --sl-state-running: light-dark(#0a6a92, #6ccff6);
+  --sl-state-pass: light-dark(#1b7a44, #57d68d);
+  --sl-state-fail: light-dark(#b62828, #ff8080);
+  --sl-state-unverified: light-dark(#835b00, #f4c55b);
+  --sl-state-stalled: light-dark(#6b3fb8, #c3a1ff);
+  --sl-state-blocked: light-dark(#a64200, #ff9254);
+  --sl-state-pending: light-dark(#7d9597, #5e7d83);
+  --sl-state-estimated: light-dark(#1f6f86, #7fd3e6);
+}
+
+/* Automatic theme selection when nothing is forced. */
+@media (prefers-color-scheme: light) {
+  :root:not([data-sl-theme]) { color-scheme: light; }
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-sl-theme]) { color-scheme: dark; }
+}
+
+[data-sl-theme="dark"] { color-scheme: dark; }
+[data-sl-theme="light"] { color-scheme: light; }
+
+/* High contrast: pure black housing, white track, saturated lamps, thicker focus. */
+[data-sl-theme="contrast"] {
+  color-scheme: dark;
+  --sl-bg: #000000;
+  --sl-panel: #000000;
+  --sl-raised: #000000;
+  --sl-line: #ffffff;
+  --sl-line-soft: #bdbdbd;
+  --sl-ink: #ffffff;
+  --sl-ink-muted: #e6e6e6;
+  --sl-on-lamp: #000000;
+  --sl-focus: #ffe14d;
+  --sl-focus-width: 4px;
+  --sl-shadow: 0 0 0 1px #ffffff;
+  --sl-state-running: #00e5ff;
+  --sl-state-pass: #3dff8a;
+  --sl-state-fail: #ff6262;
+  --sl-state-unverified: #ffe14d;
+  --sl-state-stalled: #e2b8ff;
+  --sl-state-blocked: #ffa24a;
+  --sl-state-pending: #bdbdbd;
+  --sl-state-estimated: #7fe3f5;
+  --sl-weight-body: 500;
+}
+@media (prefers-contrast: more) {
+  :root:not([data-sl-theme]) {
+    --sl-line: CanvasText;
+    --sl-ink-muted: CanvasText;
+    --sl-focus-width: 4px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root, [data-sl-theme] {
+    --sl-dur-fast: 0ms;
+    --sl-dur-base: 0ms;
+  }
+}
+
+/* Toast stack created by SlAlertToast.notify() when no region is given. */
+[data-sl-toasts] {
+  position: fixed;
+  inset-block-end: 1rem;
+  inset-inline-end: 1rem;
+  display: grid;
+  gap: 0.75rem;
+  z-index: 2147483000;
+}
+
+/* Optional page defaults: opt in by adding class="sl-page" to <body>. */
+.sl-page {
+  margin: 0;
+  background: var(--sl-bg);
+  color: var(--sl-ink);
+  font-family: var(--sl-font-sans);
+  font-weight: var(--sl-weight-body);
+  font-size: var(--sl-step-0);
+  line-height: var(--sl-leading);
+  font-variant-numeric: tabular-nums;
+}
