@@ -16,7 +16,7 @@ import {
   zonedToUtc,
   type ContentPlan,
 } from "../../lib/plan/content-plan.ts";
-import { FORMATS, pieceTypeFor, routeForFormat } from "../../lib/plan/formats.ts";
+import { FORMATS, monthlyMix, pieceTypeFor, routeForFormat } from "../../lib/plan/formats.ts";
 import { renderCalendar, statusCounts } from "../../lib/plan/calendar.ts";
 import { resolveStart } from "../../lib/cli/plan-commands.ts";
 import { buildBrandProfile, fixtureCollection } from "../../lib/profile/brand-profile.ts";
@@ -145,4 +145,15 @@ test("calendar renders a table and markdown with BRT and the next-cycle note", (
   assert.match(md, /fila do próximo ciclo/);
   const counts = statusCounts(views);
   assert.equal((counts.planned ?? 0) + (counts.queued_next_cycle ?? 0), plan.slots.length);
+});
+
+test("the monthly mix asks for 4 hero videos, 10 derivatives, 6 slideshows or carousels, and long cuts only with a long video", () => {
+  const tally = (formats: string[]) => Object.fromEntries(FORMATS.map((f) => [f, formats.filter((x) => x === f).length]));
+  assert.deepEqual(tally(assignFormats(20, monthlyMix({ hasLongVideo: false }))), { hero: 4, cutdown: 6, hook_variant: 4, slideshow: 3, carousel: 3, long_cut: 0 });
+  assert.deepEqual(tally(assignFormats(24, monthlyMix({ hasLongVideo: true }))), { hero: 4, cutdown: 6, hook_variant: 4, slideshow: 3, carousel: 3, long_cut: 4 });
+  const plan = planContent({ ...base, mix: monthlyMix({ hasLongVideo: true }) });
+  const longCuts = plan.slots.filter((s) => s.format === "long_cut");
+  assert.ok(longCuts.length > 0);
+  assert.ok(longCuts.every((s) => s.route.lane === "realoficial-clips" && s.route.spends_credits));
+  assert.ok(plan.slots.filter((s) => s.format !== "long_cut").every((s) => !s.route.spends_credits), "only the long-cut lane spends credits");
 });

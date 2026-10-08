@@ -84,6 +84,8 @@ export interface CreditRow {
   credits: number;
   purpose: string;
   approved_by?: string;
+  /** Content format the spend produced (`long_cut`, ...), for the cost-per-format report. */
+  format?: string;
 }
 
 export function creditsPath(root: string): string {

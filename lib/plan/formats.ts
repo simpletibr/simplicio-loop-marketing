@@ -39,3 +39,13 @@ export function routeForFormat(format: Format): Route {
 export function pieceTypeFor(format: Format): string {
   return format === "carousel" ? "carousel" : "reel";
 }
+
+/**
+ * The format mix a client gets in a 30 day month, as counts: 4 hero videos,
+ * 10 derivatives that reuse the cached voice, 6 slideshows and carousels, and
+ * 4 cuts of a long video only when the client has lives or a YouTube channel.
+ * The planner normalises counts to weights, so any 30 day plan keeps the ratio.
+ */
+export function monthlyMix(opts: { hasLongVideo: boolean }): Partial<Record<Format, number>> {
+  return { hero: 4, cutdown: 6, hook_variant: 4, slideshow: 3, carousel: 3, ...(opts.hasLongVideo ? { long_cut: 4 } : {}) };
+}

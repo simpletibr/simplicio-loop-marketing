@@ -337,3 +337,7 @@ stage model. Full gate green on the committed tree (unit 340, integration 59,
 regression 22, e2e 287, coverage 88.5% statements). PARTIAL: the
 `frontend-design` skill and the shared `sl-*` kit were not available. Evidence:
 `docs/evidence/issues-175-176-177-dashboard-views.md`.
+
+## Checkpoint 20 (2026-10-08 — issue #164 derived formats)
+
+Mix mensal de formatos, faixa de cortes de vídeo longo da Real Oficial (estimativa sempre antes, gasto só com a aprovação do Wesley, recibo sem o endereço do vídeo) e custo por formato. Gate completo verde (unit 361, integration 67, regression 22, e2e 295, cobertura 88,42% das linhas). Ao vivo depende de uma sessão MCP da Real Oficial; os templates do simplicio-videos ficam no outro repositório.
