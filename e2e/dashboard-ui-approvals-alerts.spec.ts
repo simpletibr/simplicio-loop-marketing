@@ -68,7 +68,7 @@ test("approvals: the red piece comes first, the owner's decision is listed, and 
 test("alerts: the centre lists what threatens a post, a toast announces it, and a new alert arrives live", async ({ page }) => {
   await open(page, "#/alerts");
   await expect(page.getByRole("heading", { name: "Alertas", level: 1 })).toBeVisible();
-  await expect(page.locator(".toast")).toContainText("alerta(s) ativo(s)", { timeout: 10_000 });
+  await expect(page.locator("sl-alert-toast")).toContainText("alerta(s) ativo(s)", { timeout: 10_000 });
   const list = page.locator("ul.alerts");
   await expect(list.locator('[data-rule="approval_due"]').first()).toContainText("URGENT-1", { timeout: 10_000 });
   await expect(list.locator('[data-rule="approval_due"]').first()).toHaveAttribute("data-severity", "error");
@@ -82,7 +82,7 @@ test("alerts: the centre lists what threatens a post, a toast announces it, and 
   // a payment arrives and no delivery starts: the alert appears by itself, with a toast, without reloading
   const created = Math.floor((Date.now() - 2 * 3_600_000) / 1000);
   appendFileSync(join(data(), "stripe-webhooks.jsonl"), `${JSON.stringify({ id: "evt_alert_1", type: "checkout.session.completed", created, data: { object: { amount_total: 35600, currency: "brl", payment_status: "paid", metadata: { client: "novo-cliente" } } } })}\n`);
-  await expect(page.locator(".toast", { hasText: "novo-cliente pagou" })).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator("sl-alert-toast", { hasText: "novo-cliente pagou" })).toBeVisible({ timeout: 15_000 });
   await expect(page.locator('ul.alerts [data-rule="payment_without_delivery"]')).toContainText("novo-cliente pagou", { timeout: 15_000 });
   expect(await page.locator("ul.alerts > li").count()).toBe(before + 1);
   await expect(page.locator("nav a[data-view=alerts]")).toHaveText(`Alertas (${before + 1})`);

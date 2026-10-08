@@ -18,9 +18,10 @@ This folder is a vendored copy of the Simplicio Live component kit.
 
 ## Changes made here
 
-Only what the page's Content-Security-Policy (`default-src 'none'; style-src 'self'; ...`) requires, so the policy stays as strict as it was:
+Only what the page's Content-Security-Policy (`default-src 'none'; style-src 'self'; ...`) and its accessibility gate (axe, WCAG 2.2 AA, no violation) require, so the policy stays as strict as it was:
 
 1. `simplicio-live.css`: removed the two `@font-face` blocks. The font files are not copied, and `font-src` falls back to `default-src 'none'`. The font stacks fall through to `system-ui`. Added a `[data-sl-toasts]` rule (see 2).
 2. `sl-alert-toast.js`: `notify()` no longer sets `host.style.cssText`; the stack's position is the `[data-sl-toasts]` rule in the stylesheet.
+3. `sl-calendar.js`: a day cell's name now comes from a visually hidden `<span class="sr-only">` instead of an `aria-label`. With the `aria-label`, axe 4.14 reports `label-content-name-mismatch` (serious) on every day that has a post, because the visible text (the number and the post titles) is not contained in the label. The spoken text is the same.
 
-Every other file is byte-identical to the source commit. To update, copy again from a newer source commit and re-apply the two changes above.
+Every other file is byte-identical to the source commit. To update, copy again from a newer source commit and re-apply the three changes above.

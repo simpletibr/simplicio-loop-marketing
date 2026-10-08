@@ -157,7 +157,7 @@ test("security: no route accepts a write, and the panel only ever reaches the re
       }
     }
     // static files, too
-    for (const path of ["/", "/app.js", "/style.css", "/ui/dom.js"]) assert.equal((await fetch(`${s.url}${path}`, { method: "POST" })).status, 405, `POST ${path}`);
+    for (const path of ["/", "/app.js", "/style.css", "/ui/dom.js", "/ui/kit/sl-kpi-card.js", "/ui/kit/simplicio-live.css"]) assert.equal((await fetch(`${s.url}${path}`, { method: "POST" })).status, 405, `POST ${path}`);
   }, ro);
   assert.ok(called.length > 0, "the views did read the account");
   assert.deepEqual(called.filter((t) => !(RO_READ_ONLY_TOOLS as readonly string[]).includes(t)), [], "only read tools");
@@ -170,6 +170,7 @@ test("security: path traversal and odd paths never read a file outside the panel
       "/ui/..%2f..%2fpackage.json", "/ui/%2e%2e/%2e%2e/package.json", "/ui/../../package.json", "/..%2f..%2fetc/passwd", "/%2e%2e/%2e%2e/etc/passwd",
       "/api/media/..%2f..%2fetc%2fpasswd/preview", "/api/media/../../preview", "/api/pieces/..%2f..%2fpackage.json", "/api/receipts/..%2f..", "/api/evidence/..%2f..%2f..%2fetc%2fpasswd",
       "/api/clients/..%2f..", "/api/campaigns/..%2f..%2fpackage.json", "/ui/view-credits.js/..%2f..%2f..%2fpackage.json", "/ui/%00.js", "/ui/a.js%00.png",
+      "/ui/kit/..%2f..%2f..%2f..%2fpackage.json", "/ui/kit/%2e%2e/%2e%2e/%2e%2e/package.json", "/ui/kit/../../../package.json", "/ui/kit/LICENSE", "/ui/kit/NOTICE.md", "/ui/kit/fonts/x.woff2", "/ui/kit/a/b.js",
     ];
     for (const path of attempts) {
       const res = await get(s, path);
@@ -195,4 +196,31 @@ test("security: the page loads no script or style from outside, and sets nothing
     assert.doesNotMatch(text.replaceAll("http://www.w3.org/2000/svg", ""), /https?:\/\//, `${file} names an external address`);
   }
   assert.doesNotMatch(readFileSync(join(ui, "style.css"), "utf8"), /@import|url\(\s*["']?https?:/i, "no external stylesheet or font");
+
+  // The vendored kit builds its shadow DOM from template strings in which every value goes through esc(), so innerHTML is
+  // allowed there and nowhere else. What the CSP and the handler rules forbid is checked in the kit exactly as in the page.
+  const kit = join(ui, "kit");
+  const kitScripts = readdirSync(kit).filter((f) => f.endsWith(".js"));
+  assert.ok(kitScripts.length > 0, "the kit is vendored");
+  for (const file of kitScripts) {
+    const text = readFileSync(join(kit, file), "utf8");
+    assert.doesNotMatch(text, /\sstyle\s*=|\.style\.cssText|setAttribute\(\s*["']style["']|<style\b/, `kit/${file} sets an inline style, which the CSP blocks`);
+    assert.doesNotMatch(text, /\son[a-z]+\s*=|<script\b|\beval\(|new Function\(|document\.write|insertAdjacentHTML|outerHTML/, `kit/${file} has an inline handler, a script or dynamic code`);
+    assert.doesNotMatch(text.replaceAll("http://www.w3.org/2000/svg", ""), /https?:\/\//, `kit/${file} names an external address`);
+  }
+  assert.doesNotMatch(readFileSync(join(kit, "simplicio-live.css"), "utf8"), /@import|@font-face|url\(/i, "the kit loads no stylesheet or font");
+});
+
+test("the kit is served as scripts and one stylesheet, and as nothing else", async () => {
+  const { root } = worldWithContacts();
+  await withServer(root, async (s) => {
+    for (const [path, type] of [["/ui/kit/sl-kpi-card.js", "text/javascript"], ["/ui/kit/base.js", "text/javascript"], ["/ui/kit/simplicio-live.css", "text/css"]] as const) {
+      const res = await get(s, path);
+      assert.equal(res.status, 200, path);
+      assert.match(res.headers.get("content-type") ?? "", new RegExp(`^${type}`), path);
+      assert.match(res.headers.get("content-security-policy") ?? "", /style-src 'self'(;|$)/, `${path} keeps the strict policy`);
+      assert.doesNotMatch(res.headers.get("content-security-policy") ?? "", /unsafe-inline|unsafe-eval|font-src/, `${path} policy is not weakened`);
+    }
+    assert.equal((await get(s, "/ui/kit/nothing.js")).status, 404);
+  });
 });

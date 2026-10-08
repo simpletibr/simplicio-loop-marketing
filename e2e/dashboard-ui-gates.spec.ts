@@ -62,7 +62,8 @@ test("status shows the client by network matrix, the publisher health and the re
 test("quality lists the seal of every gate per piece and the first-try rates", async ({ page }) => {
   await open(page, "#/quality");
   await expect(page.getByRole("heading", { name: "Qualidade e compliance", level: 1 })).toBeVisible();
-  await expect(page.locator(".kpi")).toHaveCount(4);
+  await expect(page.locator(".kpi")).toHaveCount(3);
+  await expect(page.locator("sl-donut")).toHaveCount(1);
   await expect(page.locator(".kpi", { hasText: "QA técnico: aprovadas de primeira" })).toBeVisible();
   const headers = page.locator('[aria-label="Selos por peça"] thead th');
   await expect(headers).toHaveText(["Peça", "QA técnico", "Compliance", "Watcher", "Licenças B-roll", "Aprovação", "Rótulo de IA", "Pode seguir?"]);
@@ -103,6 +104,8 @@ test("credits shows the approved spend and has no control that can spend, buy or
 
 test("the three new sections are reachable by keyboard from the navigation", async ({ page }) => {
   await open(page, "#/cockpit");
+  // the first render also hands the focus to the content; pressing Enter on a link before that moves it away
+  await expect(page.locator("#main")).toBeFocused();
   for (const label of ["Status por rede", "Qualidade", "Créditos e custos"]) {
     const link = page.locator("nav a", { hasText: label });
     await expect(link).toBeVisible();
@@ -118,7 +121,7 @@ test("the three new sections are reachable by keyboard from the navigation", asy
 
 test("a live update never takes the keyboard focus away from the navigation or the content", async ({ page }) => {
   await open(page, "#/cockpit");
-  await expect(page.locator("#conn")).toHaveAttribute("data-state", "open");
+  await expect(page.locator("#conn")).toHaveAttribute("status", "live");
   const link = page.locator("nav a", { hasText: "Qualidade" });
   await link.focus();
   await expect(link).toBeFocused();
