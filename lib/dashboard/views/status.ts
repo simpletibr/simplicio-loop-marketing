@@ -12,6 +12,7 @@ import { redact } from "../../automation/browser-lane";
 import { NETWORKS, listReceipts, type Network, type ScheduleReceipt } from "../../publish/publisher";
 import { listClients } from "../queries";
 import { DAY_MS, round } from "./common";
+import { scrubPii } from "../events";
 import type { ViewContext, ViewRoute } from "../routes";
 
 export interface FailureInfo {
@@ -39,11 +40,11 @@ export const FAILURES: Record<string, FailureInfo> = {
   not_found: { reason: "O agendamento não foi encontrado.", next_step: "Conferir o recibo e agendar de novo." },
 };
 
-const SECRET = /\b(cookie|set-cookie|authorization|password|passwd|senha|token|secret|api[_-]?key)\b\s*[:=]\s*[^\s,;]+(?:;\s*[^\s,;]+=[^\s,;]+)*/gi;
+const SECRET = /\b(cookie|set-cookie|authorization|password|passwd|senha|token|secret|api[_-]?key|session(?:[_-]?id)?|sid|jwt|bearer)\b\s*[:=]\s*[^\s,;]+(?:;\s*[^\s,;]+=[^\s,;]+)*/gi;
 
 /** Free text from a receipt: browser-lane redaction plus anything that looks like a credential. */
 export function sanitize(text: string | undefined): string | undefined {
-  return text === undefined ? undefined : redact(text).replace(SECRET, "$1=[redacted]").slice(0, 300);
+  return text === undefined ? undefined : scrubPii(redact(text).replace(SECRET, "$1=[redacted]")).slice(0, 300);
 }
 
 /** Plan limits of Real Oficial by platform; the warning starts at 80%. Assumed from the plan description in issue #178. */

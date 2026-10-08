@@ -76,7 +76,7 @@ test("funnel and revenue: counts, conversion against the reference, money in the
   await expect(rev).toContainText("sem dado", { timeout: 5_000 });
   await expect(page.locator("#sub-h").locator("xpath=..")).toContainText("pacote-4: 1 ativa(s)");
 
-  const groups = page.locator('[aria-label="Funil por país e lote"] tbody tr');
+  const groups = page.locator('[aria-label="Tabela do funil por país e lote"] tbody tr');
   await expect(groups).toHaveCount(3);
   const clients = page.locator('[aria-label="Clientes com venda"] tbody tr');
   await expect(clients).toHaveCount(2);

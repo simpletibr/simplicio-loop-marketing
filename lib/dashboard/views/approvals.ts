@@ -143,7 +143,7 @@ export async function approvals(ctx: ViewContext) {
   const adjustments: AdjustmentItem[] = openAdjustments(root, only ?? undefined).map((a) => ({
     client: a.client,
     piece_id: a.piece_id,
-    decided_by: a.decided_by.startsWith("client:") ? a.decided_by.slice("client:".length) : a.decided_by,
+    decided_by: scrubPii(a.decided_by.startsWith("client:") ? a.decided_by.slice("client:".length) : a.decided_by),
     decided_at: a.decided_at,
     age_hours: round((now.getTime() - Date.parse(a.decided_at)) / HOUR_MS, 1),
     note: scrubPii(a.note).slice(0, 1000),

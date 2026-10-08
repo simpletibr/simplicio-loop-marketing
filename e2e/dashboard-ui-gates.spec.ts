@@ -110,6 +110,8 @@ test("the three new sections are reachable by keyboard from the navigation", asy
     await expect(link).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(page.locator("nav a[aria-current=page]")).toHaveText(label);
+    // the section has finished rendering when the content takes the focus; moving on earlier races that
+    await expect(page.locator("#main")).toBeFocused();
     await expect(page.locator("main h1")).toBeVisible();
   }
 });

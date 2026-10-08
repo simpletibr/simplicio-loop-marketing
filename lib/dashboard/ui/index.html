@@ -19,7 +19,7 @@
     <span id="conn" class="conn" role="status" data-state="connecting"><span class="dot" aria-hidden="true"></span><span id="conn-text">Conectando…</span></span>
     <button type="button" id="palette-open" aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K">Buscar <kbd>⌘K</kbd></button>
     <button type="button" id="present-toggle" aria-pressed="false">Apresentação</button>
-    <button type="button" id="theme-toggle" aria-label="Alternar tema">Tema: auto</button>
+    <button type="button" id="theme-toggle">Tema: auto</button>
   </div>
 </header>
 <nav class="nav" aria-label="Seções" id="nav"></nav>
@@ -27,7 +27,7 @@
 <div id="live" class="sr-only" role="status" aria-live="polite"></div>
 <div id="toasts" class="toasts" role="region" aria-label="Notificações" aria-live="polite"></div>
 <dialog id="drawer" aria-labelledby="drawer-title"><div class="drawer-head"><h2 id="drawer-title">Detalhe</h2><button type="button" id="drawer-close">Fechar</button></div><div id="drawer-body"></div></dialog>
-<dialog id="palette" aria-label="Busca"><form method="dialog"><label>Buscar peça, cliente ou seção<input id="palette-input" type="search" autocomplete="off"></label><ul id="palette-results" role="listbox"></ul></form></dialog>
+<dialog id="palette" aria-label="Busca"><form method="dialog"><label>Buscar peça, cliente ou seção<input id="palette-input" type="search" autocomplete="off"></label><ul id="palette-results" role="listbox" aria-label="Resultados da busca"></ul></form></dialog>
 <script type="module" src="/app.js"></script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 :root{
   color-scheme:light dark;
   --bg:#f6f7f9;--panel:#fff;--fg:#111827;--muted:#4b5563;--line:#d5d9e0;--accent:#0b5fff;--accent-fg:#fff;
-  --ok:#14663a;--warn:#8a4b00;--bad:#b42318;--info:#0b5fff;--focus:#0b5fff;
+  --ok:#14663a;--warn:#8a4b00;--bad:#b42318;--info:#0a52e0;--focus:#0b5fff;
   --ok-bg:#e3f5ea;--warn-bg:#fff1d6;--bad-bg:#fde4e1;--info-bg:#e3ecff;
   --radius:10px;--gap:16px;
 }
@@ -17,7 +17,7 @@
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-h1{font-size:1.35rem;margin:0 0 var(--gap)}h2{font-size:1.1rem;margin:0 0 8px}h3{font-size:.95rem;margin:0}
+h1{font-size:1.35rem;margin:0 0 var(--gap)}h2{font-size:1.1rem;margin:0 0 8px}h3,h2.sub{font-size:.95rem;margin:0}
 a{color:var(--accent)}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .skip{position:absolute;left:8px;top:-48px;background:var(--accent);color:var(--accent-fg);padding:8px 12px;border-radius:6px;z-index:10}
@@ -48,9 +48,9 @@ main:focus{outline:none}
 .kpi .value{font-size:1.9rem;font-weight:700;line-height:1.2}
 .kpi .delta{font-size:.8rem;color:var(--muted)}
 .kpi .detail{font-size:.8rem;color:var(--muted)}
-.cards{grid-template-columns:repeat(auto-fill,minmax(340px,1fr));align-items:start}
+.cards{grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));align-items:start}
 .two{grid-template-columns:minmax(0,2fr) minmax(0,1fr);align-items:start}
-@media (max-width:900px){.two{grid-template-columns:1fr}}
+@media (max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
 .feed{list-style:none;margin:0;padding:0;max-height:480px;overflow:auto}
 .feed li{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--line);align-items:flex-start}
 .feed time{color:var(--muted);font-size:.8rem;min-width:70px}
@@ -64,16 +64,17 @@ th{font-size:.8rem;color:var(--muted);font-weight:600}
 .scroll{overflow-x:auto}.scroll:focus-visible{outline-offset:-3px}
 .board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:12px;align-items:start;padding-bottom:8px}
 .col{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:8px;min-height:120px}
-.col h3{display:flex;justify-content:space-between;margin-bottom:8px}
+.col h2.sub{display:flex;justify-content:space-between;margin-bottom:8px}
 .piece{display:block;width:100%;text-align:left;margin:0 0 8px;padding:8px;border-radius:8px}
 .piece .meta{display:flex;gap:6px;flex-wrap:wrap;font-size:.75rem;color:var(--muted)}
 .piece[data-state=failed]{border-color:var(--bad)}.piece[data-state=active]{border-color:var(--info)}
 .filterbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;align-items:end}
 .filterbar label{display:flex;flex-direction:column;font-size:.8rem;color:var(--muted)}
-.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
+.cal{display:grid;gap:4px}
 .cal .dow{font-size:.75rem;color:var(--muted);text-align:center}
+.calrow{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}
 .day{min-height:96px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px;text-align:left;display:block;width:100%}
-.day[aria-selected=true]{outline:2px solid var(--accent)}
+[role=gridcell][aria-selected=true] .day{outline:2px solid var(--accent)}
 .day .n{font-size:.75rem;color:var(--muted)}
 .day.empty{border-style:dashed}
 .post{display:block;font-size:.72rem;border-radius:4px;padding:1px 4px;margin-top:2px;background:var(--info-bg);color:var(--info);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -101,6 +102,8 @@ pre{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:
 .error{background:var(--bad-bg);color:var(--bad);border:1px solid var(--bad);border-radius:var(--radius);padding:12px}
 .muted{color:var(--muted)}
 .mt{margin-top:var(--gap)}
+.mt-sm{margin-top:12px}
+.evidence-img{max-width:100%;border-radius:8px}
 .chart{color:var(--accent);display:block;max-width:100%;height:auto}
 body[data-present="1"] .top::after{content:"Modo apresentação: nomes e valores por cliente ocultos";color:var(--warn);font-size:.8rem;width:100%}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

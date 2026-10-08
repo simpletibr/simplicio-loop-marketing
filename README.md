@@ -15,6 +15,12 @@ These visuals stay near the top of the README on purpose, so the repository alwa
 
 ![Marketing Engine routing matrix](./assets/readme/marketing-engine-router.svg)
 
+## Distribution dashboard
+
+A local, read-only panel of the distribution loop (`marketing-engine dashboard`): pipeline, calendar, status per network, quality gates, credits and costs, sales funnel and revenue, per-post performance, approval queue and alerts. It binds to the loopback address, answers `GET` only and never spends, charges or publishes. See [docs/DASHBOARD.md](docs/DASHBOARD.md).
+
+![Dashboard cockpit](docs/evidence/dashboard/cockpit-light.png)
+
 ## Watch the skills explainer (90s)
 
 A Remotion-rendered walkthrough of the pipeline and every skill in `.skills/`. Rendered in English; a [Portuguese version](./README.pt-BR.md#veja-o-explainer-das-skills-90s) is also available.

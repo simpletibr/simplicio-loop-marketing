@@ -61,7 +61,7 @@ test("pipeline board has every column, opens a piece with its preview and filter
   await expect(page.getByRole("heading", { name: "Pipeline", level: 1 })).toBeVisible();
   await expect(page.locator(".col")).toHaveCount(11);
   for (const name of ["Coleta", "Roteiro", "Voz", "Prévia", "QA", "Compliance", "Aprovação", "Render final", "Agendado", "Publicado", "Métricas"]) {
-    await expect(page.locator(".col h3 span").filter({ hasText: new RegExp(`^${name}$`) }).first()).toBeVisible();
+    await expect(page.locator(".col h2 span").filter({ hasText: new RegExp(`^${name}$`) }).first()).toBeVisible();
   }
   const total = await page.locator("button.piece").count();
   expect(total).toBe(host.pieces.length);

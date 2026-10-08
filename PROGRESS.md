@@ -373,3 +373,7 @@ Funil por país e lote, receita por processador na moeda original, assinaturas, 
 ## Checkpoint 28 (2026-10-08 — issue #183 performance, winners and double down)
 
 Ranking por métrica, vencedores do mês 1 ligados às variações do mês 2, comparação por formato, gancho e idioma, e crescimento por cliente; métrica ausente nunca vira zero. Gate completo verde (unit 361, integration 115, regression 22, e2e 309, cobertura 89,18% das linhas). PARTIAL: retenção e miniatura sem fonte; `frontend-design` indisponível.
+
+## Checkpoint 29 (2026-10-08 — issue #185 dashboard quality)
+
+Acessibilidade (axe-core, WCAG 2.2 AA, 0 violações em 10 seções x 2 temas e 4 estados de diálogo), LGPD (quatro vazamentos de contato achados e corrigidos), segurança, desempenho (LCP máx. 288 ms) e sessão de 8 h sem vazamento, com `docs/DASHBOARD.md`. Gate completo verde (unit 361, integration 123, regression 22, e2e 345, cobertura 89,22% das linhas). PARTIAL: `frontend-design` indisponível; alinhamento com simplicio-loop#1409 não acessível.

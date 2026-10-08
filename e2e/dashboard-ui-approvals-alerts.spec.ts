@@ -101,6 +101,11 @@ test("alerts: desktop notifications are opt-in and only new alerts reach them", 
   });
   const notes = (): Promise<Array<{ title: string; body?: string; tag?: string }>> => page.evaluate(() => (globalThis as unknown as { __notes: Array<{ title: string; body?: string; tag?: string }> }).__notes);
   await open(page, "#/alerts");
+  // the alerts that are already active must all be on the page before the opt-in, or a late one would count as new
+  await expect(page.locator('ul.alerts [data-rule="approval_due"]')).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator('ul.alerts [data-rule="tts_exhausted"]')).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator('ul.alerts [data-rule="month_underfilled"]')).toBeVisible({ timeout: 15_000 });
+  await page.waitForTimeout(1500);
   const toggle = page.getByRole("button", { name: /Notificações do navegador/ });
   await expect(toggle).toHaveAttribute("aria-pressed", "false");
   await expect(toggle).toContainText("desligadas");
@@ -134,6 +139,7 @@ test("approvals and alerts are reachable by keyboard from the navigation", async
     await expect(link).toBeFocused();
     await page.keyboard.press("Enter");
     await expect(page.locator("nav a[aria-current=page]")).toHaveText(label);
+    await expect(page.locator("#main")).toBeFocused();
     await expect(page.locator("main h1")).toBeVisible();
   }
 });
