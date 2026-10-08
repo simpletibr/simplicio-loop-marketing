@@ -7,6 +7,7 @@ import {
   existsSync,
 } from "node:fs";
 import { tmpdir } from "node:os";
+import { appendHbp } from "../lib/formats/binary";
 import { join } from "node:path";
 import {
   filterWindow,
@@ -70,16 +71,13 @@ test("cost writeReport produces valid HTML", () => {
 test("buildReport joins runs and analytics", () => {
   const host = mkdtempSync(join(tmpdir(), "me-ab-"));
   mkdirSync(join(host, "data"), { recursive: true });
-  writeFileSync(
-    join(host, "data", "runs.jsonl"),
-    JSON.stringify({
-      timestamp: new Date().toISOString(),
-      piece_id: "p1",
-      providers_used: ["claude"],
-      cost_estimate_usd: 0.02,
-      status: "success",
-    }) + "\n",
-  );
+  appendHbp(join(host, "data", "runs.hbp"), {
+    timestamp: new Date().toISOString(),
+    piece_id: "p1",
+    providers_used: ["claude"],
+    cost_estimate_usd: 0.02,
+    status: "success",
+  });
   writeFileSync(
     join(host, "data", "analytics.jsonl"),
     JSON.stringify({

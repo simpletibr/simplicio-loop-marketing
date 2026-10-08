@@ -80,7 +80,7 @@ const PROVIDER_NAMES = [
   "meta-ads",
   "deepseek",
   "gpt-image",
-  "hyperframes",
+  "simplicio-video",
   "ollama",
 ];
 // video-prompt-builder is deliberately absent: it is the dispatcher whose

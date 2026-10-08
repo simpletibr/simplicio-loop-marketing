@@ -28,8 +28,8 @@ Generic, provider-agnostic dispatcher for video generation prompts. Reads the ro
 1. Read `.specs/architecture/PROVIDERS.md` and parse the Video matrix into a `task_kind -> provider` map.
 2. If `piece_path` is set and contains `provider_override.video`, use the override.
 3. Else look up `task_kind` in the matrix. If unknown, fall back to the matrix default for `cinematic_reel`.
-4. Verify the chosen provider has the env vars set (`HIGGSFIELD_MCP_ACTIVE`, `TOPVIEW_API_KEY`, `WAVESPEED_API_KEY`, `HYPERFRAMES_ACTIVE`).
-5. Map provider to specialist skill: Higgsfield -> `higgsfield-prompt-builder`, Topview -> `topview-prompt-builder`, Wavespeed -> `wavespeed-batch`, Hyperframes -> `hyperframes-prompt-builder`.
+4. Verify the chosen provider has the env vars set (`HIGGSFIELD_MCP_ACTIVE`, `TOPVIEW_API_KEY`, `WAVESPEED_API_KEY`, `SIMPLICIO_VIDEO_BIN`).
+5. Map provider to specialist skill: Higgsfield -> `higgsfield-prompt-builder`, Topview -> `topview-prompt-builder`, Wavespeed -> `wavespeed-batch`, simplicio-video -> `hyperframes-prompt-builder`.
 6. Translate `brief` fields into the input shape the specialist expects.
 7. Invoke the specialist and capture its `params` and `mcp_tool` output.
 8. If `dry_run`, return the resolved provider, the params, and the MCP tool. Otherwise call the MCP and return the artifact reference.
@@ -55,10 +55,10 @@ Output: `{ provider_used: "higgsfield", mcp_tool: "higgsfield_seedance_generate"
 Input: `{ brief: { subject: "skincare bottle held by avatar", motion: "static", mood: "friendly", aspect: "9:16", duration_seconds: 15 }, task_kind: "ugc_product_holder" }`
 Output: `{ provider_used: "topview", mcp_tool: "topview_avatar_generate", params: {...} }`
 
-### Example 3: weekly KPI reel routed to Hyperframes
+### Example 3: weekly KPI reel routed to simplicio-video
 
 Input: `{ brief: { headline: "Semana 21 em números", aspect: "9:16", duration_seconds: 12, variables: { leads: 42, delta_pct: 12 } }, task_kind: "programmatic_short" }`
-Output: `{ provider_used: "hyperframes", mcp_tool: "hyperframes_render", params: { composition_spec: {...}, render_args: {...} } }` — local render via the `hyperframes` + `hyperframes-cli` skills.
+Output: `{ provider_used: "simplicio-video", mcp_tool: "video_run", params: { composition_spec: {...}, render_args: {...} } }` — local render via the `hyperframes` + `hyperframes-cli` skills.
 
 ## Failure modes
 

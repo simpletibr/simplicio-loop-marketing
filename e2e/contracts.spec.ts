@@ -25,6 +25,10 @@ test("every shipped schema has an $id and loads into the registry", () => {
       "simplicio.savings-event/v1",
       "marketing-loop-state/v1",
       "marketing-publish-receipt/v1",
+      "brand-profile/v1",
+      "approval/v1",
+      "content-plan/v1",
+      "simplicio.dashboard-event/v1",
     ]),
   );
 });
@@ -65,7 +69,7 @@ test("fresh producer output validates against the schemas (drift gate, side B)",
 
   const outDir = join(root, "outputs");
   mkdirSync(outDir, { recursive: true });
-  const doc = writeManifest(join(outDir, "manifest.json"), {
+  const doc = writeManifest(join(outDir, "manifest.hbi"), {
     piece_id: "PIECE-ct-001",
     client: "acme",
     date: "2026-01-01",

@@ -1,0 +1,1 @@
+{ "kind": "youtube#videoListResponse", "items": [ { "id": "yt-aaa111", "statistics": { "viewCount": "20310", "likeCount": "1500", "favoriteCount": "0", "commentCount": "87" } }, { "id": "yt-bbb222", "statistics": { "viewCount": "310", "commentCount": "2" } } ] }

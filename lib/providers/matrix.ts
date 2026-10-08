@@ -42,9 +42,9 @@ const EMBEDDED_DEFAULTS: ProviderMatrix = {
     "product-demo": { task: "product-demo", default: "topview" },
     "talking-head": { task: "talking-head", default: "topview" },
     "batch-hooks": { task: "batch-hooks", default: "wavespeed" },
-    "motion-typography": { task: "motion-typography", default: "hyperframes" },
-    "data-viz-reel": { task: "data-viz-reel", default: "hyperframes" },
-    "programmatic-short": { task: "programmatic-short", default: "hyperframes" },
+    "motion-typography": { task: "motion-typography", default: "simplicio-video" },
+    "data-viz-reel": { task: "data-viz-reel", default: "simplicio-video" },
+    "programmatic-short": { task: "programmatic-short", default: "simplicio-video" },
   },
 };
 

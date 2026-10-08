@@ -1,6 +1,22 @@
 import { readUsage, filterWindow, summarize, writeReport, usageLogPath } from "../observability/cost";
+import { costByFormat, readCreditRows } from "../cost/by-format";
+import { allPlans } from "../dashboard/model";
+import { EventStore } from "../dashboard/store";
+import { defaultSources, syncDashboard } from "../observability/dashboard/index";
+
+/** `cost --by-format [--client <slug>]`: Real Oficial credits and voice spend per content format. */
+function byFormat(argv: string[]): void {
+  const root = process.env.MARKETING_ENGINE_HOST_ROOT ?? process.cwd();
+  const i = argv.indexOf("--client");
+  const client = i >= 0 ? argv[i + 1] : undefined;
+  const store = new EventStore(root);
+  syncDashboard(root, store, defaultSources(root));
+  const rows = costByFormat({ credits: readCreditRows(root), events: store.all(), plans: allPlans(root), client });
+  process.stdout.write(`${JSON.stringify(rows, null, 2)}\n`);
+}
 
 export async function cliEntry(argv: string[]): Promise<void> {
+  if (argv.includes("--by-format")) return byFormat(argv);
   let windowDays = 7;
   let since: string | undefined;
   let reportPath: string | undefined;

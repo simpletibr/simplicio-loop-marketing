@@ -16,6 +16,7 @@ import { estimateTokenDetails } from "../providers/cost";
 import { getLLMProviderByName } from "../providers/llm";
 import { getImageProviderByName } from "../providers/image";
 import { getVideoProviderByName } from "../providers/video";
+import { buildPieceContract } from "../video/piece-contract";
 import { llmRow, imageRow, videoRow, loadProviderMatrix } from "../providers/matrix";
 import type { ImageTask, LLMTask, VideoTask } from "../providers/types";
 import {
@@ -335,6 +336,8 @@ export async function processPiece(
 
   let imageUsed: string | undefined;
   let videoUsed: string | undefined;
+  let renderManifestPath: string | undefined;
+  let renderSha256: string | undefined;
   let totalCost = (copy.result.cost_usd ?? 0) + (captionResult.result.cost_usd ?? 0);
 
   if (tasks.image) {
@@ -369,7 +372,11 @@ export async function processPiece(
       aspect: "9:16",
       duration_s: 30,
       output_dir: pieceDir,
+      contract: buildPieceContract(opts.root, fm, brief, { aspect: "9:16", duration_s: 30 }),
     });
+    renderManifestPath = r.render_manifest_path;
+    renderSha256 = r.output_sha256;
+    if (r.render_manifest_path) outputs.push(r.render_manifest_path);
     if (r.output) {
       const videoOutputs = Array.isArray(r.output) ? r.output : [r.output];
       outputs.push(...videoOutputs);
@@ -548,6 +555,8 @@ export async function processPiece(
     watcher_report_path: watcherReportPath,
     outputs,
     fallback_used: copy.fallback_triggered || captionResult.fallback_triggered,
+    ...(renderManifestPath ? { render_manifest_path: renderManifestPath } : {}),
+    ...(renderSha256 ? { render_sha256: renderSha256 } : {}),
   };
   writeManifest(join(pieceDir, "manifest.hbi"), manifest);
   emitEvent(opts.root, {

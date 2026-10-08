@@ -1,71 +1,28 @@
-export type MetricsWindow = "24h" | "48h" | "7d";
+import { defaultFetcher, pick, type Fetcher, type PostMetrics } from "./post-metrics";
 
-export interface MetricsResult {
-  reach: number;
-  engagement: number;
-  saves: number;
-  profile_visits: number;
-  window: string;
+interface VideosList {
+  items?: Array<{ id?: string; statistics?: { viewCount?: string; likeCount?: string; commentCount?: string } }>;
 }
 
-function isDryRun(): boolean {
-  const v = process.env.DRY_RUN;
-  return v === undefined || v === "" || v === "true";
-}
-
-function seedFromId(piece_id: string): number {
-  let sum = 0;
-  for (let i = 0; i < piece_id.length; i++) {
-    sum += piece_id.charCodeAt(i);
+/**
+ * YouTube Data API `videos.list` (statistics), read-only, up to 50 ids per call.
+ * Hidden counts (likes turned off) are absent, not zero.
+ */
+export async function fetchYoutubeStats(videoIds: string[], apiKey: string, fetcher: Fetcher = defaultFetcher): Promise<Map<string, PostMetrics>> {
+  if (!apiKey) throw new Error("youtube: an API key is required");
+  const out = new Map<string, PostMetrics>();
+  for (let i = 0; i < videoIds.length; i += 50) {
+    const ids = videoIds.slice(i, i + 50);
+    const res = await fetcher(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${ids.map(encodeURIComponent).join(",")}&key=${encodeURIComponent(apiKey)}`);
+    if (!res.ok) throw new Error(`youtube: HTTP ${res.status}`);
+    for (const item of ((await res.json()) as VideosList).items ?? []) {
+      if (!item.id) continue;
+      const m: PostMetrics = {};
+      pick(m, "views", item.statistics?.viewCount);
+      pick(m, "likes", item.statistics?.likeCount);
+      pick(m, "comments", item.statistics?.commentCount);
+      out.set(item.id, m);
+    }
   }
-  return sum;
-}
-
-function windowMultiplier(window: MetricsWindow): number {
-  if (window === "24h") return 1;
-  if (window === "48h") return 2;
-  return 7;
-}
-
-export async function fetchMetrics(
-  piece_id: string,
-  window: MetricsWindow,
-): Promise<MetricsResult> {
-  if (isDryRun()) {
-    const seed = seedFromId(piece_id);
-    const mult = windowMultiplier(window);
-    return {
-      reach: ((seed * 211) % 80000) * mult,
-      engagement: ((seed * 71) % 6000) * mult,
-      saves: ((seed * 23) % 500) * mult,
-      profile_visits: ((seed * 41) % 1200) * mult,
-      window,
-    };
-  }
-  const apiKey = process.env.YOUTUBE_API_KEY;
-  if (!apiKey) throw new Error("youtube: YOUTUBE_API_KEY required");
-  const res = await fetch(
-    `https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${piece_id}&key=${apiKey}`,
-  );
-  if (!res.ok) {
-    throw new Error(`youtube: HTTP ${res.status}: ${await res.text()}`);
-  }
-  const data = (await res.json()) as {
-    items?: Array<{
-      statistics?: {
-        viewCount?: string;
-        likeCount?: string;
-        favoriteCount?: string;
-        commentCount?: string;
-      };
-    }>;
-  };
-  const s = data.items?.[0]?.statistics ?? {};
-  return {
-    reach: Number(s.viewCount ?? 0),
-    engagement: Number(s.likeCount ?? 0) + Number(s.commentCount ?? 0),
-    saves: Number(s.favoriteCount ?? 0),
-    profile_visits: 0,
-    window,
-  };
+  return out;
 }

@@ -1,0 +1,1 @@
+{ "generated_at": "2026-10-01T11:00:00Z", "output": { "path": "final/final.mp4", "sha256": "2222222222222222222222222222222222222222222222222222222222222222", "duration_s": 30 }, "voice": { "provider": "gemini-tts", "seconds": 28, "cost_usd": 0.012, "cache_hit": false } }

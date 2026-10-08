@@ -328,3 +328,60 @@ Restored the issue #93 extension conformance payload in `buildDoctorReport`
 without replacing the existing release-train payload. The merged, typed doctor
 contract is covered by the focused doctor and extension Playwright specs;
 typecheck and lint are clean.
+
+## Checkpoint 19 (2026-10-08 — issues #175, #176, #177 dashboard views)
+
+Cockpit, pipeline and calendar views of the distribution dashboard, with the
+framework-free UI, presentation mode masked on the server and the per-piece
+stage model. Full gate green on the committed tree (unit 340, integration 59,
+regression 22, e2e 287, coverage 88.5% statements). PARTIAL: the
+`frontend-design` skill and the shared `sl-*` kit were not available. Evidence:
+`docs/evidence/issues-175-176-177-dashboard-views.md`.
+
+## Checkpoint 20 (2026-10-08 — issue #164 derived formats)
+
+Mix mensal de formatos, faixa de cortes de vídeo longo da Real Oficial (estimativa sempre antes, gasto só com a aprovação do Wesley, recibo sem o endereço do vídeo) e custo por formato. Gate completo verde (unit 361, integration 67, regression 22, e2e 295, cobertura 88,42% das linhas). Ao vivo depende de uma sessão MCP da Real Oficial; os templates do simplicio-videos ficam no outro repositório.
+
+## Checkpoint 21 (2026-10-08 — issue #165 dubbing adapter)
+
+Interface `Dubbing` com estimativa que nunca gasta, `dub()` que falha fechado sem a aprovação do Wesley, recibo com schema, matriz de idiomas por cliente e implementações dry-run e Real Oficial (ferramentas oficiais em vez do navegador provisório). Gate completo verde (unit 361, integration 67, regression 22, e2e 295). BLOQUEADO-EXTERNO: o piloto em 1 idioma precisa de sessão ao vivo da Real Oficial e do consentimento de voz dado no app.
+
+## Checkpoint 22 (2026-10-08 — issue #166 metrics loop)
+
+Fontes de métricas somente leitura, snapshots ligados ao recibo, vencedores do mês, plano do mês seguinte com variações dos vencedores e relatório mensal em markdown e PDF sem números inventados. Gate completo verde (unit 361, integration 67, regression 22, e2e 295, cobertura 88,42% das linhas). Ao vivo depende de credenciais por cliente e de uma sessão MCP da Real Oficial; o piloto com posts reais com recibo fica para quando houver publicação ao vivo.
+
+## Checkpoint 23 (2026-10-08 — issue #178 status per network)
+
+Matriz cliente por rede, saúde do publicador da Real Oficial, capacidade de contas e recibos com motivo e próximo passo humano; nenhuma credencial exibida (teste). Gate completo verde (unit 361, integration 81, regression 22, e2e 300, cobertura 88,8% das linhas). PARTIAL: a skill `frontend-design` não estava disponível; o limite do plano (Lite) é suposição do texto da issue.
+
+## Checkpoint 24 (2026-10-08 — issue #179 quality gates per piece)
+
+Selos por peça, bloqueio por hash divergente, taxa de aprovação de primeira, principais motivos e tendência. Gate completo verde (unit 361, integration 81, regression 22, e2e 300, cobertura 88,8% das linhas). PARTIAL: `frontend-design` e `<sl-json-tree>` indisponíveis; formato de `broll-licenses.json` é suposição a confirmar.
+
+## Checkpoint 25 (2026-10-08 — issue #180 credits and costs)
+
+Créditos e custos somente leitura, conferidos contra um cálculo de referência, com estimativas rotuladas e "sem dado" onde falta taxa, preço ou fonte. Gate completo verde (unit 361, integration 81, regression 22, e2e 300, cobertura 88,8% das linhas). PARTIAL: histórico de compras e tempo de máquina do render não têm fonte; `frontend-design` indisponível.
+
+## Checkpoint 26 (2026-10-08 — issues #182 approval queue and #184 distribution alerts)
+
+Fila de aprovações (cliente e Wesley) com SLA por cor, somente leitura, e centro de alertas com 11 regras que disparam e limpam sozinhas, sem duplicata, sem envio externo por padrão. Gate completo verde (unit 361, integration 102, regression 22, e2e 304, cobertura 88,97% das linhas). PARTIAL: `frontend-design` indisponível; motor compartilhado do simplicio-loop#1406 não acessível.
+
+## Checkpoint 27 (2026-10-08 — issue #181 funnel and revenue)
+
+Funil por país e lote, receita por processador na moeda original, assinaturas, churn, mínimo de 3 meses e LTV por cliente, tudo somente leitura; fixture de 200 prospects, 4 vendas e 2 assinaturas confere com o cálculo de referência. Gate completo verde (unit 361, integration 110, regression 22, e2e 307, cobertura 89,08% das linhas). PARTIAL: sem leitor do webhook da AbacatePay; `frontend-design` indisponível.
+
+## Checkpoint 28 (2026-10-08 — issue #183 performance, winners and double down)
+
+Ranking por métrica, vencedores do mês 1 ligados às variações do mês 2, comparação por formato, gancho e idioma, e crescimento por cliente; métrica ausente nunca vira zero. Gate completo verde (unit 361, integration 115, regression 22, e2e 309, cobertura 89,18% das linhas). PARTIAL: retenção e miniatura sem fonte; `frontend-design` indisponível.
+
+## Checkpoint 29 (2026-10-08 — issue #185 dashboard quality)
+
+Acessibilidade (axe-core, WCAG 2.2 AA, 0 violações em 10 seções x 2 temas e 4 estados de diálogo), LGPD (quatro vazamentos de contato achados e corrigidos), segurança, desempenho (LCP máx. 288 ms) e sessão de 8 h sem vazamento, com `docs/DASHBOARD.md`. Gate completo verde (unit 361, integration 123, regression 22, e2e 345, cobertura 89,22% das linhas). PARTIAL: `frontend-design` indisponível; alinhamento com simplicio-loop#1409 não acessível.
+
+## Checkpoint 30 (2026-10-08 — issue #186 flow diagram)
+
+Fluxo declarativo do projeto (entradas, passos, saídas) com Mermaid, SVG, PNG e Langflow gerados de um único arquivo, teste de drift contra o código e a lista de comandos da CLI, e imagem no README. PARTIAL: importação no Langflow 1.12.0 não verificada (não instalado); sem o gerador do simplicio-mapper; sem diagrama por execução.
+
+## Checkpoint 31 (2026-10-08 — issue #95 release train check)
+
+Verificado o que falta: a metade no repositório (reconciliação, diff de contrato, pin com rollback, recibo de versão) existe e passa nos testes; a metade que precisa do Loop core real está BLOCKED-EXTERNAL (`operator doctor --json` responde BLOCKED / MANIFEST_REJECTED, sem `simplicio-loop` instalado, sem o `component-release.json` assinado do upstream, Actions desligadas). A issue continua aberta. Evidência em `docs/evidence/issue-95-release-train-status.md`.

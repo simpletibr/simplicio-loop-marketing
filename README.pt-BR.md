@@ -73,6 +73,14 @@ https://github.com/wesleysimplicio/marketing-engine/raw/main/video/out/marketing
 | `qa-tech-specs` | <img src="./video/out/14-qa-tech-specs.png" alt="aspect, duração, codec e safe-area" width="520" /> |
 | `definition-of-done` | <img src="./video/out/15-dod-outro.png" alt="os 6 gates que um piece precisa passar" width="520" /> |
 
+## Fluxo de todo o projeto
+
+Todas as entradas, passos e saídas, desenhadas a partir de um único arquivo declarativo ([`docs/flow/simplicio-loop-marketing.flow.json`](docs/flow/simplicio-loop-marketing.flow.json)). O [Mermaid](docs/flow/simplicio-loop-marketing.mmd), o [SVG](docs/flow/simplicio-loop-marketing.svg), o PNG abaixo e o [fluxo em notas do Langflow](docs/flow/langflow/simplicio-loop-marketing.langflow.json) são gerados dele, com os mesmos bytes a cada execução; um teste falha se o fluxo citar arquivo ou comando que não existe mais ou deixar um comando da CLI de fora.
+
+![Fluxo do simplicio-loop-marketing](docs/flow/simplicio-loop-marketing.png)
+
+Regenere com `npm run flow` e confira se algo ficou velho com `npm run flow:check`.
+
 ## O que faz
 
 - Escaneia o projeto host (`package.json`, README, árvore de fontes, assets de marca existentes) e rascunha brand, persona e content-pillar specs pra você revisar.

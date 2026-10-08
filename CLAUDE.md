@@ -34,7 +34,7 @@ If you find yourself typing a provider name inside a skill body or agent prompt,
 | ----------- | ----------------------------------------------------------- | ------------------------------- |
 | LLM         | claude, codex, deepseek (cheap), copilot, ollama (fallback) | `lib/router.ts` + PROVIDERS.md  |
 | Image       | gpt-image, higgsfield, topview, wavespeed                   | `lib/providers/image.ts`        |
-| Video       | higgsfield (Soul/DoP/Seedance), topview, wavespeed, hyperframes (local HTML→MP4) | `lib/providers/video.ts`        |
+| Video       | higgsfield (Soul/DoP/Seedance), topview, wavespeed, simplicio-video (contract → voice → HyperFrames render → QA) | `lib/providers/video.ts`        |
 | Publishing  | adaptlypost (MCP, 9 platforms)                              | `lib/publish/adaptlypost.ts`    |
 | Ads         | meta-ads (MCP active)                                       | `lib/publish/meta-ads.ts`       |
 | Calendar    | Notion (database `NOTION_CALENDAR_DB_ID`)                   | env-driven                      |
@@ -118,8 +118,7 @@ The router picks it up automatically. Existing skills do not change.
 - `wavespeed-batch` — batch A/B prompt expansion for Wavespeed.
 - `hyperframes` — HTML-as-source-of-truth motion composition authoring (kinetic type, motion quote cards, programmatic data-viz reels). See https://github.com/wesleysimplicio/hyperframes.
 - `hyperframes-cli` — runs `npx hyperframes` lint/inspect/preview/render against a composition project.
-- `hyperframes-prompt-builder` — translates a piece brief into the HyperFrames composition spec; selected by `video-prompt-builder` when the matrix resolves to `hyperframes`.
-- `install-hyperframes` — one-shot bootstrap playbook that wires the three HyperFrames skills + provider layer + routing matrix into a fresh clone (idempotent).
+- `hyperframes-prompt-builder` — translates a piece brief into the HyperFrames composition spec; selected by `video-prompt-builder` when the matrix resolves to `simplicio-video`.
 - `llm-router` — selects and calls an LLM provider based on `task_type`, PROVIDERS.md, and overrides.
 - `simplicio-loop-marketing` — root super-skill orchestrator for the autonomous SaaS marketing loop (discover → orient → decide → create → verify → publish → measure → promote → learn); sequences the lanes below by capability, never by vendor.
 - `content-engineering-authentic` — renders the five evidence-aware content templates (dev article, social derivative, video script, Reddit/forum answer, launch thread); marks missing evidence explicitly instead of inventing it.

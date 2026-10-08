@@ -1,0 +1,244 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="4552" height="1070" viewBox="0 0 4552 1070" role="img" aria-labelledby="t d" font-family="DejaVu Sans, Verdana, sans-serif">
+<title id="t">simplicio-loop-marketing: entradas, passos e saídas</title>
+<desc id="d">40 nós e 45 ligações, gerados de docs/flow/simplicio-loop-marketing.flow.json</desc>
+<defs><marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#4b5563"/></marker></defs>
+<rect width="4552" height="1070" fill="#ffffff"/>
+<text x="28" y="42" font-size="18" font-weight="700" fill="#111827">simplicio-loop-marketing: entradas, passos e saídas</text>
+<text x="28" y="62" font-size="12" fill="#4b5563">azul: entrada · cinza: passo · verde: saída · laranja: efeito externo · tracejado: realimentação</text>
+<path d="M260 113 C308 113 308 193 356 193" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M260 353 C308 353 308 193 356 193" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M260 273 C308 273 308 273 356 273" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M260 193 C472 193 472 113 684 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M260 513 C472 513 472 113 684 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M588 273 C636 273 636 113 684 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M260 433 C636 433 636 113 1012 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M916 113 C2604 113 2604 433 4292 433" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M916 113 C964 113 964 113 1012 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M588 193 C800 193 800 113 1012 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M260 593 C636 593 636 193 1012 193" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M916 113 C964 113 964 193 1012 193" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M1244 193 C2768 193 2768 833 4292 833" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M1244 193 C1456 193 1456 113 1668 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M1244 113 C2768 113 2768 353 4292 353" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M1244 113 C1292 113 1292 113 1340 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M1572 113 C1620 113 1620 113 1668 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M1900 113 C1948 113 1948 113 1996 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M2228 113 C2276 113 2276 113 2324 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M2556 113 C2604 113 2604 113 2652 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M260 673 C1456 673 1456 113 2652 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M2884 113 C3588 113 3588 113 4292 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M2884 113 C2932 113 2932 113 2980 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M3212 113 C3752 113 3752 593 4292 593" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M3212 113 C3752 113 3752 513 4292 513" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M260 753 C1948 753 1948 113 3636 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M4292 513 C4080 513 4080 113 3868 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M3868 113 C4080 113 4080 673 4292 673" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M4292 673 C2604 673 2604 113 916 113" fill="none" stroke="#4b5563" stroke-width="1.4" stroke-dasharray="6 4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M3868 113 C3916 113 3916 193 3964 193" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M4196 193 C4244 193 4244 753 4292 753" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M3868 113 C3916 113 3916 273 3964 273" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M4196 273 C4244 273 4244 913 4292 913" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M3868 113 C3916 113 3916 113 3964 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M4196 113 C4244 113 4244 193 4292 193" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M260 113 C308 113 308 113 356 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M588 113 C800 113 800 113 1012 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M1244 113 C2276 113 2276 113 3308 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M3212 113 C3260 113 3260 113 3308 113" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M3540 113 C3916 113 3916 273 4292 273" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M260 833 C2112 833 2112 353 3964 353" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M4292 593 C4244 593 4244 353 4196 353" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M4292 113 C4244 113 4244 353 4196 353" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M4292 273 C4244 273 4244 353 4196 353" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<path d="M4196 353 C4244 353 4244 993 4292 993" fill="none" stroke="#4b5563" stroke-width="1.4" marker-end="url(#a)" opacity="0.8"/>
+<g><rect x="28" y="82" width="232" height="62" rx="9" fill="#e3ecff" stroke="#0a52e0" stroke-width="1.5"/>
+<text x="38" y="97" font-size="10" font-weight="700" fill="#0a52e0">ENTRADA</text>
+<text x="38" y="113" font-size="11.5" fill="#111827">CLI marketing-engine (argv e</text>
+<text x="38" y="127" font-size="11.5" fill="#111827">flags)</text>
+</g>
+<g><rect x="28" y="162" width="232" height="62" rx="9" fill="#e3ecff" stroke="#0a52e0" stroke-width="1.5"/>
+<text x="38" y="177" font-size="10" font-weight="700" fill="#0a52e0">ENTRADA</text>
+<text x="38" y="193" font-size="11.5" fill="#111827">Briefing: piece.md e CAMPAIGN.md</text>
+</g>
+<g><rect x="28" y="242" width="232" height="62" rx="9" fill="#e3ecff" stroke="#0a52e0" stroke-width="1.5"/>
+<text x="38" y="257" font-size="10" font-weight="700" fill="#0a52e0">ENTRADA</text>
+<text x="38" y="273" font-size="11.5" fill="#111827">URL do site do cliente</text>
+</g>
+<g><rect x="28" y="322" width="232" height="62" rx="9" fill="#e3ecff" stroke="#0a52e0" stroke-width="1.5"/>
+<text x="38" y="337" font-size="10" font-weight="700" fill="#0a52e0">ENTRADA</text>
+<text x="38" y="353" font-size="11.5" fill="#111827">.env e matriz de provedores</text>
+<text x="38" y="367" font-size="11.5" fill="#111827">(PROVIDERS.md)</text>
+</g>
+<g><rect x="28" y="402" width="232" height="62" rx="9" fill="#e3ecff" stroke="#0a52e0" stroke-width="1.5"/>
+<text x="38" y="417" font-size="10" font-weight="700" fill="#0a52e0">ENTRADA</text>
+<text x="38" y="433" font-size="11.5" fill="#111827">Referência autorizada (vídeo ou</text>
+<text x="38" y="447" font-size="11.5" fill="#111827">texto)</text>
+</g>
+<g><rect x="28" y="482" width="232" height="62" rx="9" fill="#e3ecff" stroke="#0a52e0" stroke-width="1.5"/>
+<text x="38" y="497" font-size="10" font-weight="700" fill="#0a52e0">ENTRADA</text>
+<text x="38" y="513" font-size="11.5" fill="#111827">Calendário no Notion</text>
+</g>
+<g><rect x="28" y="562" width="232" height="62" rx="9" fill="#e3ecff" stroke="#0a52e0" stroke-width="1.5"/>
+<text x="38" y="577" font-size="10" font-weight="700" fill="#0a52e0">ENTRADA</text>
+<text x="38" y="593" font-size="11.5" fill="#111827">Vídeo longo do cliente</text>
+</g>
+<g><rect x="28" y="642" width="232" height="62" rx="9" fill="#e3ecff" stroke="#0a52e0" stroke-width="1.5"/>
+<text x="38" y="657" font-size="10" font-weight="700" fill="#0a52e0">ENTRADA</text>
+<text x="38" y="673" font-size="11.5" fill="#111827">Decisão do cliente na página de</text>
+<text x="38" y="687" font-size="11.5" fill="#111827">aprovação</text>
+</g>
+<g><rect x="28" y="722" width="232" height="62" rx="9" fill="#e3ecff" stroke="#0a52e0" stroke-width="1.5"/>
+<text x="38" y="737" font-size="10" font-weight="700" fill="#0a52e0">ENTRADA</text>
+<text x="38" y="753" font-size="11.5" fill="#111827">Métricas das redes (somente</text>
+<text x="38" y="767" font-size="11.5" fill="#111827">leitura)</text>
+</g>
+<g><rect x="28" y="802" width="232" height="62" rx="9" fill="#e3ecff" stroke="#0a52e0" stroke-width="1.5"/>
+<text x="38" y="817" font-size="10" font-weight="700" fill="#0a52e0">ENTRADA</text>
+<text x="38" y="833" font-size="11.5" fill="#111827">Pagamentos: webhooks gravados,</text>
+<text x="38" y="847" font-size="11.5" fill="#111827">venda.json e planilha</text>
+</g>
+<g><rect x="356" y="242" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="366" y="257" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="366" y="273" font-size="11.5" fill="#111827">Perfil de marca</text>
+<text x="366" y="287" font-size="11.5" fill="#111827">(brand-profile/v1)</text>
+</g>
+<g><rect x="684" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="694" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="694" y="113" font-size="11.5" fill="#111827">Plano de conteúdo e calendário</text>
+<text x="694" y="127" font-size="11.5" fill="#111827">(content-plan/v1)</text>
+</g>
+<g><rect x="356" y="162" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="366" y="177" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="366" y="193" font-size="11.5" fill="#111827">Roteador: provedor por tipo de</text>
+<text x="366" y="207" font-size="11.5" fill="#111827">tarefa</text>
+</g>
+<g><rect x="1012" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="1022" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="1022" y="113" font-size="11.5" fill="#111827">Roteiro, criativo e legendas</text>
+<text x="1022" y="127" font-size="11.5" fill="#111827">(loop de geração)</text>
+</g>
+<g><rect x="1012" y="162" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="1022" y="177" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="1022" y="193" font-size="11.5" fill="#111827">Cortes e dublagem (gasto só com</text>
+<text x="1022" y="207" font-size="11.5" fill="#111827">aprovação do dono)</text>
+</g>
+<g><rect x="1340" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="1350" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="1350" y="113" font-size="11.5" fill="#111827">Críticos: voz da marca,</text>
+<text x="1350" y="127" font-size="11.5" fill="#111827">humanizador, plataforma</text>
+</g>
+<g><rect x="1668" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="1678" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="1678" y="113" font-size="11.5" fill="#111827">QA técnico (aspecto, duração,</text>
+<text x="1678" y="127" font-size="11.5" fill="#111827">tamanho, áreas seguras)</text>
+</g>
+<g><rect x="1996" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="2006" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="2006" y="113" font-size="11.5" fill="#111827">Compliance e verificação de</text>
+<text x="2006" y="127" font-size="11.5" fill="#111827">afirmações</text>
+</g>
+<g><rect x="2324" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="2334" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="2334" y="113" font-size="11.5" fill="#111827">Watcher gate e evidência</text>
+<text x="2334" y="127" font-size="11.5" fill="#111827">(MEASURED, CANON, UNVERIFIED)</text>
+</g>
+<g><rect x="2652" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="2662" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="2662" y="113" font-size="11.5" fill="#111827">Aprovação do cliente presa ao</text>
+<text x="2662" y="127" font-size="11.5" fill="#111827">hash da mídia (approval/v1)</text>
+</g>
+<g><rect x="2980" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="2990" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="2990" y="113" font-size="11.5" fill="#111827">Agendamento verificado (DRY_RUN</text>
+<text x="2990" y="127" font-size="11.5" fill="#111827">por padrão)</text>
+</g>
+<g><rect x="3636" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="3646" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="3646" y="113" font-size="11.5" fill="#111827">Loop de métricas e vencedores</text>
+</g>
+<g><rect x="3964" y="162" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="3974" y="177" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="3974" y="193" font-size="11.5" fill="#111827">Promoção e anúncios (guarda de</text>
+<text x="3974" y="207" font-size="11.5" fill="#111827">orçamento)</text>
+</g>
+<g><rect x="3964" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="3974" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="3974" y="113" font-size="11.5" fill="#111827">Aprendizados e retrospectiva</text>
+</g>
+<g><rect x="356" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="366" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="366" y="113" font-size="11.5" fill="#111827">Execução autônoma e recorrente</text>
+<text x="366" y="127" font-size="11.5" fill="#111827">(loop, watcher, cron)</text>
+</g>
+<g><rect x="3308" y="82" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="3318" y="97" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="3318" y="113" font-size="11.5" fill="#111827">Eventos, custo, falhas e</text>
+<text x="3318" y="127" font-size="11.5" fill="#111827">diagnóstico</text>
+</g>
+<g><rect x="3964" y="242" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="3974" y="257" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="3974" y="273" font-size="11.5" fill="#111827">Relatórios (peça e mês)</text>
+</g>
+<g><rect x="3964" y="322" width="232" height="62" rx="9" fill="#f1f3f6" stroke="#4b5563" stroke-width="1.5"/>
+<text x="3974" y="337" font-size="10" font-weight="700" fill="#4b5563">PASSO</text>
+<text x="3974" y="353" font-size="11.5" fill="#111827">Painel: fontes, regras de alerta</text>
+<text x="3974" y="367" font-size="11.5" fill="#111827">e vistas somente leitura</text>
+</g>
+<g><rect x="4292" y="322" width="232" height="62" rx="9" fill="#e3f5ea" stroke="#14663a" stroke-width="1.5"/>
+<text x="4302" y="337" font-size="10" font-weight="700" fill="#14663a">SAÍDA</text>
+<text x="4302" y="353" font-size="11.5" fill="#111827">Artefatos da peça: script,</text>
+<text x="4302" y="367" font-size="11.5" fill="#111827">legendas, manifest.json</text>
+</g>
+<g><rect x="4292" y="402" width="232" height="62" rx="9" fill="#e3f5ea" stroke="#14663a" stroke-width="1.5"/>
+<text x="4302" y="417" font-size="10" font-weight="700" fill="#14663a">SAÍDA</text>
+<text x="4302" y="433" font-size="11.5" fill="#111827">Plano do mês e calendário</text>
+</g>
+<g><rect x="4292" y="802" width="232" height="62" rx="9" fill="#e3f5ea" stroke="#14663a" stroke-width="1.5"/>
+<text x="4302" y="817" font-size="10" font-weight="700" fill="#14663a">SAÍDA</text>
+<text x="4302" y="833" font-size="11.5" fill="#111827">Cortes e versões dubladas</text>
+</g>
+<g><rect x="4292" y="82" width="232" height="62" rx="9" fill="#e3f5ea" stroke="#14663a" stroke-width="1.5"/>
+<text x="4302" y="97" font-size="10" font-weight="700" fill="#14663a">SAÍDA</text>
+<text x="4302" y="113" font-size="11.5" fill="#111827">Registro de aprovações</text>
+<text x="4302" y="127" font-size="11.5" fill="#111827">(approvals.hbp)</text>
+</g>
+<g><rect x="4292" y="562" width="232" height="62" rx="9" fill="#e3f5ea" stroke="#14663a" stroke-width="1.5"/>
+<text x="4302" y="577" font-size="10" font-weight="700" fill="#14663a">SAÍDA</text>
+<text x="4302" y="593" font-size="11.5" fill="#111827">Recibos de agendamento</text>
+<text x="4302" y="607" font-size="11.5" fill="#111827">(schedule.hbp)</text>
+</g>
+<g><rect x="4292" y="482" width="232" height="62" rx="9" fill="#fff1d6" stroke="#8a4b00" stroke-width="1.5"/>
+<text x="4302" y="497" font-size="10" font-weight="700" fill="#8a4b00">EFEITO EXTERNO</text>
+<text x="4302" y="513" font-size="11.5" fill="#111827">Post agendado na rede (efeito</text>
+<text x="4302" y="527" font-size="11.5" fill="#111827">externo, só com DRY_RUN=false)</text>
+</g>
+<g><rect x="4292" y="722" width="232" height="62" rx="9" fill="#fff1d6" stroke="#8a4b00" stroke-width="1.5"/>
+<text x="4302" y="737" font-size="10" font-weight="700" fill="#8a4b00">EFEITO EXTERNO</text>
+<text x="4302" y="753" font-size="11.5" fill="#111827">Anúncio pago (efeito externo, só</text>
+<text x="4302" y="767" font-size="11.5" fill="#111827">com DRY_RUN=false)</text>
+</g>
+<g><rect x="4292" y="642" width="232" height="62" rx="9" fill="#e3f5ea" stroke="#14663a" stroke-width="1.5"/>
+<text x="4302" y="657" font-size="10" font-weight="700" fill="#14663a">SAÍDA</text>
+<text x="4302" y="673" font-size="11.5" fill="#111827">Vencedores e plano seguinte com</text>
+<text x="4302" y="687" font-size="11.5" fill="#111827">variações</text>
+</g>
+<g><rect x="4292" y="162" width="232" height="62" rx="9" fill="#e3f5ea" stroke="#14663a" stroke-width="1.5"/>
+<text x="4302" y="177" font-size="10" font-weight="700" fill="#14663a">SAÍDA</text>
+<text x="4302" y="193" font-size="11.5" fill="#111827">Aprendizados duráveis</text>
+<text x="4302" y="207" font-size="11.5" fill="#111827">(learnings.jsonl)</text>
+</g>
+<g><rect x="4292" y="882" width="232" height="62" rx="9" fill="#e3f5ea" stroke="#14663a" stroke-width="1.5"/>
+<text x="4302" y="897" font-size="10" font-weight="700" fill="#14663a">SAÍDA</text>
+<text x="4302" y="913" font-size="11.5" fill="#111827">Relatório mensal em markdown e</text>
+<text x="4302" y="927" font-size="11.5" fill="#111827">PDF</text>
+</g>
+<g><rect x="4292" y="242" width="232" height="62" rx="9" fill="#e3f5ea" stroke="#14663a" stroke-width="1.5"/>
+<text x="4302" y="257" font-size="10" font-weight="700" fill="#14663a">SAÍDA</text>
+<text x="4302" y="273" font-size="11.5" fill="#111827">runs.jsonl, llm-usage.jsonl e</text>
+<text x="4302" y="287" font-size="11.5" fill="#111827">eventos</text>
+</g>
+<g><rect x="4292" y="962" width="232" height="62" rx="9" fill="#e3f5ea" stroke="#14663a" stroke-width="1.5"/>
+<text x="4302" y="977" font-size="10" font-weight="700" fill="#14663a">SAÍDA</text>
+<text x="4302" y="993" font-size="11.5" fill="#111827">Painel local, alertas e página do</text>
+<text x="4302" y="1007" font-size="11.5" fill="#111827">cliente</text>
+</g>
+</svg>

@@ -1,0 +1,42 @@
+{
+  "schema": "marketing-publish-receipt/v1",
+  "ts": "1970-01-01T00:00:00.000Z",
+  "piece_id": "PIECE-fixture-001",
+  "client": "fixture-client",
+  "provider": "dry-run",
+  "publisher": "dry-run",
+  "dry_run": true,
+  "claims_tag": "MEASURED",
+  "network": "tiktok",
+  "publish_at": "1970-01-01T00:00:00.000Z",
+  "approval_ref": "bf21c0f9d95a318d3777d8a5",
+  "media_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "receipt_id": "33ea53cf06d010cbd8bd",
+  "schedule_key": "PIECE-fixture-001:tiktok:2026-10-20",
+  "verdict": "scheduled",
+  "attempts": 1,
+  "stages": [
+    {
+      "stage": "request",
+      "ok": true
+    },
+    {
+      "stage": "claims_gate",
+      "ok": true
+    },
+    {
+      "stage": "window",
+      "ok": true
+    },
+    {
+      "stage": "action_gate",
+      "ok": true
+    },
+    {
+      "stage": "schedule",
+      "ok": true,
+      "detail": "dry-run: nothing was sent"
+    }
+  ],
+  "post_ref": "dry-run://tiktok/33ea53cf06d010cbd8bd"
+}

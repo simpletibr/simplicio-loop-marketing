@@ -1,0 +1,37 @@
+{
+  "$id": "dubbing-receipt/v1",
+  "type": "object",
+  "required": ["schema", "ts", "receipt_id", "client", "piece_id", "language", "route", "implementation", "dry_run", "verdict", "credits_spent", "ai_generated_voice", "stages"],
+  "properties": {
+    "schema": { "const": "dubbing-receipt/v1" },
+    "ts": { "type": "string" },
+    "receipt_id": { "type": "string" },
+    "client": { "type": "string" },
+    "piece_id": { "type": "string" },
+    "language": { "type": "string" },
+    "route": { "enum": ["tts", "realoficial-dub", "subtitle-only"] },
+    "implementation": { "enum": ["dry-run", "realoficial"] },
+    "dry_run": { "type": "boolean" },
+    "verdict": { "enum": ["dubbed", "handoff", "blocked", "failed"] },
+    "failure_class": { "enum": ["approval_missing", "consent_required", "driver_unavailable", "invalid_request", "remote_error", "not_ready"] },
+    "credits_spent": { "type": "number" },
+    "approved_by": { "type": "string" },
+    "ai_generated_voice": { "type": "boolean" },
+    "dub_id": { "type": "string" },
+    "translation_id": { "type": "string" },
+    "render_id": { "type": "string" },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["stage", "ok"],
+        "properties": {
+          "stage": { "type": "string" },
+          "ok": { "type": "boolean" },
+          "detail": { "type": "string" }
+        }
+      }
+    }
+  }
+}

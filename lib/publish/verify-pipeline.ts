@@ -23,11 +23,13 @@ import { getPublishClient, type PublishClient } from "./adaptlypost";
 import { readPiece, transitionStatus } from "../pieces/store";
 import { readWatcherReport, type ClaimsTag } from "../gate/watcher-gate";
 import { enforceClaimsGate } from "../gate/claims-gate";
+import { readHbi } from "../formats/binary";
 import { loadSchemaRegistry } from "../contracts/registry";
 import { validateArtifact } from "../contracts/validate";
 import { emitEvent } from "../observability/events";
 import { checkActionGate } from "../gate/action-gate";
 import { validateFreshAccept } from "../prototype/gate";
+import { verifyRenderManifest } from "../video/contract";
 
 export const RECEIPT_SCHEMA = "marketing-publish-receipt/v1";
 export const MAX_ATTEMPTS = 5;
@@ -39,7 +41,8 @@ export type FailureClass =
   | "compliance_blocked"
   | "provider_error"
   | "action_gate_blocked"
-  | "prototype_gate_blocked";
+  | "prototype_gate_blocked"
+  | "render_evidence_blocked";
 
 export interface ReceiptStage {
   stage: string;
@@ -54,7 +57,7 @@ export interface PublishReceipt {
   client?: string;
   provider?: string;
   dry_run: boolean;
-  verdict: "published" | "blocked" | "failed";
+  verdict: "scheduled" | "published" | "blocked" | "failed" | "cancelled";
   claims_tag: ClaimsTag;
   attempts: number;
   stages: ReceiptStage[];
@@ -183,16 +186,16 @@ export async function publishVerified(
   };
 
   // --- stage 1: manifest exists and validates against its contract ---------
-  const manifestPath = join(pieceDir, "manifest.json");
+  const manifestPath = join(pieceDir, "manifest.hbi");
   if (!existsSync(manifestPath)) {
-    stages.push({ stage: "manifest_valid", ok: false, detail: "manifest.json missing" });
+    stages.push({ stage: "manifest_valid", ok: false, detail: "manifest.hbi missing" });
     return finish("blocked", 0, "UNVERIFIED", { failure_class: "missing_manifest" });
   }
   let manifest: Record<string, unknown>;
   try {
-    manifest = JSON.parse(readFileSync(manifestPath, "utf8"));
+    manifest = readHbi<Record<string, unknown>>(manifestPath);
   } catch {
-    stages.push({ stage: "manifest_valid", ok: false, detail: "manifest.json unparseable" });
+    stages.push({ stage: "manifest_valid", ok: false, detail: "manifest.hbi unreadable" });
     return finish("blocked", 0, "UNVERIFIED", { failure_class: "invalid_manifest" });
   }
   const validation = validateArtifact(manifest, loadSchemaRegistry());
@@ -205,6 +208,19 @@ export async function publishVerified(
     return finish("blocked", 0, "UNVERIFIED", { failure_class: "invalid_manifest" });
   }
   stages.push({ stage: "manifest_valid", ok: true });
+
+  // --- stage 1b: video factory evidence — the MP4 hash must match its render manifest
+  if (typeof manifest.render_manifest_path === "string") {
+    const render = verifyRenderManifest(manifest.render_manifest_path);
+    const hashAgrees = !manifest.render_sha256 || render.manifest?.output.sha256 === manifest.render_sha256;
+    const ok = render.ok && hashAgrees;
+    stages.push({
+      stage: "render_manifest",
+      ok,
+      detail: ok ? "sha256 verified" : (render.reasons[0] ?? "render sha256 differs from the piece manifest"),
+    });
+    if (!ok) return finish("blocked", 0, "UNVERIFIED", { failure_class: "render_evidence_blocked" });
+  }
 
   // --- stage 2: claims gate — no publish for UNVERIFIED content ------------
   const watcherReport = readWatcherReport(eRoot, pieceId);

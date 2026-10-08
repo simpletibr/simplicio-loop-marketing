@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Simplicio · Distribuição</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<a class="skip" href="#main">Pular para o conteúdo</a>
+<header class="top">
+  <div class="brand"><span class="mark" aria-hidden="true"></span><strong>Simplicio</strong><span class="sub">Distribuição de marketing</span></div>
+  <form class="filters" id="scope" role="search" aria-label="Escopo">
+    <label>Cliente <select id="scope-client" name="client"><option value="">Todos</option></select></label>
+    <label>Campanha <select id="scope-campaign" name="campaign"><option value="">Todas</option></select></label>
+  </form>
+  <div class="tools">
+    <span id="conn" class="conn" role="status" data-state="connecting"><span class="dot" aria-hidden="true"></span><span id="conn-text">Conectando…</span></span>
+    <button type="button" id="palette-open" aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K">Buscar <kbd>⌘K</kbd></button>
+    <button type="button" id="present-toggle" aria-pressed="false">Apresentação</button>
+    <button type="button" id="theme-toggle">Tema: auto</button>
+  </div>
+</header>
+<nav class="nav" aria-label="Seções" id="nav"></nav>
+<main id="main" tabindex="-1" aria-live="off"></main>
+<div id="live" class="sr-only" role="status" aria-live="polite"></div>
+<div id="toasts" class="toasts" role="region" aria-label="Notificações" aria-live="polite"></div>
+<dialog id="drawer" aria-labelledby="drawer-title"><div class="drawer-head"><h2 id="drawer-title">Detalhe</h2><button type="button" id="drawer-close">Fechar</button></div><div id="drawer-body"></div></dialog>
+<dialog id="palette" aria-label="Busca"><form method="dialog"><label>Buscar peça, cliente ou seção<input id="palette-input" type="search" autocomplete="off"></label><ul id="palette-results" role="listbox" aria-label="Resultados da busca"></ul></form></dialog>
+<script type="module" src="/app.js"></script>
+</body>
+</html>

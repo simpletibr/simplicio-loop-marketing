@@ -11,6 +11,7 @@ import {
   ESTIMATOR,
   SAVINGS_SCHEMA,
 } from "../lib/observability/savings";
+import { encodeEnvelope, readHbp } from "../lib/formats/binary";
 
 function seed(root: string, n: number): void {
   for (let i = 1; i <= n; i++) {
@@ -28,10 +29,7 @@ function seed(root: string, n: number): void {
 test("appendSavingsEvent builds an intact hash chain with estimated proof", () => {
   const root = mkdtempSync(join(tmpdir(), "me-savings-"));
   seed(root, 3);
-  const lines = readFileSync(marketingLedgerPath(root), "utf8")
-    .trim()
-    .split("\n")
-    .map((l) => JSON.parse(l));
+  const lines = readHbp<any>(marketingLedgerPath(root));
   expect(lines).toHaveLength(3);
   expect(lines[0].prev_event_hash).toBeNull();
   expect(lines[1].prev_event_hash).toBe(lines[0].event_hash);
@@ -52,14 +50,26 @@ test("verifyChain detects tampering", () => {
   const root = mkdtempSync(join(tmpdir(), "me-savings-tamper-"));
   seed(root, 2);
   const path = marketingLedgerPath(root);
-  const tampered = readFileSync(path, "utf8").replace(
-    '"baseline_total":1000',
-    '"baseline_total":999999',
-  );
-  writeFileSync(path, tampered);
+  // Re-encode a valid envelope around a mutated body: the envelope checksum
+  // passes, so only the hash chain can catch the edit.
+  const rows = readHbp<any>(path);
+  rows[0].tokens.baseline_total = 999999;
+  writeFileSync(path, Buffer.concat(rows.map((row) => encodeEnvelope("HBP", row))));
   const chain = verifyChain(root);
   expect(chain.ok).toBe(false);
   expect(chain.reason).toBe("event_hash mismatch");
+});
+
+test("verifyChain rejects a raw byte flip through the envelope checksum", () => {
+  const root = mkdtempSync(join(tmpdir(), "me-savings-flip-"));
+  seed(root, 2);
+  const path = marketingLedgerPath(root);
+  const bytes = readFileSync(path);
+  bytes[bytes.length - 3] ^= 0xff;
+  writeFileSync(path, bytes);
+  const chain = verifyChain(root);
+  expect(chain.ok).toBe(false);
+  expect(chain.reason).toBe("binary envelope checksum mismatch");
 });
 
 test("savingsSummary aggregates by source and never inflates", () => {

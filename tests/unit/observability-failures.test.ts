@@ -2,10 +2,11 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { appendFileSync, mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { collectFailures, detectAlerts, postWebhook } from "../../lib/observability/failures.ts";
+import { appendHbp } from "../../lib/formats/binary.ts";
 
 function withData(root: string): string {
   const dir = join(root, "data");
@@ -52,24 +53,24 @@ test("collectFailures: includes failed/blocked run rows and ignores rows without
     { timestamp: now, piece_id: "p3", status: "ok" },
     { piece_id: "p4", status: "failed" }, // no timestamp, skipped
   ];
-  writeFileSync(join(dir, "runs.jsonl"), rows.map((r) => JSON.stringify(r)).join("\n") + "\n");
+  for (const row of rows) appendHbp(join(dir, "runs.hbp"), row);
   const summary = collectFailures(root, 24);
   assert.equal(summary.total, 2);
   assert.equal(summary.recent.length, 2);
 });
 
-test("collectFailures: caps recent events at 50 and skips malformed JSON lines", () => {
+test("collectFailures: caps recent events at 50 and rejects a corrupted runs envelope", () => {
   const root = mkdtempSync(join(tmpdir(), "me-failures-many-"));
   const dir = withData(root);
   const now = new Date().toISOString();
-  const lines: string[] = ["not-json"];
   for (let i = 0; i < 60; i++) {
-    lines.push(JSON.stringify({ timestamp: now, piece_id: `p${i}`, status: "failed" }));
+    appendHbp(join(dir, "runs.hbp"), { timestamp: now, piece_id: `p${i}`, status: "failed" });
   }
-  writeFileSync(join(dir, "runs.jsonl"), lines.join("\n") + "\n");
   const summary = collectFailures(root, 24);
   assert.equal(summary.total, 60);
   assert.equal(summary.recent.length, 50);
+  appendFileSync(join(dir, "runs.hbp"), "not-an-envelope");
+  assert.throws(() => collectFailures(root, 24));
 });
 
 test("detectAlerts: raises high_failure_rate when a provider exceeds the 20% threshold", () => {

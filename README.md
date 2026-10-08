@@ -15,6 +15,20 @@ These visuals stay near the top of the README on purpose, so the repository alwa
 
 ![Marketing Engine routing matrix](./assets/readme/marketing-engine-router.svg)
 
+## Flow of the whole project
+
+Every input, step and output of the project, drawn from one declarative file ([`docs/flow/simplicio-loop-marketing.flow.json`](docs/flow/simplicio-loop-marketing.flow.json), `simplicio.flow/v1`, each node pointing at the files and commands it comes from). The [Mermaid](docs/flow/simplicio-loop-marketing.mmd), the [SVG](docs/flow/simplicio-loop-marketing.svg), the PNG below and the [Langflow notes flow](docs/flow/langflow/simplicio-loop-marketing.langflow.json) are generated from it, the same bytes on every run, and a test fails when the flow names a file or command that is gone or leaves a CLI command out.
+
+![Flow of simplicio-loop-marketing](docs/flow/simplicio-loop-marketing.png)
+
+Regenerate with `npm run flow`; check that nothing is stale with `npm run flow:check`.
+
+## Distribution dashboard
+
+A local, read-only panel of the distribution loop (`marketing-engine dashboard`): pipeline, calendar, status per network, quality gates, credits and costs, sales funnel and revenue, per-post performance, approval queue and alerts. It binds to the loopback address, answers `GET` only and never spends, charges or publishes. See [docs/DASHBOARD.md](docs/DASHBOARD.md).
+
+![Dashboard cockpit](docs/evidence/dashboard/cockpit-light.png)
+
 ## Watch the skills explainer (90s)
 
 A Remotion-rendered walkthrough of the pipeline and every skill in `.skills/`. Rendered in English; a [Portuguese version](./README.pt-BR.md#veja-o-explainer-das-skills-90s) is also available.

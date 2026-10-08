@@ -27,7 +27,6 @@ function seedAbData(root: string): void {
     join(dir, "llm-usage.jsonl"),
     `${JSON.stringify({ piece_id: "p1", task: "script", provider: "claude", cost_usd: 0.02 })}\n`,
   );
-  writeFileSync(join(dir, "runs.jsonl"), "");
 }
 
 test("cli/ab-report: markdown format prints a table", async (t) => {

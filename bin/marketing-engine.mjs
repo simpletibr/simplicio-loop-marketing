@@ -32,12 +32,19 @@ Commands:
   findings    findings list|report|reconcile|doctor (Loop receipt projections)
   campaign    Plan a piece queue from a CAMPAIGN.md brief, or review one
   reference   Ingest or transcribe an authorized reference
+  dashboard   Local read-only panel of the distribution loop (--client --campaign --port --no-browser --stop --status --json --snapshot --present)
+  clips       Cut a client's long video into its long_cut slots (clips --client <slug> --url <url> [--estimate] [--approved-by-wesley]); DRY_RUN-safe, live spend needs the owner's OK
+  dubbing     Language versions of a piece (dubbing estimate|dub|list|matrix --client <slug> ...); dub needs --approved-by-wesley
+  metrics     Per-post performance loop (metrics link|collect|import|winners|report --client <slug>); winners feed the next month's plan (campaign --winners YYYY-MM)
+  calendar    Show the month of a client (calendar --client <slug> [--format table|markdown])
+  approval    Client approval link: request | page | record | serve | adjustments
+  profile     Build the brand-profile/v1 of a client from its URL (profile <url> --client <slug>)
   low-ticket  Plan the complete Low Ticket lifecycle (dry-run)
   anchor      Freeze/check/gate a campaign anchor with durable AC receipts
   new-piece   Create a new piece markdown from the template
   status      Show pipeline state (counts + recent runs + 24h cost)
   logs        Tail data/llm-usage.jsonl
-  cost        Aggregate llm-usage.jsonl over a window
+  cost        Aggregate llm-usage.jsonl over a window (cost --by-format [--client <slug>]: credits and voice per content format)
   ab-report   Join llm-usage + analytics; per-(task,provider) ROI
   alerts      Tail recent failures from runs + usage logs
   sync        Pull pieces from Notion calendar
@@ -681,7 +688,7 @@ function commandGenerate(args) {
 function commandPromote(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "promote.ts");
-  const extra = [];
+  const extra = args._.slice(1);
   if (args.window) extra.push("--window", args.window);
   spawnTsx(script, extra, hostRoot);
 }
@@ -739,6 +746,48 @@ function commandLowTicket(args) {
   spawnTsx(script, args._.slice(1), hostRoot);
 }
 
+function commandProfile(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "profile.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
+function commandDashboard(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "dashboard.ts");
+  spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
+}
+
+function commandClips(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "clips.ts");
+  spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
+}
+
+function commandDubbing(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "dubbing.ts");
+  spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
+}
+
+function commandMetrics(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "metrics.ts");
+  spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
+}
+
+function commandCalendar(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "calendar.ts");
+  spawnTsx(script, args._.slice(1), hostRoot);
+}
+
+function commandApproval(args) {
+  const hostRoot = resolveHostRoot(args);
+  const script = join(PACKAGE_ROOT, "lib", "cli", "approval.ts");
+  spawnTsx(script, args._.slice(1), hostRoot, { stdio: "inherit" });
+}
+
 function commandAnchor(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "anchor.ts");
@@ -766,7 +815,7 @@ function commandLogs(args) {
 function commandCost(args) {
   const hostRoot = resolveHostRoot(args);
   const script = join(PACKAGE_ROOT, "lib", "cli", "cost.ts");
-  const extra = [];
+  const extra = args._.slice(1);
   if (args.window) extra.push("--window", args.window);
   spawnTsx(script, extra, hostRoot);
 }
@@ -862,6 +911,27 @@ function main() {
       return;
     case "reference":
       commandReference(args);
+      return;
+    case "profile":
+      commandProfile(args);
+      return;
+    case "approval":
+      commandApproval(args);
+      return;
+    case "calendar":
+      commandCalendar(args);
+      return;
+    case "clips":
+      commandClips(args);
+      return;
+    case "dubbing":
+      commandDubbing(args);
+      return;
+    case "metrics":
+      commandMetrics(args);
+      return;
+    case "dashboard":
+      commandDashboard(args);
       return;
     case "low-ticket":
       commandLowTicket(args);

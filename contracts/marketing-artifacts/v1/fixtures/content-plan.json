@@ -1,0 +1,88 @@
+{
+  "schema": "content-plan/v1",
+  "plan_id": "fixture-client-2026-10-08-7d",
+  "client": "fixture-client",
+  "generated_at": "1970-01-01T00:00:00.000Z",
+  "timezone": "America/Sao_Paulo",
+  "start": "2026-10-08",
+  "days": 7,
+  "window_days": 30,
+  "networks": [
+    "tiktok",
+    "ig_reels"
+  ],
+  "slots": [
+    {
+      "slot_id": "20261008-001",
+      "piece_id": "PIECE-fixture-client-20261010-ig_reels",
+      "network": "ig_reels",
+      "publish_at": "1970-01-01T00:00:00.000Z",
+      "local_time": "2026-10-10 12:00",
+      "format": "hero",
+      "route": {
+        "lane": "video-factory",
+        "task": "programmatic-short",
+        "spends_credits": false
+      },
+      "angle": "educacao",
+      "hook": "pouco tempo para criar conteudo? Fixture-client resolve.",
+      "caption": "pouco tempo para criar conteudo? Fixture-client resolve.\neducacao",
+      "language": "pt-BR",
+      "window": "in_window"
+    },
+    {
+      "slot_id": "20261008-002",
+      "piece_id": "PIECE-fixture-client-20261011-tiktok",
+      "network": "tiktok",
+      "publish_at": "1970-01-01T00:00:00.000Z",
+      "local_time": "2026-10-11 18:00",
+      "format": "cutdown",
+      "route": {
+        "lane": "video-factory",
+        "task": "programmatic-short",
+        "spends_credits": false
+      },
+      "angle": "prova social",
+      "hook": "pouco tempo para criar conteudo? Fixture-client resolve.",
+      "caption": "pouco tempo para criar conteudo? Fixture-client resolve.\nprova social",
+      "language": "pt-BR",
+      "window": "in_window"
+    },
+    {
+      "slot_id": "20261008-003",
+      "piece_id": "PIECE-fixture-client-20261013-ig_reels",
+      "network": "ig_reels",
+      "publish_at": "1970-01-01T00:00:00.000Z",
+      "local_time": "2026-10-13 12:00",
+      "format": "hook_variant",
+      "route": {
+        "lane": "video-factory",
+        "task": "batch-hooks",
+        "spends_credits": false
+      },
+      "angle": "bastidores",
+      "hook": "pouco tempo para criar conteudo? Fixture-client resolve.",
+      "caption": "pouco tempo para criar conteudo? Fixture-client resolve.\nbastidores",
+      "language": "pt-BR",
+      "window": "in_window"
+    },
+    {
+      "slot_id": "20261008-004",
+      "piece_id": "PIECE-fixture-client-20261014-tiktok",
+      "network": "tiktok",
+      "publish_at": "1970-01-01T00:00:00.000Z",
+      "local_time": "2026-10-14 18:00",
+      "format": "slideshow",
+      "route": {
+        "lane": "video-factory",
+        "task": "motion-typography",
+        "spends_credits": false
+      },
+      "angle": "educacao",
+      "hook": "pouco tempo para criar conteudo? Fixture-client resolve.",
+      "caption": "pouco tempo para criar conteudo? Fixture-client resolve.\neducacao",
+      "language": "pt-BR",
+      "window": "in_window"
+    }
+  ]
+}

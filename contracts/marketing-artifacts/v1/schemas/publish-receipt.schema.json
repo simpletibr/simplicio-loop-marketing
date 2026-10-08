@@ -9,7 +9,7 @@
     "client": { "type": "string" },
     "provider": { "type": "string" },
     "dry_run": { "type": "boolean" },
-    "verdict": { "enum": ["published", "blocked", "failed"] },
+    "verdict": { "enum": ["scheduled", "published", "blocked", "failed", "cancelled"] },
     "claims_tag": { "enum": ["MEASURED", "CANON", "UNVERIFIED"] },
     "attempts": { "type": "integer" },
     "stages": {
@@ -26,6 +26,20 @@
       }
     },
     "failure_class": { "type": "string" },
-    "post_ref": { "type": "string" }
+    "post_ref": { "type": "string" },
+    "publisher": { "type": "string" },
+    "network": { "type": "string" },
+    "publish_at": { "type": "string" },
+    "approval_ref": { "type": "string" },
+    "media_sha256": { "type": "string" },
+    "receipt_id": { "type": "string" },
+    "schedule_key": { "type": "string" },
+    "evidence": {
+      "type": "object",
+      "properties": {
+        "screenshot": { "type": "string" },
+        "dom_snapshot": { "type": "string" }
+      }
+    }
   }
 }

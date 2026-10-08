@@ -1,0 +1,18 @@
+{
+  "$id": "simplicio.dashboard-event/v1",
+  "type": "object",
+  "required": ["schema", "event_id", "ts", "kind", "source", "severity", "data"],
+  "properties": {
+    "schema": { "const": "simplicio.dashboard-event/v1" },
+    "event_id": { "type": "string" },
+    "ts": { "type": "string" },
+    "kind": { "type": "string" },
+    "source": { "type": "string" },
+    "client": { "type": "string" },
+    "campaign_id": { "type": "string" },
+    "piece_id": { "type": "string" },
+    "network": { "type": "string" },
+    "severity": { "enum": ["info", "warn", "error"] },
+    "data": { "type": "object" }
+  }
+}

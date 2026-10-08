@@ -26,6 +26,13 @@ const { emitEvent, eventsPath } = await import(join(ROOT, "lib/observability/eve
 const { appendSavingsEvent } = await import(join(ROOT, "lib/observability/savings.ts"));
 const { runGenerateLoop } = await import(join(ROOT, "lib/cli/generate.ts"));
 const { serializePiece } = await import(join(ROOT, "lib/pieces/frontmatter.ts"));
+const { readHbi } = await import(join(ROOT, "lib/formats/binary.ts"));
+const { buildBrandProfile, fixtureCollection } = await import(join(ROOT, "lib/profile/brand-profile.ts"));
+const { requestApproval, recordDecision } = await import(join(ROOT, "lib/approval/store.ts"));
+const { planContent } = await import(join(ROOT, "lib/plan/content-plan.ts"));
+const { makeEvent } = await import(join(ROOT, "lib/dashboard/events.ts"));
+const { DryRunPublisher, scheduleVerified } = await import(join(ROOT, "lib/publish/publisher.ts"));
+const { writeWatcherReport } = await import(join(ROOT, "lib/gate/watcher-gate.ts"));
 
 const EPOCH = "1970-01-01T00:00:00.000Z";
 
@@ -103,9 +110,9 @@ const manifestPath = join(
   "fixture-client",
   "2026-01-01",
   "PIECE-fixture-001",
-  "manifest.json",
+  "manifest.hbi",
 );
-writeFixture("marketing-manifest.json", JSON.parse(readFileSync(manifestPath, "utf8")), host);
+writeFixture("marketing-manifest.json", readHbi(manifestPath), host);
 
 // --- simplicio.savings-event/v1: append through the real producer ---------
 const ev = appendSavingsEvent(host, {
@@ -128,5 +135,64 @@ const { producePublishReceiptFixture } = await import(join(ROOT, "lib/publish/ve
 if (typeof producePublishReceiptFixture === "function") {
   writeFixture("publish-receipt.json", producePublishReceiptFixture(), host);
 }
+
+// --- brand-profile/v1: built by the real producer from the dry-run collector
+writeFixture(
+  "brand-profile.json",
+  buildBrandProfile(fixtureCollection("https://fixture-client.example"), {
+    client: "fixture-client",
+    url: "https://fixture-client.example",
+    mode: "dry-run",
+  }),
+  host,
+);
+
+// --- approval/v1: request + decision through the real store ---------------
+const epochDate = new Date(EPOCH);
+requestApproval(host, { client: "fixture-client", pieceId: "PIECE-fixture-001", month: "2026-01", mediaSha256: "a".repeat(64), preview: "previews/PIECE-fixture-001.mp4", captions: { tiktok: "caption" }, now: epochDate });
+writeFixture(
+  "approval.json",
+  recordDecision(host, { client: "fixture-client", pieceId: "PIECE-fixture-001", mediaSha256: "a".repeat(64), decision: "approved", decidedBy: "client:Fixture", now: epochDate }),
+  host,
+);
+
+// --- marketing-publish-receipt/v1 (scheduled): the publisher seam in dry-run
+{
+  const schedHost = mkdtempSync(join(tmpdir(), "me-fixtures-sched-"));
+  mkdirSync(join(schedHost, "data"), { recursive: true });
+  const media = join(schedHost, "final.mp4");
+  writeFileSync(media, "bytes");
+  const now = new Date("2026-10-07T12:00:00Z");
+  writeWatcherReport(schedHost, { piece_id: "PIECE-fixture-001", tag: "MEASURED", passed: true, checked: [], checked_at: now.toISOString() });
+  requestApproval(schedHost, { client: "fixture-client", pieceId: "PIECE-fixture-001", month: "2026-10", mediaSha256: "a".repeat(64), preview: "p.mp4", captions: {}, now });
+  const approval = recordDecision(schedHost, { client: "fixture-client", pieceId: "PIECE-fixture-001", mediaSha256: "a".repeat(64), decision: "approved", decidedBy: "client:Fixture", now });
+  const receipt = await scheduleVerified(
+    { clientSlug: "fixture-client", pieceId: "PIECE-fixture-001", mediaPath: media, mediaSha256: "a".repeat(64), caption: "caption", network: "tiktok", publishAt: "2026-10-20T18:00:00.000Z", approvalRef: approval.approval_id },
+    { root: schedHost, publisher: new DryRunPublisher(), now },
+  );
+  writeFixture("publish-receipt-scheduled.json", receipt, schedHost);
+}
+
+// --- content-plan/v1: the deterministic planner over the fixture profile ---
+writeFixture(
+  "content-plan.json",
+  planContent({
+    client: "fixture-client",
+    profile: buildBrandProfile(fixtureCollection("https://fixture-client.example"), { client: "fixture-client", url: "https://fixture-client.example", mode: "dry-run" }),
+    start: "2026-10-08",
+    days: 7,
+    perWeek: 2,
+    networks: ["tiktok", "ig_reels"],
+    now: new Date("2026-10-07T12:00:00Z"),
+  }),
+  host,
+);
+
+// --- simplicio.dashboard-event/v1: the envelope built by the real mapper ---
+writeFixture(
+  "dashboard-event.json",
+  makeEvent({ source: "marketing-publish-receipt/v1", key: "fixture", ts: EPOCH, kind: "scheduled", client: "fixture-client", campaign_id: "fixture-client-2026-10-08-30d", piece_id: "PIECE-fixture-001", network: "tiktok", data: { publish_at: EPOCH, publisher: "dry-run", dry_run: true } }),
+  host,
+);
 
 process.stderr.write("gen-fixtures: done\n");
