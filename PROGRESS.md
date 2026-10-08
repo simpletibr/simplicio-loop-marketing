@@ -381,3 +381,7 @@ Acessibilidade (axe-core, WCAG 2.2 AA, 0 violações em 10 seções x 2 temas e 
 ## Checkpoint 30 (2026-10-08 — issue #186 flow diagram)
 
 Fluxo declarativo do projeto (entradas, passos, saídas) com Mermaid, SVG, PNG e Langflow gerados de um único arquivo, teste de drift contra o código e a lista de comandos da CLI, e imagem no README. PARTIAL: importação no Langflow 1.12.0 não verificada (não instalado); sem o gerador do simplicio-mapper; sem diagrama por execução.
+
+## Checkpoint 31 (2026-10-08 — issue #95 release train check)
+
+Verificado o que falta: a metade no repositório (reconciliação, diff de contrato, pin com rollback, recibo de versão) existe e passa nos testes; a metade que precisa do Loop core real está BLOCKED-EXTERNAL (`operator doctor --json` responde BLOCKED / MANIFEST_REJECTED, sem `simplicio-loop` instalado, sem o `component-release.json` assinado do upstream, Actions desligadas). A issue continua aberta. Evidência em `docs/evidence/issue-95-release-train-status.md`.
