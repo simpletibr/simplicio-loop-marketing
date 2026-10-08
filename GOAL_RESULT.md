@@ -248,3 +248,39 @@ Validation completed successfully:
 - `npm run typecheck`
 - `npm run lint`
 - `npx playwright test e2e/doctor.spec.ts e2e/extension-core.spec.ts e2e/extension-conformance.spec.ts` (7 passed)
+
+## Distribution dashboard epic (#171) and product epic (#159): per-issue result (2026-10-08)
+
+Status words: DONE (implemented, tested, pushed), PARTIAL (implemented and verified, with a stated gap), BLOCKED-EXTERNAL (needs something outside this repository), DEFERRED (out of scope for this session). The visual direction of every dashboard UI issue was not produced through the `frontend-design` skill, which was not installed in the build session; that is the common gap of the dashboard rows marked PARTIAL.
+
+| Issue | Status | Commit | Reason |
+| --- | --- | --- | --- |
+| #160 simplicio-video provider and brand-profile/v1 | DONE | a8fec47 | provider, profile command, DRY_RUN |
+| #161 publisher seam with Real Oficial browser flow | DONE | 5f01d6c | dry-run and browser flow, receipts |
+| #162 30-day plan, batch render, scheduling | DONE | bee373d | approved-only scheduling |
+| #163 client approval link | DONE | 7850f8b | bound to the media hash |
+| #164 derived formats and long-video cuts | DONE | 6d64535 | derived formats lane |
+| #165 dubbing and translation adapter | DONE | ef4f8b0 | approval gate before spend |
+| #166 metrics loop and winners | DONE | a54a1a2 | winners feed the next plan, monthly report |
+| #172 marketing.* events and adapters | DONE | 07c3e54 | event stream and source adapters |
+| #173 read-only backend with SSE replay | DONE | 43bf189 | |
+| #174 dashboard command and client page | DONE | 7e2d6d3 | |
+| #175, #176, #177 cockpit, pipeline, calendar | PARTIAL | 502b358, 5d2665f | shared `sl-*` kit and `frontend-design` not available |
+| #178 status per network and publisher health | PARTIAL | 05494b9 | `frontend-design` not available |
+| #179 quality and compliance gates | PARTIAL | e0f71be | `frontend-design` and JSON tree component not available |
+| #180 credits and costs | PARTIAL | bd35cd1 | purchase history and render machine time have no source |
+| #181 funnel and revenue | PARTIAL | ae04109 | no AbacatePay webhook reader (payload unconfirmed); BR sales arrive through `venda.json` |
+| #182 approval queue with SLA | PARTIAL | 01b69ec | read-only v1 as specified |
+| #183 performance, winners, double down | PARTIAL | 2ad2c9f | retention and thumbnails have no source |
+| #184 distribution alerts | PARTIAL | 01b69ec | shared rule engine of simplicio-loop#1406 not readable |
+| #185 dashboard quality | PARTIAL | 9b363a3 | alignment with simplicio-loop#1409 not readable |
+| #186 Langflow and Mermaid/image of the flow | PARTIAL | 29143c1 | Langflow 1.12.0 import not verified (not installed); mapper generator and contract not readable; no per-execution diagram |
+| #95 Loop core release train | BLOCKED-EXTERNAL | 637bbec (evidence), 8329ca8 (earlier pin) | needs a real Loop core and the signed component manifest; the issue stays open |
+| #167 Stripe business setup | DEFERRED | | no live billing |
+| #168 Real Oficial API request | DEFERRED | | needs a human to contact Real Oficial |
+| #169 self-serve multi-client | DEFERRED | | after the MVP |
+| #188 to #197 (parked) | DEFERRED | | labelled "[Estacionada]" |
+
+Epic #171 stays open: all of its child issues #172 to #185 are implemented, but several carry the gaps above, and its own "done when" asks for a run on a real client, the shared contract and kit with simplicio-loop#1397, and the `frontend-design` pass. Epic #159 stays open: #167, #168 and #169 are deferred.
+
+Final gate on commit 637bbec (the last code change; the commit that adds this section changes only this file): `npm run typecheck` exit 0; `npm run lint` exit 0; `npm run test:unit` 366 of 366; `npm run test:integration` 123 of 123; `npm run test:regression` 22 of 22; `npm run test:e2e` 345 passed; coverage over all of `lib/**/*.ts` with the Node and Playwright V8 coverage merged, statements and lines 89.20%, functions 89.73%, branches 79.44%; `npm run bench` dashboard reads in ms per read: cockpit 2.41, pipeline 2.94, calendar 0.06, status 0.30, quality 0.83, credits 0.24, funnel 0.20, performance 0.67, approvals 0.15, alerts 0.47, and `flow.build` 0.60.
