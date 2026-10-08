@@ -33,6 +33,7 @@ import { calendar } from "../lib/dashboard/views/calendar.ts";
 import { status } from "../lib/dashboard/views/status.ts";
 import { quality } from "../lib/dashboard/views/quality.ts";
 import { credits } from "../lib/dashboard/views/credits.ts";
+import { funnel } from "../lib/dashboard/views/funnel.ts";
 import { approvals } from "../lib/dashboard/views/approvals.ts";
 import { alerts } from "../lib/dashboard/views/alerts.ts";
 import { defaultSources } from "../lib/observability/dashboard/index.ts";
@@ -167,6 +168,7 @@ results.push(await timeitAsync("dashboard.calendar (5 clients, 60 pieces)", () =
 results.push(await timeitAsync("dashboard.status (5 clients, 60 pieces)", () => status(viewCtx), 300));
 results.push(await timeitAsync("dashboard.quality (5 clients, 60 pieces)", () => quality(viewCtx), 300));
 results.push(await timeitAsync("dashboard.credits (5 clients, 60 pieces)", () => credits(viewCtx), 300));
+results.push(await timeitAsync("dashboard.funnel (5 clients, 60 pieces)", () => funnel(viewCtx), 300));
 results.push(await timeitAsync("dashboard.approvals (5 clients, 60 pieces)", () => approvals(viewCtx), 300));
 results.push(await timeitAsync("dashboard.alerts (5 clients, 60 pieces)", () => alerts(viewCtx), 300));
 

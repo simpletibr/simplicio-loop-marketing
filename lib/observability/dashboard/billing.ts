@@ -18,9 +18,11 @@ interface StripeObject {
   currency?: string;
   payment_status?: string;
   status?: string;
+  /** Unix seconds; newer API versions report it on the item instead. */
+  current_period_end?: number;
   metadata?: { client?: string; plan?: string };
   subscription_details?: { metadata?: { client?: string; plan?: string } };
-  items?: { data?: Array<{ quantity?: number; price?: { id?: string; unit_amount?: number; currency?: string; recurring?: { interval?: string } } }> };
+  items?: { data?: Array<{ quantity?: number; current_period_end?: number; price?: { id?: string; unit_amount?: number; currency?: string; recurring?: { interval?: string } } }> };
 }
 
 interface StripeEvent {
@@ -60,7 +62,8 @@ export function mapStripeEvent(ev: StripeEvent): DashboardEvent | null {
     const currency = (item?.price?.currency ?? "usd").toUpperCase();
     const monthly = item?.price?.recurring?.interval === "month" ? ((item.price.unit_amount ?? 0) * (item.quantity ?? 1)) / 100 : undefined;
     const status = ev.type.endsWith(".deleted") ? "canceled" : (o.status ?? "unknown");
-    return makeEvent({ ...common, kind: "subscription_changed", severity: status === "canceled" || status === "past_due" ? "warn" : "info", data: { status, plan: o.metadata?.plan ?? item?.price?.id, currency, ...(monthly !== undefined && status !== "canceled" ? { mrr: monthly, ...brl(monthly, currency) } : {}), event_type: ev.type } });
+    const periodEnd = o.current_period_end ?? item?.current_period_end;
+    return makeEvent({ ...common, kind: "subscription_changed", severity: status === "canceled" || status === "past_due" ? "warn" : "info", data: { status, plan: o.metadata?.plan ?? item?.price?.id, currency, ...(monthly !== undefined && status !== "canceled" ? { mrr: monthly, ...brl(monthly, currency) } : {}), ...(typeof periodEnd === "number" && status !== "canceled" ? { next_charge_at: new Date(periodEnd * 1000).toISOString() } : {}), event_type: ev.type } });
   }
   return null;
 }

@@ -365,3 +365,7 @@ Créditos e custos somente leitura, conferidos contra um cálculo de referência
 ## Checkpoint 26 (2026-10-08 — issues #182 approval queue and #184 distribution alerts)
 
 Fila de aprovações (cliente e Wesley) com SLA por cor, somente leitura, e centro de alertas com 11 regras que disparam e limpam sozinhas, sem duplicata, sem envio externo por padrão. Gate completo verde (unit 361, integration 102, regression 22, e2e 304, cobertura 88,97% das linhas). PARTIAL: `frontend-design` indisponível; motor compartilhado do simplicio-loop#1406 não acessível.
+
+## Checkpoint 27 (2026-10-08 — issue #181 funnel and revenue)
+
+Funil por país e lote, receita por processador na moeda original, assinaturas, churn, mínimo de 3 meses e LTV por cliente, tudo somente leitura; fixture de 200 prospects, 4 vendas e 2 assinaturas confere com o cálculo de referência. Gate completo verde (unit 361, integration 110, regression 22, e2e 307, cobertura 89,08% das linhas). PARTIAL: sem leitor do webhook da AbacatePay; `frontend-design` indisponível.

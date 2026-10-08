@@ -51,7 +51,7 @@ Hierarchy: `client -> campaign_id -> piece_id -> network`. The stored form (`dat
 | `credit_spent` | `data/credits.jsonl` | `provider`, `credits`, `purpose`, `approved_by` (rows without it are dropped and counted) |
 | `tts_quota` | `tts-bloqueado-ate.txt`, `data/tts-usage.jsonl` | `blocked_until`, `requests`, `limit`, `exhausted` |
 | `payment_received` | verified Stripe webhooks (JSONL), `venda.json` | `amount`, `currency`, `processor`, `amount_brl?` |
-| `subscription_changed` | Stripe `customer.subscription.*` | `status`, `plan`, `mrr?` |
+| `subscription_changed` | Stripe `customer.subscription.*` | `status`, `plan`, `mrr?`, `next_charge_at?` (the period end, from the subscription or its item; none once cancelled) |
 
 One occurrence comes from exactly one source, so nothing is counted twice: scheduling, approvals, gates and final renders are read from their own artifacts, and the events log contributes only the kinds that no artifact owns.
 
@@ -77,3 +77,13 @@ Documented from the roadmap, not from the factory's code (not readable from the 
 `GET /api/alerts` evaluates the rules in `lib/dashboard/alerts.ts` as a pure function of the event stream, the receipts and the plans. An alert exists exactly while its condition holds (it clears by itself), its `key` is rule plus subject (no duplicates) and `since` is when the condition began. Rules: post not published 15 min after its time, publish failed (by type), Real Oficial session expired or asking login or a check, connected accounts near the plan limit, Real Oficial balance below the minimum, voice quota exhausted (with the time it returns), client approval due, piece stuck in a step, QA or compliance failing in a row, month with too few scheduled posts, payment received with no delivery started.
 
 Thresholds come from the environment: `MARKETING_ALERT_STUCK_HOURS` (48), `MARKETING_ALERT_MIN_SCHEDULED` (8), `MARKETING_ALERT_MIN_CREDITS` (50). Nothing is sent outside by default. The only outbound path is `MARKETING_DASHBOARD_ALERT_WEBHOOK` (an `http(s)` URL, unset by default): it receives `{ source, alerts }` with only the alerts that began since the last check, and the alerts already active when the panel starts are not repeated. Browser (desktop) notifications are opt-in in the Alertas section and live only in the browser.
+
+## Funnel and revenue (issue #181)
+
+`GET /api/funnel` is read-only and never a billing client: it reads the control spreadsheet export (`prospect_collected`), the factory's `venda.json` and the recorded Stripe webhook log (`payment_received`, `subscription_changed`). Filters: `client`, `country`, `batch`; `present=1` drops every per-client value (the per-client rows and the subscription list), keeping the totals.
+
+A step counts everyone who got that far: collected, preview (a preview render, or the spreadsheet status `previa`/`preview`), sent (`enviada`/`enviado`/`sent`), replied (`respondeu`/`resposta`/`replied`), sale (a payment, or `vendido`/`venda`/`pago`/`fechado`/`sold`/`paid`), subscription (the latest `subscription_changed` is `active` or `trialing`; never from a spreadsheet status). Accents and case are ignored; a status with no step is counted as collected and reported in `unknown_statuses`. The reference for prospect to sale is about 2%.
+
+Money keeps its original currency; reais are summed only when every payment carries `amount_brl` (else `brl: null` and `brl_missing`). A payment is recurring when its event type is `invoice.paid`, one-off otherwise. MRR sums the active subscriptions; churn is the cancellations of the last 30 days over (active + cancellations); the minimum is 3 months from the first active event (`minimum_until`, `minimum_met`). A client is `entregue` when `venda.json` says so or a final render finished after the first payment, `pago` before that.
+
+AbacatePay sales arrive through `venda.json` (processor `abacatepay`); there is no reader for its webhook yet because its payload is not confirmed. Not billing: nothing here creates a charge, a subscription or a refund.
