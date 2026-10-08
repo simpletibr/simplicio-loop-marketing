@@ -357,3 +357,7 @@ Matriz cliente por rede, saúde do publicador da Real Oficial, capacidade de con
 ## Checkpoint 24 (2026-10-08 — issue #179 quality gates per piece)
 
 Selos por peça, bloqueio por hash divergente, taxa de aprovação de primeira, principais motivos e tendência. Gate completo verde (unit 361, integration 81, regression 22, e2e 300, cobertura 88,8% das linhas). PARTIAL: `frontend-design` e `<sl-json-tree>` indisponíveis; formato de `broll-licenses.json` é suposição a confirmar.
+
+## Checkpoint 25 (2026-10-08 — issue #180 credits and costs)
+
+Créditos e custos somente leitura, conferidos contra um cálculo de referência, com estimativas rotuladas e "sem dado" onde falta taxa, preço ou fonte. Gate completo verde (unit 361, integration 81, regression 22, e2e 300, cobertura 88,8% das linhas). PARTIAL: histórico de compras e tempo de máquina do render não têm fonte; `frontend-design` indisponível.
