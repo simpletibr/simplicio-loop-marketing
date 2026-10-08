@@ -76,6 +76,8 @@ test("pipeline board has every column, opens a piece with its preview and filter
   await expect(page.locator("#drawer video")).toBeVisible();
   await expect(page.locator("#drawer-body")).toContainText("Histórico de eventos");
   await expect(page.locator("#drawer-body")).toContainText("Aprovações");
+  // a section that does not exist is left out, not printed as the text "null"
+  expect(await page.locator("#drawer-body").textContent()).not.toContain("null");
   await shot(page, "piece-drawer");
   await page.keyboard.press("Escape");
   await expect(page.locator("#drawer")).toBeHidden();
