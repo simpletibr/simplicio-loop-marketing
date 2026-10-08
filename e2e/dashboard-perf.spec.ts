@@ -57,7 +57,7 @@ test("the largest contentful paint of every section is under 1.5 s", async ({ br
 test("a session that keeps refreshing does not grow the page: nodes, listeners and heap return to where they started", async ({ page }) => {
   test.setTimeout(120_000);
   await open(page, "#/cockpit");
-  await expect(page.locator("#conn")).toHaveAttribute("data-state", "open");
+  await expect(page.locator("#conn")).toHaveAttribute("status", "live");
   const cdp = await page.context().newCDPSession(page);
   await cdp.send("Performance.enable");
   const measure = async (): Promise<{ nodes: number; listeners: number; heapMb: number }> => {

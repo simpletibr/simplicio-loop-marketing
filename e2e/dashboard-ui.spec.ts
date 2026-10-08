@@ -33,10 +33,10 @@ test("cockpit shows KPIs, the river, the live feed and the client grid", async (
   await expect(page).toHaveTitle(/Cockpit/);
   await expect(page.getByRole("heading", { name: "Cockpit", level: 1 })).toBeVisible();
   await expect(page.locator(".kpi")).toHaveCount(11);
-  await expect(page.getByRole("heading", { name: "Peças no funil" })).toBeVisible();
+  await expect(page.locator(".kpi", { hasText: "Peças no funil" })).toBeVisible();
   await expect(page.locator("svg.river title")).toHaveText("Rio do pipeline");
   await expect(page.locator(".feed li").first()).toBeVisible();
-  await expect(page.locator("#conn")).toHaveAttribute("data-state", "open");
+  await expect(page.locator("#conn")).toHaveAttribute("status", "live");
   await expect(page.locator("#clients-h")).toBeVisible();
   await expect(page.locator("article", { hasText: "Lothus" }).first()).toBeVisible();
   const funnel = await page.locator(".kpi", { hasText: "Peças no funil" }).locator(".value").textContent();
@@ -48,7 +48,7 @@ test("cockpit shows KPIs, the river, the live feed and the client grid", async (
 
 test("the feed updates live when something happens", async ({ page }) => {
   await open(page);
-  await expect(page.locator("#conn")).toHaveAttribute("data-state", "open");
+  await expect(page.locator("#conn")).toHaveAttribute("status", "live");
   const before = await page.locator(".feed li").count();
   const pending = host.pieces.at(-1)!;
   expect(run(host.root, ["approval", "record", "--client", host.client, "--piece", pending.piece_id, "--media-sha256", pending.media_sha256, "--decision", "changes_requested", "--note", "mais curto", "--by", "client:Ana"]).status).toBe(0);
@@ -76,6 +76,8 @@ test("pipeline board has every column, opens a piece with its preview and filter
   await expect(page.locator("#drawer video")).toBeVisible();
   await expect(page.locator("#drawer-body")).toContainText("Histórico de eventos");
   await expect(page.locator("#drawer-body")).toContainText("Aprovações");
+  // a section that does not exist is left out, not printed as the text "null"
+  expect(await page.locator("#drawer-body").textContent()).not.toContain("null");
   await shot(page, "piece-drawer");
   await page.keyboard.press("Escape");
   await expect(page.locator("#drawer")).toBeHidden();
@@ -91,18 +93,19 @@ test("calendar: month grid, keyboard navigation, time zones and the list view", 
   const month = host.start.slice(0, 7);
   await open(page, `#/calendar?month=${month}`);
   await expect(page.getByRole("heading", { name: "Calendário", level: 1 })).toBeVisible();
-  const withPosts = page.locator("button.day:not(.empty)");
+  // the month grid is the kit's <sl-calendar>: a date grid whose cells are the days, with one list item per post
+  const withPosts = page.locator("sl-calendar td:has(li)");
   expect(await withPosts.count()).toBeGreaterThan(0);
-  await expect(page.locator(".post").first()).toBeVisible();
+  await expect(page.locator("sl-calendar li").first()).toBeVisible();
   await expect(page.locator("ul.muted").first()).toContainText("30 dias");
   await shot(page, "calendar-light");
 
-  const first = page.locator("button.day").first();
-  await first.focus();
+  const days = page.locator("sl-calendar td[data-date]:not([data-out])");
+  await days.first().focus();
   await page.keyboard.press("ArrowRight");
-  await expect(page.locator("button.day").nth(1)).toBeFocused();
+  await expect(days.nth(1)).toBeFocused();
   await page.keyboard.press("ArrowDown");
-  await expect(page.locator("button.day").nth(8)).toBeFocused();
+  await expect(days.nth(8)).toBeFocused();
 
   await withPosts.first().focus();
   await page.keyboard.press("Enter");
@@ -110,10 +113,10 @@ test("calendar: month grid, keyboard navigation, time zones and the list view", 
   await expect(page.locator("#drawer-body")).toContainText("BRT");
   await page.keyboard.press("Escape");
 
-  const before = await page.locator(".post").first().textContent();
+  const before = await page.locator("sl-calendar li").first().textContent();
   await page.getByLabel("Fuso").selectOption("Asia/Singapore");
   await expect(page).toHaveURL(/zone=Asia/);
-  await expect.poll(async () => page.locator(".post").first().textContent()).not.toBe(before);
+  await expect.poll(async () => page.locator("sl-calendar li").first().textContent()).not.toBe(before);
 
   await page.getByLabel("Visão").selectOption("list");
   await expect(page.locator("table tbody tr").first()).toBeVisible();

@@ -1,19 +1,13 @@
 :root{
-  color-scheme:light dark;
-  --bg:#f6f7f9;--panel:#fff;--fg:#111827;--muted:#4b5563;--line:#d5d9e0;--accent:#0b5fff;--accent-fg:#fff;
-  --ok:#14663a;--warn:#8a4b00;--bad:#b42318;--info:#0a52e0;--focus:#0b5fff;
-  --ok-bg:#e3f5ea;--warn-bg:#fff1d6;--bad-bg:#fde4e1;--info-bg:#e3ecff;
+  /* The palette is the kit's (kit/simplicio-live.css): light and dark, automatic or forced with data-sl-theme. */
+  --bg:var(--sl-bg);--panel:var(--sl-panel);--fg:var(--sl-ink);--muted:var(--sl-ink-muted);--line:var(--sl-line-soft);
+  --accent:var(--sl-ink);--accent-fg:var(--sl-panel);--focus:var(--sl-focus);
+  --ok:var(--sl-state-pass);--warn:var(--sl-state-unverified);--bad:var(--sl-state-fail);--info:var(--sl-state-running);
+  --ok-bg:color-mix(in srgb,var(--ok) 8%,var(--panel));--warn-bg:color-mix(in srgb,var(--warn) 8%,var(--panel));
+  --bad-bg:color-mix(in srgb,var(--bad) 8%,var(--panel));--info-bg:color-mix(in srgb,var(--info) 8%,var(--panel));
   --radius:10px;--gap:16px;
-}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0b0f19;--panel:#121826;--fg:#eef1f6;--muted:#b6bfce;--line:#2b3447;--accent:#7aa2ff;--accent-fg:#0b0f19;
-  --ok:#6ee7a1;--warn:#fbbf24;--bad:#ff8a80;--info:#8fb0ff;--focus:#9db9ff;
-  --ok-bg:#0f2a1c;--warn-bg:#2d2208;--bad-bg:#33100d;--info-bg:#10203f;
-}}
-:root[data-theme="dark"]{
-  --bg:#0b0f19;--panel:#121826;--fg:#eef1f6;--muted:#b6bfce;--line:#2b3447;--accent:#7aa2ff;--accent-fg:#0b0f19;
-  --ok:#6ee7a1;--warn:#fbbf24;--bad:#ff8a80;--info:#8fb0ff;--focus:#9db9ff;
-  --ok-bg:#0f2a1c;--warn-bg:#2d2208;--bad-bg:#33100d;--info-bg:#10203f;
+  /* The kit scales its type with the viewport for wall screens; this page keeps the smallest step. */
+  --sl-fluid:1rem;
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -34,9 +28,6 @@ button[aria-pressed="true"]{background:var(--accent);color:var(--accent-fg);bord
 button:hover{border-color:var(--accent)}
 .tools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 kbd{font:inherit;font-size:.75rem;border:1px solid var(--line);border-radius:4px;padding:0 4px}
-.conn{display:inline-flex;gap:6px;align-items:center;font-size:.85rem}
-.dot{width:10px;height:10px;border-radius:50%;background:var(--muted);display:inline-block}
-.conn[data-state=open] .dot{background:var(--ok)}.conn[data-state=reconnecting] .dot{background:var(--warn)}
 .nav{display:flex;gap:4px;padding:6px 16px;background:var(--panel);border-bottom:1px solid var(--line);overflow-x:auto}
 .nav a{padding:8px 12px;border-radius:6px;text-decoration:none;color:var(--fg);white-space:nowrap}
 .nav a[aria-current=page]{background:var(--accent);color:var(--accent-fg);font-weight:600}
@@ -45,9 +36,6 @@ main:focus{outline:none}
 .grid{display:grid;gap:var(--gap)}
 .kpis{grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
-.kpi .value{font-size:1.9rem;font-weight:700;line-height:1.2}
-.kpi .delta{font-size:.8rem;color:var(--muted)}
-.kpi .detail{font-size:.8rem;color:var(--muted)}
 .cards{grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));align-items:start}
 .two{grid-template-columns:minmax(0,2fr) minmax(0,1fr);align-items:start}
 @media (max-width:900px){.two{grid-template-columns:minmax(0,1fr)}}
@@ -61,7 +49,7 @@ main:focus{outline:none}
 .chip{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:0 8px;font-size:.78rem;color:var(--muted)}
 table{border-collapse:collapse;width:100%}th,td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top}
 th{font-size:.8rem;color:var(--muted);font-weight:600}
-.scroll{overflow-x:auto}.scroll:focus-visible{outline-offset:-3px}
+.scroll{overflow-x:auto}.scroll sl-gate-badge{white-space:nowrap}.scroll:focus-visible{outline-offset:-3px}
 .board{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(230px,1fr);gap:12px;align-items:start;padding-bottom:8px}
 .col{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:8px;min-height:120px}
 .col h2.sub{display:flex;justify-content:space-between;margin-bottom:8px}
@@ -89,9 +77,6 @@ tr[data-blocked="1"] th,tr[data-blocked="1"] td,tr[data-sla="red"] th,tr[data-sl
 tr[data-sla="yellow"] th,tr[data-sla="yellow"] td{background:var(--warn-bg)}
 .alerts{list-style:none;margin:0;padding:0;display:grid;gap:8px}.alerts p{margin:0 0 4px}
 blockquote{margin:4px 0 0;padding-left:12px;border-left:3px solid var(--line)}
-.toasts{position:fixed;right:12px;bottom:12px;display:grid;gap:8px;z-index:20}
-.toast{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--info);border-radius:6px;padding:8px 12px;max-width:340px}
-.toast.warn{border-left-color:var(--warn)}.toast.error{border-left-color:var(--bad)}
 dialog{background:var(--panel);color:var(--fg);border:1px solid var(--line);border-radius:var(--radius);padding:16px;max-width:min(900px,95vw);width:100%}
 dialog::backdrop{background:rgba(0,0,0,.5)}
 .drawer-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}

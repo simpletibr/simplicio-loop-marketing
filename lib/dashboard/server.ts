@@ -261,7 +261,7 @@ export async function startDashboard(opts: DashboardOptions): Promise<DashboardS
           }
           if (path === "/" || path === "/index.html") return serveStatic(res, "index.html", head);
           if (path === "/app.js" || path === "/style.css") return serveStatic(res, path.slice(1), head);
-          if (/^\/ui\/[a-z0-9-]{1,40}\.js$/.test(path)) return serveStatic(res, path.slice(4), head);
+          if (/^\/ui\/(?:kit\/)?[a-z0-9-]{1,40}\.js$/.test(path) || path === "/ui/kit/simplicio-live.css") return serveStatic(res, path.slice(4), head);
           return sendError(res, 404, "not found");
         }
         if (!authed) return sendError(res, 401, "missing or invalid session token");
