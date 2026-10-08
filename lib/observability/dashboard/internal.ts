@@ -37,6 +37,11 @@ const SRC = {
  * owns come from here; scheduling, approvals, gates and renders are read from
  * their own source of truth so one occurrence is never counted twice.
  */
+/** Distinct rule ids of a gate report, so the dashboard can rank the reasons pieces fail; free text is never copied. */
+function ruleIds(rules: Array<string | undefined> | undefined): string[] {
+  return [...new Set((rules ?? []).filter((r): r is string => typeof r === "string" && /^[\w.:-]{1,64}$/.test(r)))].slice(0, 10);
+}
+
 export function mapMarketingEvent(ev: MarketingEvent, key: string): DashboardEvent | null {
   const base = { source: SRC.events, key, ts: ev.ts, client: ev.client, piece_id: ev.piece_id } as const;
   const data = { ...(ev.data ?? {}), ...(ev.verdict ? { verdict: ev.verdict } : {}), ...(ev.provider ? { provider: ev.provider } : {}) };
@@ -185,13 +190,14 @@ export function fromManifests(root: string): DashboardEvent[] {
 
         const compliance = readText(join(dir, "compliance.json"));
         if (compliance) {
-          const raw = parseJson<{ pass?: boolean; violations?: unknown[] }>(compliance) ?? {};
-          out.push(makeEvent({ ...common, key: `${piece}|compliance|${digest(compliance)}`, ts: stamp, kind: "compliance_result", severity: raw.pass === true ? "info" : "warn", data: { pass: raw.pass === true, violations: raw.violations?.length ?? 0 } }));
+          const raw = parseJson<{ pass?: boolean; violations?: Array<{ rule_id?: string }> }>(compliance) ?? {};
+          out.push(makeEvent({ ...common, key: `${piece}|compliance|${digest(compliance)}`, ts: stamp, kind: "compliance_result", severity: raw.pass === true ? "info" : "warn", data: { pass: raw.pass === true, violations: raw.violations?.length ?? 0, rules: ruleIds(raw.violations?.map((v) => v.rule_id)) } }));
         }
         const qa = readText(join(dir, "qa-tech-specs.json"));
         if (qa) {
-          const raw = parseJson<{ pass?: boolean }>(qa) ?? {};
-          out.push(makeEvent({ ...common, key: `${piece}|qa|${digest(qa)}`, ts: stamp, kind: "qa_result", severity: raw.pass === true ? "info" : "warn", data: { passed: raw.pass === true, kind: "tech-specs" } }));
+          const raw = parseJson<{ pass?: boolean; per_platform?: Record<string, { violations?: Array<{ rule?: string }> }> }>(qa) ?? {};
+          const rules = ruleIds(Object.values(raw.per_platform ?? {}).flatMap((p) => (p.violations ?? []).map((v) => v.rule)));
+          out.push(makeEvent({ ...common, key: `${piece}|qa|${digest(qa)}`, ts: stamp, kind: "qa_result", severity: raw.pass === true ? "info" : "warn", data: { passed: raw.pass === true, kind: "tech-specs", rules } }));
         }
         if (!manifest) continue;
         const watcher = readText(manifest.watcher_report_path ?? join(engineRoot(root), "data", "gate", `${piece}.json`));

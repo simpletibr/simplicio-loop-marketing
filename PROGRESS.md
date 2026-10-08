@@ -353,3 +353,7 @@ Fontes de métricas somente leitura, snapshots ligados ao recibo, vencedores do 
 ## Checkpoint 23 (2026-10-08 — issue #178 status per network)
 
 Matriz cliente por rede, saúde do publicador da Real Oficial, capacidade de contas e recibos com motivo e próximo passo humano; nenhuma credencial exibida (teste). Gate completo verde (unit 361, integration 81, regression 22, e2e 300, cobertura 88,8% das linhas). PARTIAL: a skill `frontend-design` não estava disponível; o limite do plano (Lite) é suposição do texto da issue.
+
+## Checkpoint 24 (2026-10-08 — issue #179 quality gates per piece)
+
+Selos por peça, bloqueio por hash divergente, taxa de aprovação de primeira, principais motivos e tendência. Gate completo verde (unit 361, integration 81, regression 22, e2e 300, cobertura 88,8% das linhas). PARTIAL: `frontend-design` e `<sl-json-tree>` indisponíveis; formato de `broll-licenses.json` é suposição a confirmar.

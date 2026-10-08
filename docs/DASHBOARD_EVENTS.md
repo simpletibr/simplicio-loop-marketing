@@ -37,8 +37,8 @@ Hierarchy: `client -> campaign_id -> piece_id -> network`. The stored form (`dat
 | `voice_rendered` | render manifest (`voice`) | `provider`, `seconds`, `cost_usd`, `cache_hit` |
 | `render_started` | `piece_start` event | |
 | `render_finished` | factory preview and final manifests, piece `manifest.hbi`, `render_failed` event | `stage` (`preview`/`final`), `ok`, `sha256`, `duration_s` |
-| `qa_result` | factory `result.json`, piece `qa-tech-specs.json` | `passed`, `resolution`, `lufs`, `freeze_s`, `cuts` |
-| `compliance_result` | piece `compliance.json` | `pass`, `violations` |
+| `qa_result` | factory `result.json`, piece `qa-tech-specs.json` | `passed`, `resolution`, `lufs`, `freeze_s`, `cuts`, `rules?` (rule ids of the tech-specs report) |
+| `compliance_result` | piece `compliance.json` | `pass`, `violations`, `rules?` (rule ids only, never the matched text) |
 | `watcher_gate` | watcher report | `passed`, `tag` |
 | `approval_requested` | approval log (queue `client`), yool `human.approval_required` (queue `operator`) | `queue`, `request_id`, `media_sha256` |
 | `approval_decided` | approval log | `decision`, `decided_by_role`, `media_sha256`, `note` |

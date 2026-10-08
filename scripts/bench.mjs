@@ -31,6 +31,7 @@ import { cockpit } from "../lib/dashboard/views/cockpit.ts";
 import { pipeline } from "../lib/dashboard/views/pipeline.ts";
 import { calendar } from "../lib/dashboard/views/calendar.ts";
 import { status } from "../lib/dashboard/views/status.ts";
+import { quality } from "../lib/dashboard/views/quality.ts";
 import { defaultSources } from "../lib/observability/dashboard/index.ts";
 import { syntheticOperation } from "../tests/helpers/dashboard-fixture.ts";
 import { appendSnapshot } from "../lib/analytics/score.ts";
@@ -161,6 +162,7 @@ results.push(await timeitAsync("dashboard.cockpit (5 clients, 60 pieces)", () =>
 results.push(await timeitAsync("dashboard.pipeline (5 clients, 60 pieces)", () => pipeline(viewCtx), 300));
 results.push(await timeitAsync("dashboard.calendar (5 clients, 60 pieces)", () => calendar(viewCtx), 300));
 results.push(await timeitAsync("dashboard.status (5 clients, 60 pieces)", () => status(viewCtx), 300));
+results.push(await timeitAsync("dashboard.quality (5 clients, 60 pieces)", () => quality(viewCtx), 300));
 
 // metrics loop: winners vary the next plan; the monthly report and its PDF
 const winnersIn = [{ piece_id: "P-w1", hook: "Gancho um", angle: "a" }, { piece_id: "P-w2", hook: "Gancho dois", angle: "b" }, { piece_id: "P-w3", hook: "Gancho três", angle: "c" }];
