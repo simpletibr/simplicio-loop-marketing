@@ -1,27 +1,8 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { resolve } from "node:path";
 import { listPieces } from "../pieces/store";
-
-interface RunRow {
-  timestamp: string;
-  piece_id: string;
-  providers_used: string[];
-  cost_estimate_usd: number;
-  status: string;
-}
-
-function readRuns(path: string): RunRow[] {
-  if (!existsSync(path)) return [];
-  const text = readFileSync(path, "utf8");
-  const rows: RunRow[] = [];
-  for (const line of text.split("\n")) {
-    if (!line.trim()) continue;
-    try {
-      rows.push(JSON.parse(line) as RunRow);
-    } catch {}
-  }
-  return rows;
-}
+import { readRuns } from "../data/runs";
+import { readDashboardState } from "../dashboard/state";
 
 function engineRoot(): string {
   const root = process.env.MARKETING_ENGINE_HOST_ROOT ?? process.cwd();
@@ -60,6 +41,8 @@ export async function cliEntry(_argv: string[]): Promise<void> {
       `  ${r.timestamp} ${r.piece_id} ${r.status} ${r.providers_used.join("+")} $${(r.cost_estimate_usd ?? 0).toFixed(4)}\n`,
     );
   }
+  const dashboard = readDashboardState(process.env.MARKETING_ENGINE_HOST_ROOT ?? process.cwd());
+  if (dashboard) process.stdout.write(`\n== Dashboard ==\n  http://127.0.0.1:${dashboard.port}  (pid ${dashboard.pid})\n`);
   void _argv;
 }
 

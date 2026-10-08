@@ -134,7 +134,7 @@ export function fromTtsUsage(root: string, cursor: number): { events: DashboardE
 }
 
 export function fromMetricSnapshots(root: string): DashboardEvent[] {
-  return readSnapshots(root).map((s, i) =>
+  return readSnapshots(engineRoot(root)).map((s, i) =>
     makeEvent({ source: "analytics-snapshots", key: `${s.piece_id}|${s.channel_id}|${s.metric}|${s.polled_at}|${i}`, ts: s.polled_at, kind: "metrics_snapshot", piece_id: s.piece_id, network: s.channel_id, data: { metric: s.metric, value: s.value, source: s.source ?? "api" } }),
   );
 }

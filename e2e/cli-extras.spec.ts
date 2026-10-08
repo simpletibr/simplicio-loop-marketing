@@ -114,6 +114,7 @@ locale: en
   expect(r.stdout).toContain("Pieces");
   expect(r.stdout).toContain("draft");
   expect(r.stdout).toContain("cost USD");
+  expect(r.stdout).toContain("PIECE-2026W19-001 success claude $1.2300");
 });
 
 test("logs command exits 2 when the workspace is missing", () => {

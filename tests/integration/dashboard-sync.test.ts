@@ -105,7 +105,7 @@ test("the repo's own producers feed the stream, each occurrence from exactly one
   writeTuple(eRoot, { id: "winner.promote:P1", class: "winner.promote", status: "done" });
   writeTuple(eRoot, { id: "winner.promote:P2", class: "winner.promote", status: "pending" });
   writeTuple(eRoot, { id: "piece.plan:P1", class: "piece.plan", status: "done" });
-  appendSnapshot(root, { piece_id: "P1", channel_id: "tiktok", metric: "views", value: 1200, polled_at: NOW.toISOString() });
+  appendSnapshot(eRoot, { piece_id: "P1", channel_id: "tiktok", metric: "views", value: 1200, polled_at: NOW.toISOString() });
 
   // per-piece artifacts, as the generate pipeline writes them
   const pieceDir = join(eRoot, "outputs", "acme", "2026-10-07", "P1");

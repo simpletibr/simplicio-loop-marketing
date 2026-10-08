@@ -13,6 +13,6 @@ Status: PARTIAL by scope split. The server, SSE with replay, the read API for cl
 
 | Criterion | Result |
 | --- | --- |
-| A new event in the JSONL reaches the SSE client in under 500 ms (p95); reconnection without loss | done: `e2e/dashboard-sse.spec.ts` measured p50=90 ms, p95=170 ms, max=190 ms over 25 samples with the default 200 ms poll; replay and no-duplicate reconnection in `tests/integration/dashboard-server.test.ts` |
+| A new event in the JSONL reaches the SSE client in under 500 ms (p95); reconnection without loss | done: `e2e/dashboard-cli.spec.ts` (server started through the CLI) measured p50=90 ms, p95=170 ms, max=190 ms over 25 samples with the default 200 ms poll; replay and no-duplicate reconnection in `tests/integration/dashboard-server.test.ts` |
 | No route calls a tool that spends credits (explicit allowlist) | done: allowlist and TTL tests, plus a static test that no file under `lib/dashboard/` names a spending tool |
 | Media served only from the allowed folders (path traversal test) | done: plain and encoded traversal, a symlink escape, an approval request whose preview points outside, and unknown media types are all 404 |

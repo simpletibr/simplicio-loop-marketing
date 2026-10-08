@@ -5,6 +5,7 @@ import { engineRoot } from "../clients/paths";
 import { createApprovalHandler } from "../approval/webhook";
 import { renderApprovalPage } from "../approval/page";
 import {
+  listDecisions,
   listRequests,
   mediaSha256Of,
   openAdjustments,
@@ -32,6 +33,7 @@ const USAGE = `approval: usage:
   approval record  --client <slug> --piece <id> --media-sha256 <hex> --decision approved|changes_requested --by <name> [--note <text>]
   approval serve   [--port 8788]
   approval adjustments [--client <slug>]
+  approval list    [--client <slug>] [--month <YYYY-MM>]
 `;
 
 export async function cliEntry(argv: string[]): Promise<void> {
@@ -98,6 +100,15 @@ export async function cliEntry(argv: string[]): Promise<void> {
     });
     emitEvent(root, { kind: "approval_decided", client: approval.client, piece_id: approval.piece_id, phase: "approval", verdict: approval.decision });
     process.stdout.write(`${JSON.stringify(approval, null, 2)}\n`);
+    return;
+  }
+  if (sub === "list") {
+    const decisions = listDecisions(root);
+    const rows = listRequests(root, { client: flag(argv, "--client"), month: flag(argv, "--month") }).map((r) => {
+      const latest = decisions.filter((d) => d.piece_id === r.piece_id && d.media_sha256 === r.media_sha256).at(-1);
+      return { request_id: r.request_id, client: r.client, piece_id: r.piece_id, month: r.month, media_sha256: r.media_sha256, publish_at: r.publish_at, status: latest ? latest.decision : "pending" };
+    });
+    process.stdout.write(`${JSON.stringify(rows, null, 2)}\n`);
     return;
   }
   if (sub === "adjustments") {
