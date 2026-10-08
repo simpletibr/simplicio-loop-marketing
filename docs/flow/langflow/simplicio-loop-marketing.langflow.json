@@ -1,0 +1,940 @@
+{
+  "name": "simplicio-loop-marketing",
+  "description": "simplicio-loop-marketing: entradas, passos e saídas",
+  "is_component": false,
+  "endpoint_name": null,
+  "tags": [
+    "simplicio.flow/v1"
+  ],
+  "icon": null,
+  "data": {
+    "nodes": [
+      {
+        "id": "note-2a16da61",
+        "type": "noteNode",
+        "position": {
+          "x": 36.4,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-2a16da61",
+          "type": "note",
+          "node": {
+            "description": "ENTRADA: CLI marketing-engine (argv e flags)\nFonte: bin/marketing-engine.mjs\nSegue para: Roteador: provedor por tipo de tarefa; Execução autônoma e recorrente (loop, watcher, cron)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-14c5747a",
+        "type": "noteNode",
+        "position": {
+          "x": 36.4,
+          "y": 356.40000000000003
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-14c5747a",
+          "type": "note",
+          "node": {
+            "description": "ENTRADA: Briefing: piece.md e CAMPAIGN.md\nFonte: lib/cli/new-piece.ts, lib/campaigns/campaign.ts\nComandos: marketing-engine new-piece\nSegue para: Plano de conteúdo e calendário (content-plan/v1)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-351bea6a",
+        "type": "noteNode",
+        "position": {
+          "x": 36.4,
+          "y": 532.4000000000001
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-351bea6a",
+          "type": "note",
+          "node": {
+            "description": "ENTRADA: URL do site do cliente\nFonte: lib/cli/profile.ts\nSegue para: Perfil de marca (brand-profile/v1)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-d79240ce",
+        "type": "noteNode",
+        "position": {
+          "x": 36.4,
+          "y": 708.4000000000001
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-d79240ce",
+          "type": "note",
+          "node": {
+            "description": "ENTRADA: .env e matriz de provedores (PROVIDERS.md)\nFonte: lib/router.ts, .specs/architecture/PROVIDERS.md\nSegue para: Roteador: provedor por tipo de tarefa",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-99286ebc",
+        "type": "noteNode",
+        "position": {
+          "x": 36.4,
+          "y": 884.4000000000001
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-99286ebc",
+          "type": "note",
+          "node": {
+            "description": "ENTRADA: Referência autorizada (vídeo ou texto)\nFonte: lib/cli/reference.ts\nComandos: marketing-engine reference\nSegue para: Roteiro, criativo e legendas (loop de geração)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-0ce75344",
+        "type": "noteNode",
+        "position": {
+          "x": 36.4,
+          "y": 1060.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-0ce75344",
+          "type": "note",
+          "node": {
+            "description": "ENTRADA: Calendário no Notion\nFonte: lib/calendar/notion.ts, lib/cli/sync.ts\nComandos: marketing-engine sync\nSegue para: Plano de conteúdo e calendário (content-plan/v1)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-a8e9939f",
+        "type": "noteNode",
+        "position": {
+          "x": 36.4,
+          "y": 1236.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-a8e9939f",
+          "type": "note",
+          "node": {
+            "description": "ENTRADA: Vídeo longo do cliente\nFonte: lib/clips/realoficial-clips.ts\nSegue para: Cortes e dublagem (gasto só com aprovação do dono)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-0b5f2fe8",
+        "type": "noteNode",
+        "position": {
+          "x": 36.4,
+          "y": 1412.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-0b5f2fe8",
+          "type": "note",
+          "node": {
+            "description": "ENTRADA: Decisão do cliente na página de aprovação\nFonte: lib/approval/page.ts, lib/approval/webhook.ts\nSegue para: Aprovação do cliente presa ao hash da mídia (approval/v1)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-bcb07573",
+        "type": "noteNode",
+        "position": {
+          "x": 36.4,
+          "y": 1588.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-bcb07573",
+          "type": "note",
+          "node": {
+            "description": "ENTRADA: Métricas das redes (somente leitura)\nFonte: lib/analytics/collect.ts\nSegue para: Loop de métricas e vencedores",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-04555323",
+        "type": "noteNode",
+        "position": {
+          "x": 36.4,
+          "y": 1764.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-04555323",
+          "type": "note",
+          "node": {
+            "description": "ENTRADA: Pagamentos: webhooks gravados, venda.json e planilha\nFonte: lib/observability/dashboard/billing.ts, lib/observability/dashboard/videos.ts\nSegue para: Painel: fontes, regras de alerta e vistas somente leitura",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "blue"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-1372221a",
+        "type": "noteNode",
+        "position": {
+          "x": 462.8,
+          "y": 532.4000000000001
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-1372221a",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Perfil de marca (brand-profile/v1)\nFonte: lib/profile/brand-profile.ts, lib/cli/profile.ts\nComandos: marketing-engine init, marketing-engine scan, marketing-engine profile\nSegue para: Plano de conteúdo e calendário (content-plan/v1)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-0314869b",
+        "type": "noteNode",
+        "position": {
+          "x": 889.2,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-0314869b",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Plano de conteúdo e calendário (content-plan/v1)\nFonte: lib/plan/content-plan.ts, lib/cli/plan-commands.ts\nComandos: marketing-engine campaign, marketing-engine calendar\nSegue para: Plano do mês e calendário; Roteiro, criativo e legendas (loop de geração); Cortes e dublagem (gasto só com aprovação do dono)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-081267ab",
+        "type": "noteNode",
+        "position": {
+          "x": 462.8,
+          "y": 356.40000000000003
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-081267ab",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Roteador: provedor por tipo de tarefa\nFonte: lib/router.ts, lib/providers/matrix.ts\nComandos: marketing-engine check\nSegue para: Roteiro, criativo e legendas (loop de geração)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-3d001051",
+        "type": "noteNode",
+        "position": {
+          "x": 1315.6000000000001,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-3d001051",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Roteiro, criativo e legendas (loop de geração)\nFonte: lib/cli/generate.ts, lib/providers/llm.ts, lib/providers/image.ts, lib/providers/video.ts\nComandos: marketing-engine generate\nSegue para: Artefatos da peça: script, legendas, manifest.json; Críticos: voz da marca, humanizador, plataforma; Eventos, custo, falhas e diagnóstico",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-51770f0a",
+        "type": "noteNode",
+        "position": {
+          "x": 1315.6000000000001,
+          "y": 356.40000000000003
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-51770f0a",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Cortes e dublagem (gasto só com aprovação do dono)\nFonte: lib/clips/realoficial-clips.ts, lib/dubbing/dubbing.ts\nComandos: marketing-engine clips, marketing-engine dubbing\nSegue para: Cortes e versões dubladas; QA técnico (aspecto, duração, tamanho, áreas seguras)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-4cb36387",
+        "type": "noteNode",
+        "position": {
+          "x": 1742,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-4cb36387",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Críticos: voz da marca, humanizador, plataforma\nFonte: .skills/revisao-humanizada/SKILL.md\nSegue para: QA técnico (aspecto, duração, tamanho, áreas seguras)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-d6e26d21",
+        "type": "noteNode",
+        "position": {
+          "x": 2168.4,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-d6e26d21",
+          "type": "note",
+          "node": {
+            "description": "PASSO: QA técnico (aspecto, duração, tamanho, áreas seguras)\nFonte: lib/qa/tech-specs.ts\nSegue para: Compliance e verificação de afirmações",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-e88b2749",
+        "type": "noteNode",
+        "position": {
+          "x": 2594.8,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-e88b2749",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Compliance e verificação de afirmações\nFonte: lib/compliance/generic.ts, lib/gate/claims-gate.ts\nSegue para: Watcher gate e evidência (MEASURED, CANON, UNVERIFIED)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-cbe2a58f",
+        "type": "noteNode",
+        "position": {
+          "x": 3021.2000000000003,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-cbe2a58f",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Watcher gate e evidência (MEASURED, CANON, UNVERIFIED)\nFonte: lib/gate/watcher-gate.ts, lib/gate/evidence.ts\nComandos: marketing-engine evidence\nSegue para: Aprovação do cliente presa ao hash da mídia (approval/v1)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-d759dd28",
+        "type": "noteNode",
+        "position": {
+          "x": 3447.6,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-d759dd28",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Aprovação do cliente presa ao hash da mídia (approval/v1)\nFonte: lib/approval/store.ts, lib/cli/approval.ts\nComandos: marketing-engine approval\nSegue para: Registro de aprovações (approvals.hbp); Agendamento verificado (DRY_RUN por padrão)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-479ae2da",
+        "type": "noteNode",
+        "position": {
+          "x": 3874,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-479ae2da",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Agendamento verificado (DRY_RUN por padrão)\nFonte: lib/publish/publisher.ts, lib/publish/verify-pipeline.ts\nSegue para: Recibos de agendamento (schedule.hbp); Post agendado na rede (efeito externo, só com DRY_RUN=false); Eventos, custo, falhas e diagnóstico",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-7d835084",
+        "type": "noteNode",
+        "position": {
+          "x": 4726.8,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-7d835084",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Loop de métricas e vencedores\nFonte: lib/analytics/winners.ts, lib/cli/metrics.ts\nComandos: marketing-engine metrics\nSegue para: Vencedores e plano seguinte com variações; Promoção e anúncios (guarda de orçamento); Relatórios (peça e mês); Aprendizados e retrospectiva",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-29800ae2",
+        "type": "noteNode",
+        "position": {
+          "x": 5153.2,
+          "y": 356.40000000000003
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-29800ae2",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Promoção e anúncios (guarda de orçamento)\nFonte: lib/promotion/budget-guardrail.ts, lib/publish/meta-ads.ts, lib/cli/promote.ts\nComandos: marketing-engine promote\nSegue para: Anúncio pago (efeito externo, só com DRY_RUN=false)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-9513c21e",
+        "type": "noteNode",
+        "position": {
+          "x": 5153.2,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-9513c21e",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Aprendizados e retrospectiva\nFonte: lib/promotion/learnings.ts, lib/cli/retrospective.ts\nComandos: marketing-engine retrospective\nSegue para: Aprendizados duráveis (learnings.jsonl)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-49bbeba9",
+        "type": "noteNode",
+        "position": {
+          "x": 462.8,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-49bbeba9",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Execução autônoma e recorrente (loop, watcher, cron)\nFonte: lib/cli/loop.ts, lib/cli/watcher.ts, lib/cli/schedule.ts, lib/loop/journal.ts, lib/cli/low-ticket.ts, lib/cli/anchor.ts, lib/cli/autoresearch.ts\nComandos: marketing-engine loop, marketing-engine watcher, marketing-engine schedule, marketing-engine low-ticket, marketing-engine anchor, marketing-engine autoresearch\nSegue para: Roteiro, criativo e legendas (loop de geração)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-3179123e",
+        "type": "noteNode",
+        "position": {
+          "x": 4300.400000000001,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-3179123e",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Eventos, custo, falhas e diagnóstico\nFonte: lib/observability/events.ts, lib/cli/status.ts, lib/cli/doctor.ts\nComandos: marketing-engine status, marketing-engine logs, marketing-engine cost, marketing-engine ab-report, marketing-engine alerts, marketing-engine doctor, marketing-engine findings, marketing-engine operator\nSegue para: runs.jsonl, llm-usage.jsonl e eventos",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-4ea4f98e",
+        "type": "noteNode",
+        "position": {
+          "x": 5153.2,
+          "y": 532.4000000000001
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-4ea4f98e",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Relatórios (peça e mês)\nFonte: lib/report/builder.ts, lib/report/monthly.ts\nComandos: marketing-engine report\nSegue para: Relatório mensal em markdown e PDF",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-ef688e52",
+        "type": "noteNode",
+        "position": {
+          "x": 5153.2,
+          "y": 708.4000000000001
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-ef688e52",
+          "type": "note",
+          "node": {
+            "description": "PASSO: Painel: fontes, regras de alerta e vistas somente leitura\nFonte: lib/observability/dashboard/index.ts, lib/dashboard/alerts.ts, lib/dashboard/server.ts\nComandos: marketing-engine dashboard\nSegue para: Painel local, alertas e página do cliente",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "neutral"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-f2a0126a",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 708.4000000000001
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-f2a0126a",
+          "type": "note",
+          "node": {
+            "description": "SAÍDA: Artefatos da peça: script, legendas, manifest.json\nFonte: lib/cli/generate.ts",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "emerald"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-07aa8ac3",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 884.4000000000001
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-07aa8ac3",
+          "type": "note",
+          "node": {
+            "description": "SAÍDA: Plano do mês e calendário\nFonte: lib/plan/content-plan.ts",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "emerald"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-9cd7e473",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 1764.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-9cd7e473",
+          "type": "note",
+          "node": {
+            "description": "SAÍDA: Cortes e versões dubladas\nFonte: lib/dubbing/dubbing.ts",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "emerald"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-684b6122",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 180.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-684b6122",
+          "type": "note",
+          "node": {
+            "description": "SAÍDA: Registro de aprovações (approvals.hbp)\nFonte: lib/approval/store.ts\nSegue para: Painel: fontes, regras de alerta e vistas somente leitura",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "emerald"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-a3770ad8",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 1236.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-a3770ad8",
+          "type": "note",
+          "node": {
+            "description": "SAÍDA: Recibos de agendamento (schedule.hbp)\nFonte: lib/publish/publisher.ts\nSegue para: Painel: fontes, regras de alerta e vistas somente leitura",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "emerald"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-5ec8bc77",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 1060.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-5ec8bc77",
+          "type": "note",
+          "node": {
+            "description": "EFEITO EXTERNO: Post agendado na rede (efeito externo, só com DRY_RUN=false)\nFonte: lib/publish/realoficial-browser.ts, lib/publish/adaptlypost.ts\nSegue para: Loop de métricas e vencedores",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "amber"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-c2216147",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 1588.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-c2216147",
+          "type": "note",
+          "node": {
+            "description": "EFEITO EXTERNO: Anúncio pago (efeito externo, só com DRY_RUN=false)\nFonte: lib/publish/meta-ads.ts",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "amber"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-c2cff47c",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 1412.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-c2cff47c",
+          "type": "note",
+          "node": {
+            "description": "SAÍDA: Vencedores e plano seguinte com variações\nFonte: lib/analytics/winners.ts\nSegue para: Plano de conteúdo e calendário (content-plan/v1)",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "emerald"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-931d3a50",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 356.40000000000003
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-931d3a50",
+          "type": "note",
+          "node": {
+            "description": "SAÍDA: Aprendizados duráveis (learnings.jsonl)\nFonte: lib/promotion/learnings.ts",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "emerald"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-324a4ae3",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 1940.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-324a4ae3",
+          "type": "note",
+          "node": {
+            "description": "SAÍDA: Relatório mensal em markdown e PDF\nFonte: lib/report/monthly.ts",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "emerald"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-51e73f8a",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 532.4000000000001
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-51e73f8a",
+          "type": "note",
+          "node": {
+            "description": "SAÍDA: runs.jsonl, llm-usage.jsonl e eventos\nFonte: lib/observability/events.ts\nSegue para: Painel: fontes, regras de alerta e vistas somente leitura",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "emerald"
+            }
+          }
+        }
+      },
+      {
+        "id": "note-0ce28924",
+        "type": "noteNode",
+        "position": {
+          "x": 5579.6,
+          "y": 2116.4
+        },
+        "width": 300,
+        "height": 190,
+        "selected": false,
+        "data": {
+          "id": "note-0ce28924",
+          "type": "note",
+          "node": {
+            "description": "SAÍDA: Painel local, alertas e página do cliente\nFonte: lib/dashboard/server.ts, lib/dashboard/snapshot.ts",
+            "display_name": "",
+            "documentation": "",
+            "template": {
+              "backgroundColor": "emerald"
+            }
+          }
+        }
+      }
+    ],
+    "edges": [],
+    "viewport": {
+      "x": 0,
+      "y": 0,
+      "zoom": 0.5
+    }
+  }
+}

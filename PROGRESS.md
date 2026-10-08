@@ -377,3 +377,7 @@ Ranking por métrica, vencedores do mês 1 ligados às variações do mês 2, co
 ## Checkpoint 29 (2026-10-08 — issue #185 dashboard quality)
 
 Acessibilidade (axe-core, WCAG 2.2 AA, 0 violações em 10 seções x 2 temas e 4 estados de diálogo), LGPD (quatro vazamentos de contato achados e corrigidos), segurança, desempenho (LCP máx. 288 ms) e sessão de 8 h sem vazamento, com `docs/DASHBOARD.md`. Gate completo verde (unit 361, integration 123, regression 22, e2e 345, cobertura 89,22% das linhas). PARTIAL: `frontend-design` indisponível; alinhamento com simplicio-loop#1409 não acessível.
+
+## Checkpoint 30 (2026-10-08 — issue #186 flow diagram)
+
+Fluxo declarativo do projeto (entradas, passos, saídas) com Mermaid, SVG, PNG e Langflow gerados de um único arquivo, teste de drift contra o código e a lista de comandos da CLI, e imagem no README. PARTIAL: importação no Langflow 1.12.0 não verificada (não instalado); sem o gerador do simplicio-mapper; sem diagrama por execução.

@@ -69,6 +69,8 @@
     "coverage": "c8 --check-coverage --lines 85 --statements 85 --functions 85 --branches 70 --reporter=text --reporter=html --reporter=json-summary --exclude \"tests/**\" --exclude \"e2e/**\" --exclude \"scripts/**\" --exclude \"lib/providers/__mocks__/**\" npm run test:node",
     "typecheck": "tsc --noEmit",
     "lint": "node scripts/lint-conventions.mjs",
+    "flow": "node scripts/flow.mjs",
+    "flow:check": "node scripts/flow.mjs --check",
     "ci:verify": "node scripts/verify-quality-gate.mjs",
     "check": "node scripts/check.mjs",
     "claims:audit": "node scripts/claims-audit.mjs",
